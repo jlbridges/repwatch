@@ -1,5 +1,5 @@
 """
-WSGI config for repwatch project.
+WSGI config for repwatch project. (traditional development entrypoint)
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

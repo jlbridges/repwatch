@@ -1,0 +1,1 @@
+# admin interface registrations for models as needed
