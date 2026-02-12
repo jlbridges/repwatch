@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="homepage">
+    <div class="section1">
+        <div class="heading">
+            <p class="track-your">
+                Track Your Represntatives and Legislation in One Place
+            </p>
+        </div>
+        <div class="paragraph">
+            <p class="repwatch-helps-you">
+                RepWatch helps you stay informed about your elected officials and the legislation that matters to you. 
+                Keep all your civic engagement organized and accessible.
+            </p>
+        </div>
+        <div class="container">
+            <div class="button-signup">
+                <button class="button">
+                    <div class="text-signup">Get Started Free</div>
+                </button>
+            </div>
+            <div class="butto-login">
+                <button class="buttonForLogin">
+                    <div class="text-login">Log In</div>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="section2">
+        <div class="heading">
+            <p class="secondp">Everything You Need to Stay Engaged</p>
+        </div>
+        <div class="info">
+
+            <div class="block1">
+                <div class="images">
+                    <img class="track" src="XXX" />
+                </div>
+                <div class="heading">
+                    <p>Track Representatives</p>
+                </div>
+                <div class="paragraph">
+                    <p>Store and organize information about your elected officials at all levels of government.</p>
+                </div>
+            </div>
+            <div class="block2">
+                <div class="images2">
+                    <img class="Monitor" src="XXX" />
+                </div>
+                <div class="heading2">
+                    <p>Monitor Legislation</p>
+                </div>
+                <div class="paragraph2">
+                    <p>Keep tabs on bills and legislation that impact your community and interests.</p>
+                </div>                
+            </div>
+            <div class="block3">
+                 <div class="images3">
+                    <img class="update" src="XXX" />
+                </div>
+                <div class="heading3">
+                    <p>Stay Updated</p>
+                </div>
+                <div class="paragraph3">
+                    <p>Get organized with a personalized dashboard that keeps you informed and engaged.</p>
+                </div>               
+            </div>
+            <div class="block4">
+                  <div class="images4">
+                    <img class="track" src="XXX" />
+                </div>
+                <div class="heading4">
+                    <p>Secure & Private</p>
+                </div>
+                <div class="paragraph4">
+                    <p>Your data is protected with secure authentication and privacy-first design.</p>
+                </div>              
+            </div>
+        </div>
+    </div>
+    <div class="section3">
+        <div class="headingS3">
+            <p>Ready to Make Your Voice Heard?</p>
+        </div>
+        <div class="paragraphS3">
+            <p>Join RepWatch today and take control of your civic engagement.</p>
+        </div>
+        <div class="button-S3">
+            <a href="{% url 'registration' %}" class="buttonS3">Create Your Account</a>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
