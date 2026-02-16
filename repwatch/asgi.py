@@ -1,5 +1,5 @@
 """
-ASGI config for repwatch project.
+ASGI config for repwatch project. (async development entrypoint)
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

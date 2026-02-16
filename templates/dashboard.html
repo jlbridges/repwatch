@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="section 1">
+  <div class="heading">
+    <p>Your Dashboard</p>
+  </div>
+  <div class="paragraph">
+    <P>Track representatives, search legislation, and stay informed</P>
+  </div>
+</div>
+<div class="tablist">
+  <ul class="tabs">
+    <li><a href="{% url 'dashboard' %}?tab=overview">Overview</a></li>
+    <li><a href="{% url 'dashboard' %}?tab=myreps">My Reps</a></li>
+    <li><a href="{% url 'dashboard' %}?tab=mybills">My Bills</a></li>
+    <li><a href="{% url 'dashboard' %}?tab=search">Search</a></li>
+    <li><a href="{% url 'dashboard' %}?tab=setting">Setting</a></li>
+  </ul>
+</div>
+
+
+{% endblock content %}
