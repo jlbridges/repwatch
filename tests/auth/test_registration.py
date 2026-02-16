@@ -1,7 +1,12 @@
+
+# test_registration.py
+
 from django.contrib.auth.models import User
+import pytest
+pytestmark = pytest.mark.django_db  # utilizing the provided django DB
 
 
-def test_user_can_register(client, signup_url):
+def test_user_can_register(client, signup_url):  # tests agaisnt the provided cases added into the bottom of settings
     payload = {
         "username": "newuser",
         "email": "newuser@example.com",
