@@ -1,0 +1,17 @@
+.buttonS3 {
+    display: inline-block;          /* Make <a> behave like a button */
+    background-color: #4CAF50;      /* Green background */
+    color: white;                   /* White text */
+    padding: 0.8rem 1.5rem;         /* Top/Bottom & Left/Right spacing */
+    border-radius: 5px;             /* Rounded corners */
+    text-decoration: none;          /* Remove underline from <a> */
+    font-size: 1rem;                /* Text size */
+    font-weight: bold;              /* Optional: bold text */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+    cursor: pointer;                /* Cursor changes to pointer on hover */
+    text-align: center;             /* Center text */
+}
+
+.buttonS3:hover {
+    background-color: #4e5992;      /* Darker green on hover */
+}

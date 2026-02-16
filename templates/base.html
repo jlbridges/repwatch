@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RepWatch{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/homepage.css' %}">
+
+</head>
+
+<body>
+
+    {% if show_layout %}
+    <header class="navbar">
+        <div class="container">
+
+            <h1>
+                <a href="{% url 'homepage' %}">
+                    <img src="{% static 'images/logo_repwatch.png' %}" alt="RepWatch Logo">
+                </a>
+            </h1>
+
+            <nav>
+                {% if page == 'dashboard' %}
+                <span>Welcome user</span>
+                <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+                {% elif page == 'homepage' %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'registration' %}">Register</a>
+                {% endif %}
+            </nav>
+
+        </div>
+    </header>
+    {% endif %}
+
+    <main class="content">
+        {% block content %}{% endblock content %}
+    </main>
+
+    {% if show_layout %}
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 RepWatch. Stay informed, stay engaged.</p>
+        </div>
+    </footer>
+    {% endif %}
+
+</body>
+
+</html>
