@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    
+
     {% if show_layout %}
     <header class="navbar">
         <div class="container">
@@ -25,22 +25,25 @@
 
             <nav>
                 {% if page == 'dashboard' %}
-                    <span>Welcome user</span>
-                    <a href="{% url 'logout' %}">Logout</a>
+                <span>Welcome user</span>
+                <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
                 {% elif page == 'homepage' %}
-                    <a href="{% url 'login' %}">Login</a>
-                    <a href="{% url 'registration' %}">Register</a>
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'registration' %}">Register</a>
                 {% endif %}
             </nav>
 
-        </div>  
+        </div>
     </header>
     {% endif %}
 
     <main class="content">
         {% block content %}{% endblock content %}
     </main>
-   
+
     {% if show_layout %}
     <footer>
         <div class="container">
@@ -50,4 +53,5 @@
     {% endif %}
 
 </body>
+
 </html>
