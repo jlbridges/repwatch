@@ -10,14 +10,14 @@
         {% csrf_token %}
 
         {% if form.non_field_errors %}
-            <div class="error">{{ form.non_field_errors }}</div>
+        <div class="error">{{ form.non_field_errors }}</div>
         {% endif %}
 
         <div class="form-group">
             {{ form.first_name.label_tag }}
             {{ form.first_name }}
             {% if form.first_name.errors %}
-                <div class="error">{{ form.first_name.errors }}</div>
+            <div class="error">{{ form.first_name.errors }}</div>
             {% endif %}
         </div>
 
@@ -25,7 +25,7 @@
             {{ form.email.label_tag }}
             {{ form.email }}
             {% if form.email.errors %}
-                <div class="error">{{ form.email.errors }}</div>
+            <div class="error">{{ form.email.errors }}</div>
             {% endif %}
         </div>
 
@@ -33,7 +33,7 @@
             {{ form.password1.label_tag }}
             {{ form.password1 }}
             {% if form.password1.errors %}
-                <div class="error">{{ form.password1.errors }}</div>
+            <div class="error">{{ form.password1.errors }}</div>
             {% endif %}
         </div>
 
@@ -41,16 +41,14 @@
             {{ form.password2.label_tag }}
             {{ form.password2 }}
             {% if form.password2.errors %}
-                <div class="error">{{ form.password2.errors }}</div>
+            <div class="error">{{ form.password2.errors }}</div>
             {% endif %}
         </div>
 
         <button type="submit">Create Account</button>
     </form>
 
-    <p class="register-link">
-        Already have an account? <a href="{% url 'login' %}">Log in here</a>.
-    </p>  
+    <p class="register-link"> Already have an account? <a href="{% url 'login' %}">Log in here</a></p>
 </section>
 
 {% endblock content %}
