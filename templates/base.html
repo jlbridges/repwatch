@@ -6,46 +6,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}RepWatch{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/homepage.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/about.css' %}">
 
 </head>
 
 <body>
 
-    {% if show_layout %}
-    <header class="navbar">
-        <div class="container">
-
-            <h1>
-                <a href="{% url 'homepage' %}">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'homepage' %}">
+                <div class="logo-wrap" style="--logo-bg: transparent;">
                     <img src="{% static 'images/logo_repwatch.png' %}" alt="RepWatch Logo">
-                </a>
-            </h1>
+                </div>
+            </a>
 
-            <nav>
-                {% if page == 'dashboard' %}
-                <span>Welcome user</span>
-                <form method="post" action="{% url 'account_logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Logout</button>
-                </form>
-                {% elif page == 'homepage' %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'registration' %}">Register</a>
-                {% endif %}
-            </nav>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                {% block header_nav %}
+                <div class="ms-auto d-flex flex-column align-items-end">
+                    <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'about' %}">About</a>
+                        </li>
+
+                        <li class="nav-item">
+                            {% if user.is_authenticated %}
+                                <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button id="auth-action" type="submit" class="btn btn-link nav-link">Logout</button>
+                                </form>
+                            {% else %}
+                                <a id="auth-action" class="nav-link" href="{% url 'login' %}">Login</a>
+                            {% endif %}
+                        </li>
+
+                        <li class="nav-item">
+                            {% if user.is_authenticated %}
+                                <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                            {% else %}
+                                <a class="nav-link" href="{% url 'registration' %}">Register</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+
+                    {% if user.is_authenticated %}
+                    <div class="header-username text-end d-none d-lg-block mt-1">
+                        <small class="text-muted">Signed in as: {{ user.get_username }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endblock header_nav %}
+            </div>
         </div>
-    </header>
-    {% endif %}
+    </nav>
 
     <main class="content">
         {% block content %}{% endblock content %}
     </main>
 
     {% if show_layout %}
-    <footer>
+    <footer class="site-footer">
         <div class="container">
             <p>&copy; 2026 RepWatch. Stay informed, stay engaged.</p>
         </div>
@@ -55,3 +81,17 @@
 </body>
 
 </html>
+
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script>
+// Confirm before signing out. If the logout form exists, intercept submit.
+document.addEventListener('DOMContentLoaded', function () {
+    var logoutForm = document.getElementById('logout-form');
+    if (logoutForm) {
+        logoutForm.addEventListener('submit', function (e) {
+            var ok = window.confirm('Are you sure you want to sign out?');
+            if (!ok) e.preventDefault();
+        });
+    }
+});
+</script>
