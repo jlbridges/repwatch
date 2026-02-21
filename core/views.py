@@ -38,4 +38,12 @@ def registration(request):
 
 def login_view(request):
     return render(request, "login.html", {"show_layout": False }) # hide navbar and footer
+
+
+def about(request):
+    context = {
+        "show_layout": True,
+        "page": "about",
+    }
+    return render(request, "about.html", context)
  

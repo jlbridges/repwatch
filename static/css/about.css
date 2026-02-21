@@ -1,0 +1,76 @@
+/* About page styles */
+.about-page {
+    padding: 2rem 0;
+    line-height: 1.6;
+    color: #020202;
+    font-family: inherit;
+}
+
+.about-page .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.about-title {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.about-title h1 {
+    font-size: 2.3rem;
+    margin-bottom: 0.5rem;
+    color: #000000;
+    font-weight: 600;
+}
+
+.about-text p {
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem !important;
+    color: #000000;
+    text-align: justify;
+}
+
+.about-text strong {
+    color: #000000;
+}
+
+.cta-section {
+    background-color: #a8bed3;
+    padding: 2rem;
+    border-radius: .5rem;
+    font-size: 1.4rem;
+    text-align: center;
+    margin-top: 2.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.cta-button {
+    display: inline-block;
+    background-color: var(--accent-color, #007bff);
+    color: #ffffff !important;
+    padding: .75rem 1.25rem;
+    border-radius: .5rem;
+    text-decoration: none;
+    font-weight: 700;
+    transition: background-color .15s ease-in-out, transform .08s;
+    margin-top: 1rem;
+    border: none;
+}
+
+.cta-button:hover,
+.cta-button:focus {
+    background-color: #0069d9;
+    transform: translateY(-1px);
+    color: #ffffff !important;
+}
+
+/* CTA button centered and responsive */
+.cta-section .cta-button { width: 260px; display: block; }
+@media (max-width: 576px) { .cta-section .cta-button { width: 100%; } }
+
+@media (max-width: 576px) {
+    .about-title h1 { font-size: 1.75rem; }
+    .features-grid { gap: 1rem; }
+}
