@@ -64,7 +64,7 @@ ROOT_URLCONF = "repwatch.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -76,8 +76,6 @@ TEMPLATES = [
         },
     },
 ]
-
-TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
 
 WSGI_APPLICATION = "repwatch.wsgi.application"
 
@@ -95,7 +93,7 @@ DATABASES = {
 
 # Authentication
 
-LOGIN_URL = "/accounts/login/"
+LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 

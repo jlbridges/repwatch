@@ -19,9 +19,19 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from core import views as core_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+
+    # Your overrides FIRST
+    path("accounts/signup/", core_views.registration, name="registration"),
+    path("accounts/login/", core_views.login_view, name="login"),
+     path("accounts/logout/", core_views.accountlogout, name="accountlogout"),
+
+    # Allauth routes
     path("accounts/", include("allauth.urls")),
+
+     # App routes 
     path("", include("core.urls"))
 ]
