@@ -1,0 +1,40 @@
+/* Button hover effect */
+.btn.btn-white-hover {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  transition: background-color 0.3s ease;
+}
+
+.btn.btn-white-hover:hover {
+  background-color: #e0e0e0; /* Gray on hover */
+  color: #000000;
+}
+
+/* CTA section */
+.cta-section {
+  width: 100vw;
+  position: relative;
+  padding: 2rem 2rem;
+  background-color: #051738;
+  color: #ffffff;
+  text-align: center;
+  box-sizing: border-box;
+  margin-top: 6rem;
+  margin-bottom: 6rem;
+}
+
+.cta-section h2 {
+  font-size: 1.70rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.cta-section p {
+  font-size: 1.20rem;
+  margin-bottom: 1.5rem;
+}
+
+.text-blue {
+  color: #959ca7;
+}

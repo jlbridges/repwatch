@@ -1,15 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Homepage{% endblock %}
 
-{% load static %}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+{% endblock %}
 
 {% block content %}
-
-<header>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/homepage.css' %}">
-</header>
-
 <div class="homepage">
 
     <div class="section1 py-5">
@@ -114,13 +112,11 @@
     </div>
 
     <div class="section3"> 
-        <h3>Ready to Make Your Voice Heard?</h3>
-        <p class="text-blue">Join RepWatch today and take control of your civic engagement.</p>
-        <a href="{% url 'registration' %}" class="btn btn-white-hover px-4 py-2">
-            Create Your Account
+        <h3>Learn More About Us!</h3>
+        <p class="text-blue">Discover how RepWatch is empowering civic engagement and making government more transparent.</p>
+        <a href="{% url 'about' %}" class="btn btn-white-hover px-4 py-2">
+            Click me to know more
         </a> 
     </div>
-
 </div>
-
 {% endblock content %}

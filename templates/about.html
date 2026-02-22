@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-
 {% load static %}
 
 {% block title %}About Us - RepWatch{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/about.css' %}">
+    <link rel="stylesheet" href="{% static 'css/about.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="about-page">
+
     <div class="container">
         <header class="about-title">
             <h1>About RepWatch</h1>
@@ -21,23 +21,24 @@
                 We believe that staying informed shouldn't be a full-time job, so we’ve built a centralized space to help you track 
                 the people and policies that shape your world. By providing tools to store and organize information about 
                 elected officials at all levels of government, RepWatch ensures you always know who is representing your interests.
-            </p>
-            
+            </p>  
             <p>
                 Beyond tracking individuals, our platform allows you to keep tabs on specific bills and legislation that impact 
                 your community. Built with a privacy-first design and secure authentication, RepWatch ensures your data remains 
                 protected, allowing you to know and understand how bills and legislation affect you.
             </p>
         </section>
-
-        <section class="cta-section">
-            <h2>Ready to Make Your Voice Heard?</h2>
-            <p>Join RepWatch today and take control of your civic engagement.</p>
-                <div class="d-flex justify-content-center">
-                    <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg cta-button" role="button">Get Started Now</a>
-                </div>
-        </section>
-
     </div>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Make Your Voice Heard?</h2>
+            <p class="text-blue">Join RepWatch today and take control of your civic engagement.</p>
+            <a href="{% url 'account_signup' %}" class="btn btn-white-hover px-4 py-2">
+                Get Started Now
+            </a>
+        </div>
+    </section>
+
 </div>
 {% endblock content %}
