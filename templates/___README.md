@@ -74,8 +74,7 @@ Tabs:
     - Photo
     - First name
     - Last name
-    - U.S. Senator
-    - Senior Senator / Junior Senior
+    - U.S. Senator    -
     - Politic Party and where state is.
     ---------
     - Term expires: MM/DD/YYYY
