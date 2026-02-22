@@ -56,8 +56,19 @@
         </div>
 
         <div class="form-group">
-            {{ form.state.label_tag }} 
-            {{ form.state }}
+            {{ form.city.label_tag }} 
+            {{ form.city }}
+            {% if form.city.errors %}
+            <div class="error">
+                {{ form.city.errors }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group d-flex flex-column align-items-center">
+            {{ form.state.label_tag }}
+            {% load widget_tweaks %}
+            {{ form.state|add_class:"form-select w-auto mw-100" }}
             {% if form.state.errors %}
             <div class="error">
                 {{ form.state.errors }}
