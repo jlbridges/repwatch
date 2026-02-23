@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Dashboard{% endblock %}
+
 {% block content %}
 
 <div class="section1">
@@ -24,9 +26,6 @@
         <button class="nav-link rounded-5" id="mybills-tab" data-bs-toggle="tab" data-bs-target="#mybills" type="button" role="tab" aria-controls="mybills" aria-selected="false">My Bills</button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-5" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab" aria-controls="search" aria-selected="false">Search</button>
-    </li>
-    <li class="nav-item" role="presentation">
         <button class="nav-link rounded-5" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting" type="button" role="tab" aria-controls="setting" aria-selected="false">Setting</button>
     </li>
 </ul>
@@ -36,18 +35,30 @@
     <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
         <p>Overview:</p>
     </div>
+
     <div class="tab-pane fade" id="myreps" role="tabpanel" aria-labelledby="myreps-tab">
         <p>Display resp:</p>
     </div>
+
     <div class="tab-pane fade" id="mybills" role="tabpanel" aria-labelledby="mybills-tab">
         <p>My Bills:</p>
     </div>
-    <div class="tab-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
-        <p>Search my reps and bills:</p>
-    </div>
+
     <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
         <p>Settings:</p>
+        <!-- password reset -->
+        <h5>Change Password</h5>
+        {% if password_success %}
+            <div class="alert alert-success">Password successfully updated!</div>
+        {% endif %}
+
+        <form method="post" class="mb-3">
+            {% csrf_token %}
+            {{ password_form.as_p }}
+            <button type="submit" class="btn btn-primary">Update Password</button>
+        </form>
     </div>
+
 </div>
 
 

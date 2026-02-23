@@ -1,132 +1,112 @@
-# RepWatch – Templates Documentation 👁️
+# RepWatch Django Templates
 
-This directory contains Django HTML templates
-
-Structure:
-- `registration/` contains templates used by Django's authentication system
-- Top-level templates are application pages (homepage, login, signup, dashboard)
-
-Templates are resolved via Django's template loader
+This folder contains the Django HTML templates for RepWatch’s UI. Most pages extend `base.html` and use [Bootstrap](https://getbootstrap.com/) (via CDN) for layout and styling.
 
 ---
 
-## Directory Structure:
+## Folder Structure
 
-### base.html
+```
+templates/
+├─ about.html
+├─ base.html
+├─ dashboard.html
+├─ homepage.html
+├─ login.html
+└─ signup.html
+```
 
-The main layout template. 
+> **Note:** In this repo, auth templates live at the top level (`login.html`, `signup.html`) rather than under `registration/` or `account/`.
 
-contains:
-- Global HTML structure
-- Navigation bar
-- Footer
-- CSS links from static folder
-- Template blocks
+---
 
-### homepage.html
+## `base.html` (Shared Layout)
 
-lanfing page of the application. User will be able to raed about our goal web app, and the login or signup.
+`base.html` provides:
 
-Purpose: 
-- intrduces RepWatch
-- Displays welcom content
-- Navigation entry point (login and signup)
+- Shared `<head>` assets (Bootstrap + Bootstrap Icons via CDN)
+- Optional header/nav + footer
+- Template blocks used by child templates
 
-### account/login.html
+### Template Blocks
 
-User authenticated page. For current user will be able to introduce their gmail and passwords in order to login.
+- `{% block title %}` — Page title  
+- `{% block content %}` — Main page content  
 
-Purpose:
-- Login form
-- Error handling display
-- Django form rendering
+### Expected Context Variables
 
-### account/signup.html
+- `showlayout` (`bool`) — If `true`, show header/footer; if `false`, render only page content  
+- `page` (`str`) — Used for simple nav/behavior switches (e.g., `"homepage"`, `"dashboard"`)  
+- `user` — Used for the dashboard welcome message  
 
-User registration page. For new user, they will introduce their names, gamil, and password.
+---
 
-Purpose:
-- User registration form
-- Form validation feedback
-- Styled input fields
+## Page Templates
 
-## dashboard.html
+### `homepage.html`
+- Landing page  
+- Loads `static/css/homepage.css`  
+- Links to sign up / log in  
 
-User dashboard nterface. After the user login or signup will be ale to see the dashboard.
+### `dashboard.html`
+- Authenticated dashboard  
+- Uses Bootstrap nav-pills tabs  
+- Includes a Change Password section  
+- Expects:
+  - `passwordform`
+  - Optionally `passwordsuccess`
 
-Purpose:
-- Displays user-specific data
-- Structured layout for reports/monitoring
-- Organized content sections
+### `login.html`
+- Login form with CSRF  
+- Shows field and non-field errors  
+- Treats email as the username  
 
-Tabs:
+### `signup.html`
+- Registration form with CSRF  
+- Shows field and non-field errors  
+- Includes typical user/address fields + password confirmation  
 
-- Overview:
-    - Your representatives --> spring #2
-        - Name
-        - US senador
-    - Tracked Legislation --> spring #3
-        - label or number bill
-        - Official tittle of the bill
+### `about.html`
+- Informational page  
+- Extends `base.html`  
 
+---
 
-- My reps:
-    - Photo
-    - First name
-    - Last name
-    - U.S. Senator    -
-    - Politic Party and where state is.
-    ---------
-    - Term expires: MM/DD/YYYY
-    ----------
-    - Legislative activity:
-        - sponsored: 
-        - Co-sponsored: 
-    ----------
-    Policy Focus
-    (example: Agriculture, samll Business, ect...)
-    ----------
-    Committeess
-    (examples: committee on Armed Services, Veterans' Affairs, etc...)
-    ----------
-    Personal contact (out fo scope):
-        - Phone
-        - Email
+## Styling
 
-- My Bills (Display):
-    - label or number bill
-    - Official tittle of the bill
-    - Status
-    -----------
-    - tag
-    - Congress-specific
-    - Cosponsors
-    -----------
-    - Sponsor and politic party (D or R)
-    - Introduced: MM/DD/YYYY
-    - Summary
-    - Latest Action
+- Bootstrap is loaded in `base.html`
+- Bootstrap Icons are loaded in `base.html`
+- Custom homepage CSS lives in `static/css/homepage.css`  
 
-- Search:
-    - Find Representatives:
-        - Stret Address
-        - city
-        - State
-        - ZIP
+> Keep custom CSS minimal; prefer Bootstrap utility classes.
 
-    - Search Bills:
-        - Search Bills
-        - Status
-        - Policy Subject
-        - Sponsor Name
-        - Date From
-        - Date To
+---
 
-- Settings:
-    - Display: "Profile information (manage your account details and contac information)"
-    - Full Name
-    - Email
-    - address (street, city, State, Zip)
-    - reset passwords
-    - Delete profile
+## Adding a New Template
 
+1. Start with:
+   ```django
+   {% extends "base.html" %}
+   ```
+
+2. Add `{% load static %}` only if you use static assets.
+
+3. Put HTML inside:
+   ```django
+   {% block content %}
+   {% endblock %}
+   ```
+
+4. In your view context, set:
+   ```python
+   showlayout = True
+   ```
+   to display the standard header/footer.
+
+---
+
+## Troubleshooting
+
+- **Header/footer missing:** Check `showlayout`
+- **Nav/conditional behavior wrong:** Confirm `page` is set (e.g., `"homepage"` or `"dashboard"`)
+- **CSS/images missing:** Verify static files are configured and served correctly (and collected in production)
