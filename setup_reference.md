@@ -42,6 +42,9 @@ These are commands you will use often.
 ### Create migrations (only after adding models)  
 `py manage.py makemigrations`
 
+### Show migration history
+`py manage.py showmigrations`
+
 ### Django shell  
 `py manage.py shell`
 
