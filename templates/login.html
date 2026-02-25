@@ -1,50 +1,70 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Log In{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<section class="login-section">
-  <h2 class="heading">Welcome Back</h2>
-  <p class="paragraph">Log in to access your dashboard.</p>
-
-  <form method="post">
-
-    {% csrf_token %}
-      
-    {{ form.non_field_errors }}
-
-    {# email as username #}
-    <div class="form-group">
-      {{ form.email.label_tag }} 
-      {{ form.email }}
-      {% if form.email.errors %}
-        <div class="error">{{ form.email.errors }}</div>
-      {% endif %}
+<section class="login-section auth-page">
+  <div class="auth-wrap">
+    <div class="auth-columns d-flex w-100">
+      <div class="auth-left">
+      <a class="auth-logo" href="{% url 'homepage' %}">
+        <img src="{% static 'images/logo_repwatch.png' %}" alt="RepWatch">
+      </a>
+      <h2 class="auth-heading">Welcome Back</h2>
+      <p class="auth-subhead">Log in to access your dashboard.</p>
     </div>
 
-    {# password #}
-    <div class="form-group">
-      {{ form.password.label_tag }} 
-      {{ form.password }}
-      {% if form.password.errors %}
-        <div class="error">{{ form.password.errors }}</div>
-      {% endif %}
+      <div class="auth-right">
+        <div class="auth-card">
+          <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            {# email as username #}
+            <div class="form-group">
+              {{ form.email.label_tag }}
+              {{ form.email }}
+              {% if form.email.errors %}
+                <div class="error">{{ form.email.errors }}</div>
+              {% endif %}
+            </div>
+
+            {# password #}
+            <div class="form-group">
+              {{ form.password.label_tag }}
+              <div class="input-with-toggle">
+                {{ form.password }}
+                <button type="button" class="password-toggle" aria-label="Show password">👁️</button>
+              </div>
+              {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="auth-actions">
+              <button type="submit" class="btn-primary">Log In</button>
+            </div>
+          </form>
+        </div>
     </div>
 
-    <button type="submit">Log In</button>
-
-    <p class="register-link">
-      Don't have an account? <a href="{% url 'registration' %}">Register here</a>.
-    </p>
-
-  </form>
-
-  <p class="back_home">
-    <a href="{% url 'homepage' %}">← Back to Home</a>.
-  </p>
-  
-
+    </div>
+    <!-- auth links inside the light-blue box, below columns -->
+    <div class="w-100 mt-3 text-center">
+      <p class="register-link mb-1">Don't have an account? <a href="{% url 'registration' %}">Register here</a></p>
+      <p class="back_home mb-0"><a href="{% url 'homepage' %}">← Back to Home</a></p>
+    </div>
+  </div>
 </section>
+
+{% block extra_scripts %}
+  <script src="{% static 'js/auth.js' %}"></script>
+{% endblock %}
 
 {% endblock content %}
