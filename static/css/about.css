@@ -1,3 +1,53 @@
+/* About page header and text */
+.about-title { margin: 0 0 2rem 0; } /* top | right | bottom | left */
+.about-title h1 { line-height: 1.05; }
+.about-text p { font-size: 1.1rem; line-height: 1.75; }
+
+/* Numbers / stats section */
+.numbers-section {
+  width: 100%;
+  padding: 2rem 1rem;
+  background-color: #a3b7db;
+  box-sizing: border-box;
+  margin: 2rem 0 0 0; /* top | right | bottom | left */
+}
+.numbers-title { text-align: center; margin-bottom: 1rem; }
+.numbers-title h2 { font-size: 1.6rem; font-weight: 700; margin: 0; }
+.numbers-grid { display: flex; gap: 1rem; justify-content: center; align-items: stretch; }
+.number-card { background: transparent; border-radius: 6px; flex: 1 1 0; min-width: 160px; }
+.number-value { font-size: 2.25rem; font-weight: 800; color: #07203a; }
+.number-label { font-size: 1rem; color: #313f49; margin-top: 0.5rem; }
+
+/* CTA section */
+.cta-section {
+  width: 100%;
+  position: relative;
+  padding: 3rem 1rem;
+  background-color: #051738;
+  color: #ffffff;
+  text-align: center;
+  box-sizing: border-box;
+  margin: 0 0 0 0; /* top | right | bottom | left */
+}
+
+.cta-section h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  line-height: 1.15;
+}
+
+.cta-section p {
+  font-size: 1.1rem;
+  line-height: 1.65;
+  margin-bottom: 1rem;
+  color: #dfe9f6;
+}
+
+.text-blue {
+  color: #9fb3d6;
+}
+
 /* Button hover effect */
 .btn.btn-white-hover {
   background-color: #ffffff;
@@ -7,34 +57,18 @@
 }
 
 .btn.btn-white-hover:hover {
-  background-color: #e0e0e0; /* Gray on hover */
+  background-color: #cccbcb;
   color: #000000;
 }
 
-/* CTA section */
-.cta-section {
-  width: 100vw;
-  position: relative;
-  padding: 2rem 2rem;
-  background-color: #051738;
-  color: #ffffff;
-  text-align: center;
-  box-sizing: border-box;
-  margin-top: 6rem;
-  margin-bottom: 6rem;
-}
+@media (max-width: 700px) {
+  .cta-section {
+    padding: 2rem .75rem;
+    margin: 2rem 0;
+  }
+  .cta-section h2 { font-size: 1.5rem; }
+  .cta-section p { font-size: 1rem; }
 
-.cta-section h2 {
-  font-size: 1.70rem;
-  font-weight: 500;
-  margin-bottom: 1rem;
-}
-
-.cta-section p {
-  font-size: 1.20rem;
-  margin-bottom: 1.5rem;
-}
-
-.text-blue {
-  color: #959ca7;
+  .numbers-grid { flex-direction: column; gap: 1rem; }
+  .number-value { font-size: 1.8rem; }
 }
