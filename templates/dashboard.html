@@ -1,65 +1,96 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Dashboard{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
 {% block content %}
+<div class="container px-1">
 
-<div class="section1">
-    <div class="heading">
-        <p>Your Dashboard</p>
+    <div class="section1 pb-3">
+        <div class="heading">
+            <p>Your Dashboard</p>
+        </div>
+        <div class="paragraph">
+            <p>Track representatives, search legislation, and stay informed</p>
+        </div>
     </div>
-    <div class="paragraph">
-        <p>Track representatives, search legislation, and stay informed</p>
+
+    <!-- Bootstrap Nav Pills -->
+    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3" id="dashboardTab" role="tablist" 
+        style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white);">
+        
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-5" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-5" id="myreps-tab" data-bs-toggle="tab" data-bs-target="#myreps" type="button" role="tab" aria-controls="myreps" aria-selected="false">My Reps</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-5" id="mybills-tab" data-bs-toggle="tab" data-bs-target="#mybills" type="button" role="tab" aria-controls="mybills" aria-selected="false">My Bills</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-5" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting" type="button" role="tab" aria-controls="setting" aria-selected="false">Setting</button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="dashboardTabContent">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+
+            <div class="row g-4 mt-2 py-4">
+                <!-- Reps Card here -->
+                <div class="col-md-6">
+                    <div class="overview-box">
+                        <p class="text-start fs-5">Your Representatives</p>
+                        <!-- Card 1 content goes here -->
+                    </div>
+                </div>
+                <!-- Bills Card here -->
+                <div class="col-md-6">
+                    <div class="overview-box">
+                        <p class="text-start fs-5">Tracked Legislation</p>
+                        <!-- Card 2 content goes here -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- My Reps -->
+        <div class="tab-pane fade" id="myreps" role="tabpanel" aria-labelledby="myreps-tab">
+            <p>Display resp:</p>
+        </div>
+
+        <!-- My Bills -->
+        <div class="tab-pane fade" id="mybills" role="tabpanel" aria-labelledby="mybills-tab">
+            <p>My Bills:</p>
+        </div>
+
+        <!-- Settings -->
+        <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
+            <p>Settings:</p>
+            <!-- password reset -->
+            <h5>Change Password</h5>
+            {% if password_success %}
+                <div class="alert alert-success">Password successfully updated!</div>
+            {% endif %}
+
+            <form method="post" class="mb-3">
+                {% csrf_token %}
+                {{ password_form.as_p }}
+                <button type="submit" class="btn btn-primary">Update Password</button>
+            </form>
+        </div>
+
     </div>
+
 </div>
 
-<!-- Bootstrap Nav Pills -->
-<ul class="nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm mb-3" id="dashboardTab" role="tablist" 
-    style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white);">
-    <li class="nav-item" role="presentation">
-        <button class="nav-link active rounded-5" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-5" id="myreps-tab" data-bs-toggle="tab" data-bs-target="#myreps" type="button" role="tab" aria-controls="myreps" aria-selected="false">My Reps</button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-5" id="mybills-tab" data-bs-toggle="tab" data-bs-target="#mybills" type="button" role="tab" aria-controls="mybills" aria-selected="false">My Bills</button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-5" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting" type="button" role="tab" aria-controls="setting" aria-selected="false">Setting</button>
-    </li>
-</ul>
-
-<!-- Tab Content -->
-<div class="tab-content" id="dashboardTabContent">
-    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
-        <p>Overview:</p>
-    </div>
-
-    <div class="tab-pane fade" id="myreps" role="tabpanel" aria-labelledby="myreps-tab">
-        <p>Display resp:</p>
-    </div>
-
-    <div class="tab-pane fade" id="mybills" role="tabpanel" aria-labelledby="mybills-tab">
-        <p>My Bills:</p>
-    </div>
-
-    <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
-        <p>Settings:</p>
-        <!-- password reset -->
-        <h5>Change Password</h5>
-        {% if password_success %}
-            <div class="alert alert-success">Password successfully updated!</div>
-        {% endif %}
-
-        <form method="post" class="mb-3">
-            {% csrf_token %}
-            {{ password_form.as_p }}
-            <button type="submit" class="btn btn-primary">Update Password</button>
-        </form>
-    </div>
-
-</div>
 
 
 
