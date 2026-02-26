@@ -1,6 +1,7 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.views.decorators.http import require_POST
 from .forms import CustomUserRegister, EmailLoginForm
 
 # Homepage
@@ -34,6 +35,7 @@ def registration(request):
         form = CustomUserRegister(request.POST)
         if form.is_valid():
             user = form.save() # save user + creates profile
+            login(request, user)
             return redirect("dashboard")
     else:
         form = CustomUserRegister()
@@ -58,9 +60,7 @@ def login_view(request):
 
     return render(request, "login.html", {"form": form, "show_layout": False, "page": "login"})  # hide navbar and footer
 
-@login_required
+@require_POST
 def accountlogout(request):
-    # Your base template uses a POST form for logout
-    if request.method == "POST":
-        logout(request)
+    logout(request)
     return redirect("homepage")

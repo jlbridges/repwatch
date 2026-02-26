@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.forms import UserCreationForm
+from django.db import transaction
 
 from .models import Profile
 
@@ -13,21 +14,22 @@ class CustomUserRegister(UserCreationForm):
     last_name = forms.CharField(required=True)
     email = forms.EmailField(required=True)
 
-    address = forms.CharField(required=False)
+    address_line1 = forms.CharField(required=False)
+    address_line2 = forms.CharField(required=False)
     city = forms.CharField(required=False)
 
     STATE_CHOICES = (
         ("", "Select your state"), # placeholder
         ("NC", "NC"),
         )
+    
     state = forms.ChoiceField(
         choices=STATE_CHOICES,
         required=True,
         widget=forms.Select(attrs={"class": "form-select"}),
-        label="State",
     )
 
-    zip_code = forms.CharField(required=False)
+    zipcode = forms.CharField(required=False)
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -51,10 +53,11 @@ class CustomUserRegister(UserCreationForm):
             raise forms.ValidationError("Only NC is allowed.")
         return state
 
+    @transaction.atomic # all-or-nothing. Django feature
     def save(self, commit=True):
         user = super().save(commit=False)
+        email = self.cleaned_data["email"]
 
-        email = self.cleaned_data["email"].strip().lower()
         user.username = email
         user.email = email
         user.first_name = self.cleaned_data["first_name"]
@@ -62,11 +65,13 @@ class CustomUserRegister(UserCreationForm):
 
         if commit:
             user.save()
+
             profile, _ = Profile.objects.get_or_create(user=user)
-            profile.address = self.cleaned_data.get("address", "") or ""
-            profile.city = self.cleaned_data.get("city", "") or ""
+            profile.address_line1 = self.cleaned_data.get("address_line1", "")
+            profile.address_line2 = self.cleaned_data.get("address_line2", "")
+            profile.city = self.cleaned_data.get("city", "")
             profile.state = self.cleaned_data.get("state", "NC")
-            profile.zip_code = self.cleaned_data.get("zip_code", "") or ""
+            profile.zipcode = self.cleaned_data.get("zip_code", "")
             profile.save()
 
         return user

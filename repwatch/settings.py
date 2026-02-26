@@ -78,6 +78,8 @@ TEMPLATES = [
     },
 ]
 
+TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
+
 WSGI_APPLICATION = "repwatch.wsgi.application"
 
 
@@ -94,7 +96,7 @@ DATABASES = {
 
 # Authentication
 
-LOGIN_URL = "/login/"
+LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 

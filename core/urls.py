@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import homepage, dashboard, about, registration, login_view, accountlogout
+from .views import homepage, dashboard, about
 
 urlpatterns = [
     path("", homepage, name="homepage"),
