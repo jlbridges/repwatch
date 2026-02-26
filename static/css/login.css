@@ -87,7 +87,7 @@ input[type="text"], input[type="email"], input[type="password"], textarea {
 
 /* Small utility / button styles used */
 .auth-actions { display:flex; flex-direction:column; gap:0.65rem; margin-top:0.5rem; }
-.btn-primary { background: #ffb100; color: #07203a; padding: 0.75rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
+.btn-primary { background: #ffffff; color: #07203a; padding: 0.75rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
 .btn-secondary { background: transparent; color: #cfe6ff; border: 1px solid rgba(255,255,255,0.12); padding: 0.65rem; border-radius: 6px; }
 .auth-footer { font-size: 0.9rem; color: rgba(255,255,255,0.8); text-align: center; margin-top: 0.6rem; }
 
@@ -158,5 +158,6 @@ input:not(:placeholder-shown) { background: #7fb8ff1a; }
   .auth-left, .auth-right { width: 100%; }
   .auth-card { margin-top: 0; }
 }
+
 
 @media (max-width: 480px) { .auth-card { padding: 1.25rem; margin: 0 1rem; } }
