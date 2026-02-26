@@ -1,17 +1,80 @@
-.buttonS3 {
-    display: inline-block;          /* Make <a> behave like a button */
-    background-color: #4CAF50;      /* Green background */
-    color: white;                   /* White text */
-    padding: 0.8rem 1.5rem;         /* Top/Bottom & Left/Right spacing */
-    border-radius: 5px;             /* Rounded corners */
-    text-decoration: none;          /* Remove underline from <a> */
-    font-size: 1rem;                /* Text size */
-    font-weight: bold;              /* Optional: bold text */
-    transition: background-color 0.3s ease; /* Smooth hover effect */
-    cursor: pointer;                /* Cursor changes to pointer on hover */
-    text-align: center;             /* Center text */
+/* Section 1 and 3 for the button hover effect */
+.btn-white-hover {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #000000;
+    transition: background-color 0.3s ease;
 }
 
-.buttonS3:hover {
-    background-color: #4e5992;      /* Darker green on hover */
+.btn-white-hover:hover {
+    background-color: #e0e0e0;     /* Gray on hover */
+    color: #000000;
+}
+
+/* Section 3 */
+.section3 {
+    width: 100vw;                   /* full viewport width */
+    position: relative;             /* needed for edge alignment */       
+    padding: 2rem 2rem;             /* vertical + optional side padding */
+    background-color: #051738;    /* deep primary blue */
+    color: #ffffff;               /* white text */
+    text-align: center;
+    box-sizing: border-box;         /* include padding in width */
+    margin-top: 6rem;               /* space from previous section */  
+    margin-bottom: 6rem;            /* space from next section */
+}
+
+/* Heading in Section 3 */
+.section3 h3 {
+    font-size: 1.70rem;                /* fs-2 */
+    font-weight: 500;               /* fw-semibold */
+    margin-bottom: 1rem;
+}
+
+/* Paragraph in Section 3 */
+.section3 p {
+    font-size: 1.20rem;             /* fs-5 */
+    margin-bottom: 1.5rem;
+}
+
+.text-light-blue {
+    color: #45556c; /* light blue color */
+}
+
+.section2 .card-text {
+    color: #45556c; /* light blue color */
+}
+
+.text-blue {
+    color: #959ca7; /* deep primary blue */
+}
+
+/* Icon wrapper for the shield icon with a circular background */
+.icon-wrapper {
+    position: relative;
+    display: inline-block; /* fits content */
+    width: 80px;           /* container width = circle size */
+    height: 80px;          /* container height = circle size */
+}
+
+.icon-wrapper .circle-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* center perfectly */
+    font-size: 80px;       /* circle size */
+    color: #cfe2ff;        /* light blue background */
+    z-index: 0;
+    line-height: 1;
+}
+
+.icon-wrapper .icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* center perfectly */
+    font-size: 50px;       /* icon size */
+    color: #051738;        /* dark blue */
+    z-index: 1;
+    line-height: 1;
 }

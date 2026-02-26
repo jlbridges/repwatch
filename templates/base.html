@@ -5,53 +5,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <title>{% block title %}RepWatch{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/homepage.css' %}">
-
 </head>
 
-<body>
+<body class="base-layout bg-light">
 
     {% if show_layout %}
-    <header class="navbar">
+    <header class="bg-white border-bottom mb-4 border-1">
         <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-between py-1">
 
-            <h1>
-                <a href="{% url 'homepage' %}">
-                    <img src="{% static 'images/logo_repwatch.png' %}" alt="RepWatch Logo">
+                <!-- Logo and Home Link -->
+                <a class="d-inline-flex link-body-emphasis text-decoration-none" href="{% url 'homepage' %}">
+                    <img src="{% static 'images/logo_repwatch.png' %}" 
+                         alt="RepWatch Logo" 
+                         class="img-fluid" 
+                         style="max-height: 80px;">
                 </a>
-            </h1>
 
-            <nav>
-                {% if page == 'dashboard' %}
-                <span>Welcome user</span>
-                <form method="post" action="{% url 'account_logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Logout</button>
-                </form>
-                {% elif page == 'homepage' %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'registration' %}">Register</a>
-                {% endif %}
-            </nav>
+                <!-- Navigation Links and User Actions -->
+                <div class="text-end">
+                    {% if page == 'dashboard' %}
+                        <span class="me-3">Welcome {{ user.first_name }}.</span>
+                        <form method="post" action="{% url 'accountlogout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                        </form>
 
+                    {% elif page == 'homepage' %}
+                        <a href="{% url 'login' %}" class="fs-5 text-dark text-decoration-none me-3">Login</a>
+                        <a href="{% url 'registration' %}" class="btn btn-dark px-4">Sign Up</a>
+                    {% endif %}
+                </div>
+
+            </div>
         </div>
     </header>
     {% endif %}
 
-    <main class="content">
+    <main class="text-center py-5 pb-5 min-vh-100">
         {% block content %}{% endblock content %}
     </main>
 
     {% if show_layout %}
-    <footer>
+    <footer class="bg-white text-center border-top py-3">
         <div class="container">
-            <p>&copy; 2026 RepWatch. Stay informed, stay engaged.</p>
+            <p class="mb-0 text-primary-emphasis">&copy; 2026 RepWatch. Stay informed, stay engaged.</p>
         </div>
     </footer>
     {% endif %}
 
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>

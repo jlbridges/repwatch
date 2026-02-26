@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+
+<section class="registration-section">
+    <h2 class="heading">Create Your Account</h2>
+    <p class="paragraph">Start tracking your representatives and legislation.</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="error">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="form-group">
+            {{ form.first_name.label_tag }} 
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+            <div class="error">
+                {{ form.first_name.errors }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.last_name.label_tag }} 
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+            <div class="error">
+                {{ form.last_name.errors }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.email.label_tag }} 
+            {{ form.email }}
+            {% if form.email.errors %}
+            <div class="error">
+                {{ form.email.errors }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.address.label_tag }} 
+            {{ form.address }}
+            {% if form.address.errors %}
+            <div class="error">
+                {{ form.address.errors }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.state.label_tag }} 
+            {{ form.state }}
+            {% if form.state.errors %}
+            <div class="error">
+                {{ form.state.errors }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.zip_code.label_tag }} 
+            {{ form.zip_code }}
+            {% if form.zip_code.errors %}
+            <div class="error">
+                {{ form.zip_code.errors }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.password1.label_tag }} 
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+            <div class="text-danger small">
+                {{ form.password1.errors }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.password2.label_tag }} 
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+            <div class="text-danger small">
+                {{ form.password2.errors }}
+            </div>
+            {% endif %}
+        </div>
+
+        <button type="submit">Create Account</button>
+
+        <p class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Log In</a>.
+        </p>
+
+    </form>
+
+    <p class="back_home">
+        <a href="{% url 'homepage' %}">← Back to Home</a>.
+    </p>
+    
+</section>
+
+{% endblock content %}
