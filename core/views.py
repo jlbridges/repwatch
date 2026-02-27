@@ -35,7 +35,7 @@ def registration(request):
         form = CustomUserRegister(request.POST)
         if form.is_valid():
             user = form.save() # save user + creates profile
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect("dashboard")
     else:
         form = CustomUserRegister()
@@ -53,6 +53,7 @@ def login_view(request):
         form = EmailLoginForm(request.POST)
         if form.is_valid():
             # log in the authenticated user
+            form.user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, form.user)
             return redirect("dashboard")
     else:
