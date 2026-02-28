@@ -1,0 +1,50 @@
+/* Nav Pill */
+.custom-nav {
+    background-color: #052a6b;
+}
+
+.custom-nav .nav-link {
+    color: #e8ecf3; /* text color */
+}
+
+.custom-nav .nav-link.active {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Section1 container */
+.section1 {
+    text-align: left;          /* force left alignment */
+    margin-bottom: 2rem;
+}
+
+/* Main heading */
+.section1 .heading p {
+    font-size: 2rem;         /* bigger title */
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Subtitle */
+.section1 .paragraph p {
+    font-size: 1rem;        /* larger subtext */
+    color: #6c757d;            /* soft gray */
+    margin-bottom: 0;
+}
+
+/* Card boxes */
+.overview-box {
+    background-color: #ffffff;
+    border-radius: 16px;
+    aspect-ratio: 1 / 1; /* makes it a square */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Subtle hover effect */
+.overview-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
