@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 from .forms import CustomUserRegister, EmailLoginForm
+from .services.geocodio_service import get_representatives_from_address
+from .models import Representative, Profile
+
 
 # Homepage
 def homepage(request):
@@ -10,18 +13,48 @@ def homepage(request):
         "show_layout": True,
         "page": "homepage"
     }
-    return render(request, "homepage.html", context) 
+    return render(request, "homepage.html", context)
 
-# dashboard -- for testing authentication
+
+# Dashboard
 @login_required
 def dashboard(request):
-    context = {
-        "show_layout": True,
-        "page": "dashboard"
-    }
-    return render(request, "dashboard.html", context) 
 
-# about
+    user = request.user
+
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        return render(request, "core/dashboard.html")
+
+    address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
+
+    print("ADDRESS:", address)
+
+    reps = get_representatives_from_address(address)
+    print("REPS:", reps)
+
+    if reps:
+        for rep in reps:
+            rep_obj, created = Representative.objects.update_or_create(
+                Bioguide_id=rep["bioguide_id"],  # ✅ FIXED
+                defaults={
+                    "name": rep["name"],
+                    "district_number": rep["district_number"],
+                    "first_name": rep["first_name"],
+                    "last_name": rep["last_name"],
+                    "state": profile.state,
+                    "party": rep["party"],
+                    "photo_url": rep["photo_url"],
+                }
+            )
+
+            rep_obj.constituents.add(user)
+
+    return render(request, "core/dashboard.html")
+
+
+# About
 def about(request):
     context = {
         "show_layout": True,
@@ -29,12 +62,13 @@ def about(request):
     }
     return render(request, "about.html", context)
 
-# registration 
+
+# Registration
 def registration(request):
     if request.method == "POST":
         form = CustomUserRegister(request.POST)
         if form.is_valid():
-            user = form.save() # save user + creates profile
+            user = form.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect("dashboard")
     else:
@@ -42,7 +76,7 @@ def registration(request):
 
     return render(request, "signup.html", {
         "form": form,
-        "show_layout": False, # hide navbar and footer
+        "show_layout": False,
         "page": "signup",
     })
 
@@ -52,15 +86,20 @@ def login_view(request):
     if request.method == "POST":
         form = EmailLoginForm(request.POST)
         if form.is_valid():
-            # log in the authenticated user
             form.user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, form.user)
             return redirect("dashboard")
     else:
         form = EmailLoginForm()
 
-    return render(request, "login.html", {"form": form, "show_layout": False, "page": "login"})  # hide navbar and footer
+    return render(request, "login.html", {
+        "form": form,
+        "show_layout": False,
+        "page": "login"
+    })
 
+
+# Logout
 @require_POST
 def accountlogout(request):
     logout(request)

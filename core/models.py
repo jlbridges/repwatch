@@ -23,7 +23,7 @@ class Profile(models.Model):
         return f"{self.user.username}'s profile"
 
 
-class representative(models.Model):
+class Representative(models.Model):
     Bioguide_id = models.CharField(max_length=10,blank=False, null=False, primary_key=True)
     constituents = models.ManyToManyField(User)
     name = models.CharField(max_length=70,blank=False)
