@@ -9,11 +9,11 @@ class Profile(models.Model):
     }
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # Link to auth user
-    address_line1 = models.CharField(max_length=35, blank=False,null=False, default="")
-    address_line2 = models.CharField(max_length=35, blank=True, default="")
-    city = models.CharField(max_length=50, blank=False,null=False, default="")
-    state = models.CharField(max_length=2,blank=False,null=False, choices=STATE_LIST)
-    zipcode = models.CharField(max_length=10, blank=False,null=False,default="")
+    address_line1 = models.CharField(max_length=35)
+    address_line2 = models.CharField(max_length=35, blank=True) # optional to fill out
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=2, choices=STATE_LIST)
+    zipcode = models.CharField(max_length=10)
 
     class Meta:
         db_table = "repwatch_profile"

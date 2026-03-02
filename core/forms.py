@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
+import re
 
 from .models import Profile
 
@@ -14,9 +15,9 @@ class CustomUserRegister(UserCreationForm):
     last_name = forms.CharField(required=True)
     email = forms.EmailField(required=True)
 
-    address_line1 = forms.CharField(required=False)
-    address_line2 = forms.CharField(required=False)
-    city = forms.CharField(required=False)
+    address_line1 = forms.CharField(required=True)
+    address_line2 = forms.CharField(required=False) # optional to fill out
+    city = forms.CharField(required=True)
 
     STATE_CHOICES = (
         ("", "Select your state"), # placeholder
@@ -27,9 +28,13 @@ class CustomUserRegister(UserCreationForm):
         choices=STATE_CHOICES,
         required=True,
         widget=forms.Select(attrs={"class": "form-select"}),
+         initial="", # default to placeholder
     )
 
-    zipcode = forms.CharField(required=False)
+    zipcode = forms.CharField(
+        required=True, # zipcode required 
+        max_length=10
+        ) 
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -41,17 +46,23 @@ class CustomUserRegister(UserCreationForm):
             "password2",
         )
 
-    def clean_email(self):
+    def clean_email(self): # validate email uniqueness
         email = (self.cleaned_data.get("email") or "").strip().lower()
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("An account with this email already exists.")
         return email
 
-    def clean_state(self):
+    def clean_state(self): # validate that only NC is allowed
         state = self.cleaned_data["state"]
         if state != "NC":
             raise forms.ValidationError("Only NC is allowed.")
         return state
+    
+    def clean_zipcode(self): # validate zipcode format
+        zipcode = self.cleaned_data["zipcode"].strip()
+        if not re.match(r'^\d{5}(-\d{4})?$', zipcode):
+           raise forms.ValidationError("Enter a valid 5-digit ZIP code.")
+        return zipcode
 
     @transaction.atomic # all-or-nothing. Django feature
     def save(self, commit=True):
@@ -67,24 +78,24 @@ class CustomUserRegister(UserCreationForm):
             user.save()
 
             profile, _ = Profile.objects.get_or_create(user=user)
-            profile.address_line1 = self.cleaned_data.get("address_line1", "")
+            profile.address_line1 = self.cleaned_data["address_line1"]
             profile.address_line2 = self.cleaned_data.get("address_line2", "")
-            profile.city = self.cleaned_data.get("city", "")
-            profile.state = self.cleaned_data.get("state", "NC")
-            profile.zipcode = self.cleaned_data.get("zip_code", "")
+            profile.city = self.cleaned_data["city"]
+            profile.state = self.cleaned_data["state"]
+            profile.zipcode = self.cleaned_data["zipcode"]
             profile.save()
 
         return user
 
 
-class EmailLoginForm(forms.Form):
+class EmailLoginForm(forms.Form): # custom login form that uses email instead of username
     email = forms.EmailField(required=True)
     password = forms.CharField(widget=forms.PasswordInput, required=True)
 
     def clean(self):
         cleaned = super().clean()
         email = (cleaned.get("email") or "").strip().lower()
-        password = cleaned.get("password")
+        password = (cleaned.get("password") or "").strip()
 
         if email and password:
             user = authenticate(username=email, password=password)
@@ -97,7 +108,7 @@ class EmailLoginForm(forms.Form):
 
 # For django-allauth: this is what ACCOUNT_SIGNUP_FORM_CLASS points to.
 # allauth requires a plain forms.Form with a signup(self, request, user) method. [web:87]
-class CustomSignupForm(forms.Form):
+class CustomSignupForm(forms.Form): # It allows us to capture the state during signup.
     state = forms.ChoiceField(
         choices=(("NC", "NC"),),
         initial="NC",

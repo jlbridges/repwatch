@@ -55,6 +55,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware"
 ]
 
+#made changes here for testing
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
@@ -95,8 +96,9 @@ DATABASES = {
 
 
 # Authentication
+#made change here to match the urls.py and login.html
 
-LOGIN_URL = "/accounts/login/"
+LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 

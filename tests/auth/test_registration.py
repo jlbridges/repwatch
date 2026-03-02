@@ -6,20 +6,26 @@ import pytest
 pytestmark = pytest.mark.django_db  # utilizing the provided django DB
 
 
-def test_user_can_register(client, signup_url):  # tests agaisnt the provided cases added into the bottom of settings
+from django.contrib.auth.models import User
+
+def test_user_can_register(client, signup_url):
     payload = {
-        "username": "newuser",
+        "first_name": "New",
+        "last_name": "User",
         "email": "newuser@example.com",
         "password1": "NewUserPass123",
         "password2": "NewUserPass123",
-        # if you added address fields, include them here
-        # "address": "123 Main St, Raleigh, NC",
+        "address_line1": "123 Main St",
+        "address_line2": "",
+        "city": "Raleigh",
+        "state": "NC",
+        "zipcode": "27601",
     }
 
     response = client.post(signup_url, payload)
 
     assert response.status_code == 302
-    assert User.objects.filter(username="newuser").exists()
+    assert User.objects.filter(email="newuser@example.com").exists()
 
 
 def test_registration_fails_with_mismatched_passwords(client, signup_url):
