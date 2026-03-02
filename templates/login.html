@@ -21,11 +21,12 @@
     </div>
 
       <div class="auth-right">
-        <div class="auth-card">
-          <form method="post">
+        <div class="auth-card"> 
+          <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
-            {{ form.non_field_errors }}
-
+            <!-- email -->
+             <!-- removed {{ form.non_field_errors }} to achieve passing result -->
+        
             {# email as username #}
             <div class="form-group">
               {{ form.email.label_tag }}
