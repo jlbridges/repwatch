@@ -26,7 +26,7 @@
       <div class="auth-right">
         <div class="auth-card">
 
-          <form method="POST" action="{% url 'login' %}">
+          <form method="POST">
             {% csrf_token %}
 
             {{ form.non_field_errors }}
@@ -70,6 +70,11 @@
         Don't have an account?
         <a href="{% url 'registration' %}">Register here</a>
       </p>
+      <p class="register-link mb-1">
+        Forgot your password?
+        <a>Reset it here (not implemented)</a>
+      </p>
+
       <p class="back_home mb-0">
         <a href="{% url 'homepage' %}">← Back to Home</a>
       </p>

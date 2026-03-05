@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Change Password{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/passwordChanges.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="login-section auth-page">
+  <div class="auth-wrap">
+    <div class="auth-columns d-flex w-100">
+
+      <!-- LEFT SIDE -->
+      <div class="auth-left">
+        <a class="auth-logo" href="{% url 'homepage' %}">
+          <img src="{% static 'images/logo_repwatch.png' %}" alt="RepWatch">
+        </a>
+        <h2 class="auth-heading">Change your password</h2>
+        <p class="auth-subhead">Choose a strong new password.</p>
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="auth-right">
+        <div class="auth-card">
+
+          <form method="POST">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <!-- Old password -->
+            <div class="form-group">
+              {{ form.old_password.label_tag }}
+              <div class="input-with-toggle">
+                {{ form.old_password }}
+                <button type="button" class="password-toggle" aria-label="Show/hide password">👁️</button>
+              </div>
+              {% if form.old_password.errors %}
+                <div class="error">{{ form.old_password.errors }}</div>
+              {% endif %}
+            </div>
+
+            <!-- New password -->
+            <div class="form-group">
+              {{ form.new_password1.label_tag }}
+              <div class="input-with-toggle">
+                {{ form.new_password1 }}
+                <button type="button" class="password-toggle" aria-label="Show/hide password">👁️</button>
+              </div>
+              {% if form.new_password1.errors %}
+                <div class="error">{{ form.new_password1.errors }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Confirm new password -->
+            <div class="form-group">
+              {{ form.new_password2.label_tag }}
+              <div class="input-with-toggle">
+                {{ form.new_password2 }}
+                <button type="button" class="password-toggle" aria-label="Show/hide password">👁️</button>
+              </div>
+              {% if form.new_password2.errors %}
+                <div class="error">{{ form.new_password2.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="auth-actions">
+              <button type="submit" class="btn-primary">Update password</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Links -->
+    <div class="w-100 mt-3 text-center">
+      <p class="back_home mb-0">
+        <a href="{% url 'dashboard' %}">← Back to the dashboard</a>
+      </p>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/auth.js' %}"></script>
+{% endblock %}

@@ -130,15 +130,7 @@
 
             <h5>Change Password</h5>
 
-            {% if password_success %}
-                <div class="alert alert-success">Password successfully updated!</div>
-            {% endif %}
-
-            <form method="post" class="mb-3">
-                {% csrf_token %}
-                {{ password_form.as_p }}
-                <button type="submit" class="btn btn-primary">Update Password</button>
-            </form>
+            <a href="{% url 'passwordChange' %}" class="btn btn-secondary">Change Password</a>
         </div>
 
     </div>

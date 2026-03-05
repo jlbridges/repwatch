@@ -51,7 +51,7 @@ def dashboard(request):
 
             rep_obj.constituents.add(user)
 
-    return render(request, "core/dashboard.html")
+    return render(request, "core/dashboard.html", {"show_layout": True, "page": "dashboard"})
 
 
 # About
