@@ -41,7 +41,8 @@ def get_representatives_from_address(address):
         reps = []
 
         for person in legislators:
-            if person.get("type") == "representative":
+            #TEST TO SEE IF OR STATEMENT ADDS SENTATORS
+            if person.get("type") == "representative" or person.get("type") == "senator":
 
                 bio = person.get("bio", {})
                 references = person.get("references", {})
