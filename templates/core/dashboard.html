@@ -86,10 +86,10 @@
                                     <div class="rep-info">
                                         <div class="rep-name">{{ rep.name }}</div>
                                         <div class="rep-role text-muted">
-                                            {% if rep.district_number %}
-                                                {{ rep.state }} - District {{ rep.district_number }}
+                                            {% if rep.type == 'representative' %}
+                                                 {{ rep.state }} - District {{ rep.district_number }}
                                             {% else %}
-                                                {{ rep.state }}
+                                              {{ rep.state }} - U.S. Senator
                                             {% endif %}
                                         </div>
                                     </div>

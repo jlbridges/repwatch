@@ -45,6 +45,7 @@ def dashboard(request):
                     "last_name": rep["last_name"],
                     "state": profile.state,
                     "party": rep["party"],
+                    "type": rep["type"],
                     "photo_url": rep["photo_url"],
                 }
             )

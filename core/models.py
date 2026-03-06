@@ -32,6 +32,7 @@ class Representative(models.Model):
     last_name = models.CharField(max_length=35, blank=False,null=False)
     state = models.CharField(max_length=2, blank=False, null=False)
     party = models.CharField(max_length=25,blank= False)
+    type = models.CharField(max_length=25, blank= False)
     photo_url = models.URLField(max_length=40)
     image = models.ImageField()
     
