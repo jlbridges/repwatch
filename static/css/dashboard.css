@@ -42,9 +42,80 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+
 /* Subtle hover effect */
 .overview-box:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
+/* Representative Card */
+.rep-card {
+    background-color: #f8f9fa; /* light bg */
+    border-radius: 12px;
+    padding: 12px 16px;
+    border: none;
+}
+
+.rep-info {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+.rep-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #111827;
+    margin: 0;
+    padding-left: 0;
+}
+
+.rep-role {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin: 0;
+    padding-left: 0;
+}
+
+.rep-party-container {
+    background-color: #e3e3e4;
+    border-radius: 8px;
+    padding: 2px 8px;
+}
+
+.rep-party {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+  white-space: nowrap;
+}
+/* End Representative Card */
+
+/* Extra info in the collapsed section */
+.rep-card .collapse {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 0.75rem;
+}
+
+.rep-card .collapse > div {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.reps-box {
+    /* Copy from .overview-box but dynamic height */
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    transition: all 0.3s ease;
+    height: auto !important;      /* Key: allows expansion */
+    min-height: 200px;            /* Collapsed starting size */
+}
+
+.reps-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}

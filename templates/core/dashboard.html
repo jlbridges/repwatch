@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1">
 {% endblock %}
 
 {% block content %}
@@ -78,18 +78,28 @@
                 <!-- Reps Card -->
                 <div class="col-md-6">
                     <div class="overview-box">
-                        <p class="text-start fs-5">Your Representatives</p>
 
                         {% for rep in user.representative_set.all %}
-                            <div class="card mb-2 p-2">
-                                <strong>{{ rep.name }}</strong><br>
-                                {{ rep.party }} - {{ rep.state }}
-                                {% if rep.district_number %}- District {{ rep.district_number }}{% endif %}
+                            <div class="rep-card mb-2 p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="rep-info">
+                                        <div class="rep-name">{{ rep.name }}</div>
+                                        <div class="rep-role text-muted">
+                                            {% if rep.district_number %}
+                                                {{ rep.state }} - District {{ rep.district_number }}
+                                            {% else %}
+                                                {{ rep.state }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="rep-party-container">
+                                        <span class="rep-party">{{ rep.party }}</span>
+                                    </div>
+                                </div>    
                             </div>
                         {% empty %}
                             <p>No representatives found yet.</p>
                         {% endfor %}
-
                     </div>
                 </div>
 
@@ -106,17 +116,46 @@
 
         <!-- My Reps -->
         <div class="tab-pane fade" id="myreps" role="tabpanel" aria-labelledby="myreps-tab">
-            <p>Display reps:</p>
+            <div class="row g-4 mt-2 py-4">
 
-            {% for rep in user.representative_set.all %}
-                <div class="card mb-2 p-2">
-                    <strong>{{ rep.name }}</strong><br>
-                    {{ rep.party }} - {{ rep.state }}
-                    {% if rep.district_number %}- District {{ rep.district_number }}{% endif %}
-                </div>
-            {% empty %}
-                <p>No representatives found.</p>
-            {% endfor %}
+                <!-- My Reps Card -->
+                {% for rep in user.representative_set.all %}
+                    <div class="col-md-6">
+                        <div class="reps-box d-flex flex-column">
+                            <div class="rep-card mb-2 p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="rep-info">
+                                        <div class="rep-name">{{ rep.name }}</div>
+                                    </div>
+                                    <!-- Populate button -->
+                                    <button 
+                                        class="btn btn-sm btn-outline-primary"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#repDetails{{ rep.Bioguide_id }}"
+                                        aria-expanded="false"
+                                        aria-controls="repDetails{{ rep.Bioguide_id }}">
+                                        View More
+                                    </button>
+                                </div>
+                                <!-- Extra details collapse -->
+                                <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
+                                    <div class="pt-2">
+                                        <p><strong>State:</strong> {{ rep.state }}</p>
+                                        {% if rep.district_number %}
+                                            <p><strong>District:</strong> {{ rep.district_number }}</p>
+                                        {% endif %}
+                                        <p><strong>Party:</strong> {{ rep.party }}</p>
+                                        <h5>Still working on it!</h5>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                {% empty %}
+                    <p>No representatives found yet.</p>
+                {% endfor %}
+            </div>
         </div>
 
         <!-- My Bills -->
@@ -126,11 +165,14 @@
 
         <!-- Settings -->
         <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
-            <p>Settings:</p>
+            
+            <div class="overview-box">            
+        
+                <p>My Profile: </p>
 
-            <h5>Change Password</h5>
-
-            <a href="{% url 'passwordChange' %}" class="btn btn-secondary">Change Password</a>
+                <h5>Change Password</h5>
+               <a href="{% url 'passwordChange' %}" class="btn btn-secondary">Change Password</a>
+            </div>
         </div>
 
     </div>
