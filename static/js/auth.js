@@ -24,7 +24,7 @@ function updateFilledState(input) {
 }
 
 document.addEventListener('input', function (e) {
-  const {target} = e;
+  const target = e.target;
   if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
     updateFilledState(target);
   }

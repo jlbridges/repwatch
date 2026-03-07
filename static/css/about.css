@@ -10,33 +10,13 @@
   background-color: #a3b7db;
   box-sizing: border-box;
   margin: 2rem 0 0 0; /* top | right | bottom | left */
-  transition: background-color 0.2s ease;
 }
-
-[data-bs-theme="dark"] .numbers-section {
-  background-color: #2d2d2d;
-}
-
 .numbers-title { text-align: center; margin-bottom: 1rem; }
-.numbers-title h2 { font-size: 1.6rem; font-weight: 700; margin: 0; transition: color 0.2s ease; }
-
-[data-bs-theme="dark"] .numbers-title h2 {
-  color: #ffffff;
-}
-
+.numbers-title h2 { font-size: 1.6rem; font-weight: 700; margin: 0; }
 .numbers-grid { display: flex; gap: 1rem; justify-content: center; align-items: stretch; }
 .number-card { background: transparent; border-radius: 6px; flex: 1 1 0; min-width: 160px; }
-.number-value { font-size: 2.25rem; font-weight: 800; color: #07203a; transition: color 0.2s ease; }
-
-[data-bs-theme="dark"] .number-value {
-  color: #ffffff;
-}
-
-.number-label { font-size: 1rem; color: #313f49; margin-top: 0.5rem; transition: color 0.2s ease; }
-
-[data-bs-theme="dark"] .number-label {
-  color: #b0b0b0;
-}
+.number-value { font-size: 2.25rem; font-weight: 800; color: #07203a; }
+.number-label { font-size: 1rem; color: #313f49; margin-top: 0.5rem; }
 
 /* CTA section */
 .cta-section {
@@ -48,12 +28,6 @@
   text-align: center;
   box-sizing: border-box;
   margin: 0 0 0 0; /* top | right | bottom | left */
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-[data-bs-theme="dark"] .cta-section {
-  background-color: #051738;
-  color: #ffffff;
 }
 
 .cta-section h2 {
@@ -61,7 +35,6 @@
   font-weight: 600;
   margin-bottom: 0.75rem;
   line-height: 1.15;
-  transition: color 0.2s ease;
 }
 
 .cta-section p {
@@ -69,16 +42,10 @@
   line-height: 1.65;
   margin-bottom: 1rem;
   color: #dfe9f6;
-  transition: color 0.2s ease;
 }
 
 .text-blue {
   color: #9fb3d6;
-  transition: color 0.2s ease;
-}
-
-[data-bs-theme="dark"] .text-blue {
-  color: #7fa8d1;
 }
 
 /* Button hover effect */
@@ -86,7 +53,7 @@
   background-color: #ffffff;
   color: #000000;
   border: 1px solid #000000;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.3s ease;
 }
 
 .btn.btn-white-hover:hover {

@@ -1,88 +1,52 @@
 /* Section 1 and 3 for the button hover effect */
 .btn-white-hover {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    border: 1px solid var(--text-color);
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #000000;
+    transition: background-color 0.3s ease;
 }
 
 .btn-white-hover:hover {
     background-color: #e0e0e0;     /* Gray on hover */
-    color: var(--text-color);
+    color: #000000;
 }
 
-/* Keep button styling consistent in section3 */
-.section3 .btn-white-hover {
-    background-color: #ffffff;     /* Fixed white background */
-    color: #051738;                /* Fixed dark blue text */
-    border: 1px solid #ffffff;
-}
-
-.section3 .btn-white-hover:hover {
-    background-color: #e0e0e0;
-    color: #051738;
-}
-
-[data-bs-theme="dark"] .section3 .btn-white-hover {
-    background-color: #ffffff !important;
-    color: #051738 !important;
-    border: 1px solid #ffffff !important;
-}
-
+/* Section 3 */
 .section3 {
     width: 100vw;                   /* full viewport width */
     position: relative;             /* needed for edge alignment */       
     padding: 4rem 2rem;             /* vertical + optional side padding */
-    background-color: #051738;      /* Fixed dark blue - always stays the same */
-    color: #ffffff;                 /* Fixed white text - always stays the same */
+    background-color: #051738;    /* deep primary blue */
+    color: #ffffff;               /* white text */
     text-align: center;
     box-sizing: border-box;         /* include padding in width */
     margin-top: 6rem;               /* space from previous section */  
     margin-bottom: 6rem;            /* space from next section */
 }
 
-/* Ensure section3 stays the same in dark mode */
-[data-bs-theme="dark"] .section3 {
-    background-color: #051738 !important;
-    color: #ffffff !important;
-}
-
+/* Heading in Section 3 */
 .section3 h3 {
-    color: #ffffff !important;
+    font-size: 1.70rem;                /* fs-2 */
+    font-weight: 500;               /* fw-semibold */
+    margin-bottom: 1rem;
 }
 
-[data-bs-theme="dark"] .section3 h3 {
-    color: #ffffff !important;
+/* Paragraph in Section 3 */
+.section3 p {
+    font-size: 1.20rem;             /* fs-5 */
+    margin-bottom: 1.5rem;
 }
 
 .text-light-blue {
-    color: var(--secondary-color);
-    transition: color 0.2s ease;
+    color: #45556c; /* light blue color */
 }
 
 .section2 .card-text {
-    color: var(--secondary-color);
-    transition: color 0.2s ease;
+    color: #45556c; /* light blue color */
 }
 
 .text-blue {
-    color: var(--accent-color);
-}
-
-/* Keep text colors consistent in section3 */
-.section3 .text-blue {
-    color: #ffffff !important;
-}
-
-[data-bs-theme="dark"] .section3 .text-blue {
-    color: #ffffff !important;
-}
-
-/* Ensure section2 transitions uniformly with theme changes */
-.section2,
-.section2 .card,
-.section2 h5 {
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    color: #959ca7; /* deep primary blue */
 }
 
 /* Icon wrapper for the shield icon with a circular background */
@@ -99,10 +63,9 @@
     left: 50%;
     transform: translate(-50%, -50%); /* center perfectly */
     font-size: 80px;       /* circle size */
+    color: #cfe2ff;        /* light blue background */
     z-index: 0;
     line-height: 1;
-    color: var(--light-blue-bg);
-    transition: color 0.2s ease;
 }
 
 .icon-wrapper .icon {
@@ -111,8 +74,7 @@
     left: 50%;
     transform: translate(-50%, -50%); /* center perfectly */
     font-size: 50px;       /* icon size */
+    color: #051738;        /* dark blue */
     z-index: 1;
     line-height: 1;
-    color: var(--primary-color);
-    transition: color 0.2s ease;
 }
