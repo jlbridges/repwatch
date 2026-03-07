@@ -306,3 +306,26 @@ footer.navbar-theme {
     border-color: #444;
     color: #ffffff;
 }
+
+/* ===== NAVBAR BUTTONS ===== */
+.btn-outline-primary {
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #ffffff;
+    color: var(--primary-color);
+    border-color: #ffffff;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary {
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary:hover {
+    background-color: #ffffff;
+    color: #051738;
+    border-color: #ffffff;
+}

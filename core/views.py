@@ -9,11 +9,10 @@ from .models import Representative, Profile
 
 # Homepage
 def homepage(request):
-    context = {
-        "show_layout": True,
-        "page": "homepage"
-    }
-    return render(request, "homepage.html", context)
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    else:
+        return render(request, "homepage.html", {"show_layout": True, "page": "homepage"})
 
 
 # Dashboard
@@ -25,14 +24,19 @@ def dashboard(request):
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
-        return render(request, "core/dashboard.html")
+        return render(request, "core/dashboard.html", {"show_layout": True, "page": "dashboard"})
 
     address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
 
     print("ADDRESS:", address)
 
-    reps = get_representatives_from_address(address)
-    print("REPS:", reps)
+    # Only fetch representatives if geocodio key is available
+    try:
+        reps = get_representatives_from_address(address)
+        print("REPS:", reps)
+    except Exception as e:
+        print(f"Error fetching representatives: {e}")
+        reps = None
 
     if reps:
         for rep in reps:

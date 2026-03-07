@@ -68,15 +68,15 @@
                         <img id="theme-icon" src="" alt="Theme Icon" style="width: 30px; height: 30px; object-fit: contain;">
                     </button>
 
-                    {% if page == 'dashboard' %}
+                    {% if user.is_authenticated %}
                         <span class="fs-6 text-nowrap flex-shrink-0">Welcome {{ user.first_name }}!</span>
                         <form method="post" action="{% url 'accountlogout' %}" class="d-inline flex-shrink-0">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-outline-danger px-4">Logout</button>
                         </form>
 
-                    {% elif page == 'homepage' %}
-                        <a href="{% url 'account_login' %}" class="fs-5 nav-link text-decoration-none flex-shrink-0">Login</a>
+                    {% elif page != 'login' and page != 'signup' %}
+                        <a href="{% url 'account_login' %}" class="btn btn-outline-primary px-4 flex-shrink-0">Login</a>
                         <a href="{% url 'registration' %}" class="btn btn-primary px-4 flex-shrink-0">Sign Up</a>
                     {% endif %}
 
