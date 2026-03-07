@@ -77,7 +77,7 @@ def registration(request):
 
     return render(request, "signup.html", {
         "form": form,
-        "show_layout": False,
+        "show_layout": True,
         "page": "signup",
     })
 
@@ -95,7 +95,7 @@ def login_view(request):
 
     return render(request, "login.html", {
         "form": form,
-        "show_layout": False,
+        "show_layout": True,
         "page": "login"
     })
 
