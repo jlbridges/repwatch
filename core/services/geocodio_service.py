@@ -36,6 +36,9 @@ def get_representatives_from_address(address):
         district_info = result["fields"]["congressional_districts"][0]
 
         district_number = district_info["district_number"]
+        district_name = district_info.get("name")  # NEW
+        congress_number = district_info.get("congress_number")  # NEW
+
         legislators = district_info["current_legislators"]
 
         reps = []
@@ -49,17 +52,19 @@ def get_representatives_from_address(address):
                 rep_data = {
                     "bioguide_id": references.get("bioguide_id"),
                     "district_number": district_number,
+                    "congress_number": congress_number,  # NEW FIELD
                     "first_name": bio.get("first_name"),
                     "last_name": bio.get("last_name"),
-                    "name": f"{bio.get('first_name')} {bio.get('last_name')}",
+
+                    # CHANGED: use district name instead of rep full name
+                    "name": district_name,
+
                     "party": bio.get("party"),
                     "type": person.get("type"),
                     "photo_url": bio.get("photo_url")
                 }
 
                 reps.append(rep_data)
-                
-            
 
         return reps
 
