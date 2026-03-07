@@ -1,20 +1,13 @@
 @import url('theme.css');
 
-/* Selective transitions - avoid flashing on theme change */
-body,
-main,
-header,
-footer,
-.navbar-theme,
-.btn,
-.nav-link,
-.dropdown-menu,
-.card,
-.alert,
-input,
-textarea,
-.form-control {
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+/* Universal smooth transitions - applies to all elements */
+* {
+    transition: background-color 0.25s ease-out, color 0.25s ease-out, border-color 0.25s ease-out, border 0.25s ease-out;
+}
+
+/* Disable transition on html temporarily if set to 'none' */
+html {
+    transition: background-color 0.25s ease-out, color 0.25s ease-out, border-color 0.25s ease-out;
 }
 
 /* Optional: If your navbar is dark by default, ensure the icons are visible */

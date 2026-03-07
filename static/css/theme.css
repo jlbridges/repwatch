@@ -33,6 +33,10 @@
 }
 
 /* ===== GLOBAL THEME STYLING ===== */
+html {
+    /* Transitions handled by styles.css universal selector */
+}
+
 html[data-bs-theme="dark"] {
     background-color: #1a1a1a;
     color: #ffffff;
@@ -41,14 +45,13 @@ html[data-bs-theme="dark"] {
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    transition: background-color 0.2s ease, color 0.2s ease;
+    /* Transitions handled by universal selector in styles.css */
 }
 
 /* ===== NAVBAR STYLING ===== */
 .navbar-theme {
     background-color: var(--bg-color);
     color: var(--text-color);
-    transition: background-color 0.2s ease, color 0.2s ease;
     border-color: var(--border-color) !important;
 }
 
@@ -61,7 +64,6 @@ body {
 .navbar-theme a,
 .navbar-theme .nav-link {
     color: var(--text-color) !important;
-    transition: color 0.2s ease;
 }
 
 .navbar-theme a:hover,
@@ -177,7 +179,6 @@ body {
 main {
     background-color: var(--bg-color);
     color: var(--text-color);
-    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ===== FOOTER STYLING ===== */
@@ -245,7 +246,6 @@ footer.navbar-theme {
 
 /* ===== DROPDOWN MENU STYLING ===== */
 .dropdown-menu {
-    transition: background-color 0.2s ease, color 0.2s ease;
     border-color: var(--border-color);
 }
 

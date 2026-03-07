@@ -18,16 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
         updateIcon(theme);
     };
 
-    // Loads saved theme on page load
+    // Get saved theme (should already be set by inline script, but double-check)
     const savedTheme = localStorage.getItem('theme') || 'light';
-    updateTheme(savedTheme);
+    updateIcon(savedTheme);
 
     // Handle theme toggle click
-    themeToggle.addEventListener('click', () => {
-        const currentTheme = htmlElement.getAttribute('data-bs-theme');
-        const newTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-        updateTheme(newTheme);
-    });
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-bs-theme');
+            const newTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            updateTheme(newTheme);
+        });
+    }
 
     // Optional: Listen for system theme changes
     if (window.matchMedia) {

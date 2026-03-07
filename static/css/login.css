@@ -23,7 +23,6 @@ html, body { height: 100%; }
   gap: 1rem;
   align-items: stretch;
   background: var(--light-blue-bg);
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 [data-bs-theme="dark"] .auth-wrap {
@@ -59,13 +58,11 @@ html, body { height: 100%; }
   margin: 0 0 0.5rem 0; 
   color: var(--primary-color); 
   font-size: 1.6rem; 
-  transition: color 0.2s ease; 
 }
 
 .auth-subhead { 
   margin: 0 0 0.75rem 0; 
   color: var(--secondary-color); 
-  transition: color 0.2s ease; 
 }
 
 .auth-left .auth-heading { text-align: center; }
@@ -93,7 +90,6 @@ html, body { height: 100%; }
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .auth-card {
@@ -106,7 +102,6 @@ html, body { height: 100%; }
   color: var(--bg-color);
   margin: 0 0 0.5rem 0;
   font-weight: 600;
-  transition: color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .auth-card h1,
@@ -116,7 +111,6 @@ html, body { height: 100%; }
 
 .auth-card p {
   color: var(--bg-color);
-  transition: color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .auth-card p {
@@ -125,7 +119,6 @@ html, body { height: 100%; }
 
 .auth-card label {
   color: var(--bg-color);
-  transition: color 0.2s ease;
   font-weight: 500;
 }
 
@@ -145,7 +138,6 @@ input[type="text"], input[type="email"], input[type="password"], textarea {
   background: rgba(255,255,255,0.03);
   color: var(--bg-color);
   box-sizing: border-box;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .auth-card input[type="text"],
@@ -173,7 +165,6 @@ input[type="text"], input[type="email"], input[type="password"], textarea {
   border: none;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary:hover {
@@ -197,7 +188,6 @@ input[type="text"], input[type="email"], input[type="password"], textarea {
   border: 1px solid rgba(255,255,255,0.12);
   padding: 0.65rem;
   border-radius: 6px;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-secondary:hover {
@@ -220,7 +210,6 @@ input[type="text"], input[type="email"], input[type="password"], textarea {
   color: var(--bg-color);
   text-align: center;
   margin-top: 0.6rem;
-  transition: color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .auth-footer {
@@ -285,7 +274,6 @@ input:not(:placeholder-shown) {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s ease;
 }
 
 .password-toggle:hover {
@@ -318,13 +306,11 @@ input:not(:placeholder-shown) {
   color: var(--primary-color);
   font-size: 0.95rem;
   text-align: center;
-  transition: color 0.2s ease;
 }
 
 .register-link a, .login-link a, .back_home a {
   color: var(--dark-blue-bg);
   text-decoration: underline;
-  transition: color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .register-link,

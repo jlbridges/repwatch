@@ -6,11 +6,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- On page load, applys the theme from localStorage -->
+    <!-- Prevent flicker: disable transitions on load, apply theme instantly, then re-enable -->
     <script>
         (function() {
+            // Disable transitions immediately
+            document.documentElement.style.transition = 'none';
+            
+            // Apply saved theme instantly (no animation)
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            
+            // Re-enable transitions after CSS loads
+            window.addEventListener('load', function() {
+                setTimeout(() => {
+                    document.documentElement.style.transition = '';
+                }, 50);
+            });
+            
+            // Also enable transitions when DOMContentLoaded fires
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    document.documentElement.style.transition = '';
+                }, 50);
+            });
         })();
     </script>
 

@@ -1,7 +1,6 @@
 /* Nav Pill */
 .custom-nav {
     background-color: var(--dark-blue-bg);
-    transition: background-color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .custom-nav {
@@ -10,7 +9,6 @@
 
 .custom-nav .nav-link {
     color: var(--light-blue-bg);
-    transition: color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .custom-nav .nav-link {
@@ -20,7 +18,6 @@
 .custom-nav .nav-link.active {
     background-color: var(--bg-color);
     color: var(--text-color);
-    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .custom-nav .nav-link.active {
@@ -33,7 +30,6 @@
     text-align: left;           /* force left alignment */
     margin-bottom: 2rem;
     background-color: var(--bg-color);
-    transition: background-color 0.2s ease;
 }
 
 /* Main heading */
@@ -41,7 +37,6 @@
     font-size: 2rem;            /* bigger title */
     color: var(--primary-color);
     margin-bottom: 0.5rem;
-    transition: color 0.2s ease;
 }
 
 /* Subtitle */
@@ -49,7 +44,6 @@
     font-size: 1rem;             /* Larger subtext */
     color: var(--light-text-color);             /* soft gray */
     margin-bottom: 0;
-    transition: color 0.2s ease;
 }
 
 /* Card boxes */
@@ -59,7 +53,6 @@
     aspect-ratio: 1 / 1; /* makes it a square */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     padding: 20px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
     border: 1px solid var(--border-color);
 }
 
@@ -84,7 +77,6 @@
     border-radius: 12px;
     padding: 12px 16px;
     border: none;
-    transition: background-color 0.2s ease;
 }
 
 .rep-info {
@@ -100,7 +92,6 @@
     color: var(--text-color);
     margin: 0;
     padding-left: 0;
-    transition: color 0.2s ease;
 }
 
 .rep-role {
@@ -108,14 +99,12 @@
     color: var(--light-text-color);
     margin: 0;
     padding-left: 0;
-    transition: color 0.2s ease;
 }
 
 .rep-party-container {
     background-color: var(--dark-gray-bg);
     border-radius: 8px;
     padding: 2px 8px;
-    transition: background-color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .rep-party-container {
@@ -127,7 +116,6 @@
     font-weight: 600;
     color: var(--dark-text-color);
     white-space: nowrap;
-    transition: color 0.2s ease;
 }
 
 /* End Representative Card */
@@ -136,7 +124,6 @@
 .rep-card .collapse {
     border-top: 1px solid var(--dark-gray-bg);
     padding-top: 0.75rem;
-    transition: border-color 0.2s ease;
 }
 
 [data-bs-theme="dark"] .rep-card {
@@ -154,7 +141,6 @@
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     padding: 20px;
-    transition: all 0.3s ease;
     height: auto !important;      /* Key: allows expansion */
     min-height: 200px;            /* Collapsed starting size */
 }

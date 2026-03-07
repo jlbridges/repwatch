@@ -3,7 +3,6 @@
     background-color: var(--bg-color);
     color: var(--text-color);
     border: 1px solid var(--text-color);
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-white-hover:hover {
@@ -57,12 +56,10 @@
 
 .text-light-blue {
     color: var(--secondary-color);
-    transition: color 0.2s ease;
 }
 
 .section2 .card-text {
     color: var(--secondary-color);
-    transition: color 0.2s ease;
 }
 
 .text-blue {
@@ -82,7 +79,7 @@
 .section2,
 .section2 .card,
 .section2 h5 {
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    /* Transitions are handled by universal selector in styles.css */
 }
 
 /* Icon wrapper for the shield icon with a circular background */
@@ -102,7 +99,6 @@
     z-index: 0;
     line-height: 1;
     color: var(--light-blue-bg);
-    transition: color 0.2s ease;
 }
 
 .icon-wrapper .icon {
@@ -114,5 +110,4 @@
     z-index: 1;
     line-height: 1;
     color: var(--primary-color);
-    transition: color 0.2s ease;
 }
