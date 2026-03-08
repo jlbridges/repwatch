@@ -5,6 +5,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
 import re
 
+from core.services.test_usps_service import validate_address
+
 from .models import Profile
 
 User = get_user_model()
@@ -86,6 +88,26 @@ class CustomUserRegister(UserCreationForm):
             profile.save()
 
         return user
+    
+    #code for usps address validation on user registration. Commented out until team reviews.
+
+    #def clean(self):
+     #   cleaned = super().clean()
+
+      #  address = cleaned.get("address_line1")
+       # city = cleaned.get("city")
+        #state = cleaned.get("state")
+        #zipcode = cleaned.get("zipcode")
+
+        #if address and city and state and zipcode:
+         #   validated = validate_address(address, city, state, zipcode)
+
+          #  if not validated:
+           #     raise forms.ValidationError(
+            #        "Address could not be validated by USPS."
+             #   )
+
+        #return cleaned
 
 
 class EmailLoginForm(forms.Form): # custom login form that uses email instead of username
