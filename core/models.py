@@ -42,5 +42,21 @@ class Representative(models.Model):
             models.Index(fields=["first_name"], name="first_name_idx"),
             models.Index(fields=["Bioguide_id"],name="Bio_idx"),
         ]
-def __str(self):
-    return f"{self.Bioguide_id}"
+    def __str__(self):
+        return f"{self.Bioguide_id}"
+
+class rep_detail(models.Model):
+     Bioguide_id = models.ForeignKey(Representative, on_delete=models.CASCADE,related_name='rep_details')
+     currentMember = models.BooleanField()
+     district_number = models.CharField(max_length=2,null=True,blank=True)
+     congress = models.CharField(max_length=3,blank=True,null=True)
+     state = models.CharField(max_length=2,blank=True,null=True)
+     party = models.CharField(max_length=25,null=True,blank=True)
+     type = models.CharField(max_length=15,null=True,blank=True)
+     count_sponsoredLegislation = models.IntegerField(null=True,blank=True)
+     count_cosponsoredLegislation = models.ImageField(null=True,blank=True)
+     officalWebsiteUrl = models.URLField(max_length=50,null=True,blank=True)
+     contract_form = models.CharField(max_length=20,null=True,blank=True)
+
+     def __str__(self):
+        return f"{self.Bioguide_id}"
