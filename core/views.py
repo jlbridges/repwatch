@@ -1,9 +1,11 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.http import require_POST
+
 from .forms import CustomUserRegister, EmailLoginForm
 from .services.geocodio_service import get_representatives_from_address
+from core.services.congress_service import get_member_details
 from .models import Representative, Profile
 
 
@@ -25,19 +27,19 @@ def dashboard(request):
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
-        return render(request, "core/dashboard.html")
+        return render(request, "core/dashboard.html", {
+            "show_layout": True,
+            "page": "dashboard"
+        })
 
     address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
 
-    print("ADDRESS:", address)
-
     reps = get_representatives_from_address(address)
-    print("REPS:", reps)
 
     if reps:
         for rep in reps:
             rep_obj, created = Representative.objects.update_or_create(
-                Bioguide_id=rep["bioguide_id"],  # ✅ FIXED
+                Bioguide_id=rep["bioguide_id"],   # IMPORTANT
                 defaults={
                     "name": rep["name"],
                     "district_number": rep["district_number"],
@@ -52,7 +54,28 @@ def dashboard(request):
 
             rep_obj.constituents.add(user)
 
-    return render(request, "core/dashboard.html", {"show_layout": True, "page": "dashboard"})
+    return render(request, "core/dashboard.html", {
+        "show_layout": True,
+        "page": "dashboard"
+    })
+
+
+# Representative Detail Page
+@login_required
+def rep_detail(request, bioguide_id):
+
+    rep = get_object_or_404(Representative, Bioguide_id=bioguide_id)
+
+    member_details = get_member_details(bioguide_id)
+
+    context = {
+        "rep": rep,
+        "member_details": member_details,
+        "show_layout": True,
+        "page": "rep_detail"
+    }
+
+    return render(request, "core/rep_detail.html", context)
 
 
 # About
