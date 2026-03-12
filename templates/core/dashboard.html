@@ -8,214 +8,185 @@
 {% block content %}
 <div class="container px-1">
 
-    <div class="section1 pb-3">
-        <div class="heading">
-            <p>Your Dashboard</p>
-        </div>
-        <div class="paragraph">
-            <p>Track representatives, search legislation, and stay informed</p>
-        </div>
-    </div>
+<div class="section1 pb-3">
+<div class="heading">
+<p>Your Dashboard</p>
+</div>
+<div class="paragraph">
+<p>Track representatives, search legislation, and stay informed</p>
+</div>
+</div>
 
-    <!-- Bootstrap Nav Pills -->
-    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3"
-        id="dashboardTab"
-        role="tablist"
-        style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white);">
+<ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3"
+id="dashboardTab" role="tablist">
 
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active rounded-5"
-                id="overview-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#overview"
-                type="button"
-                role="tab"
-                aria-controls="overview"
-                aria-selected="true">Overview</button>
-        </li>
+<li class="nav-item">
+<button class="nav-link active rounded-5"
+data-bs-toggle="tab"
+data-bs-target="#overview">Overview</button>
+</li>
 
-        <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-5"
-                id="myreps-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#myreps"
-                type="button"
-                role="tab"
-                aria-controls="myreps"
-                aria-selected="false">My Reps</button>
-        </li>
+<li class="nav-item">
+<button class="nav-link rounded-5"
+data-bs-toggle="tab"
+data-bs-target="#myreps">My Reps</button>
+</li>
 
-        <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-5"
-                id="mybills-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#mybills"
-                type="button"
-                role="tab"
-                aria-controls="mybills"
-                aria-selected="false">My Bills</button>
-        </li>
+<li class="nav-item">
+<button class="nav-link rounded-5"
+data-bs-toggle="tab"
+data-bs-target="#mybills">My Bills</button>
+</li>
 
-        <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-5"
-                id="setting-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#setting"
-                type="button"
-                role="tab"
-                aria-controls="setting"
-                aria-selected="false">Settings</button>
-        </li>
-    </ul>
+<li class="nav-item">
+<button class="nav-link rounded-5"
+data-bs-toggle="tab"
+data-bs-target="#setting">Settings</button>
+</li>
 
-    <!-- Tab Content -->
-    <div class="tab-content" id="dashboardTabContent">
+</ul>
 
-        <!-- Overview Tab -->
-        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
-            <div class="row g-4 mt-2 py-4">
+<div class="tab-content">
 
-                <!-- Representatives Card -->
-                <div class="col-md-6">
-                    <div class="overview-box">
-                        <p class="text-start fs-5">Your Representatives</p>
+<!-- Overview -->
+<div class="tab-pane fade show active" id="overview">
 
-                        {% for rep in user.representative_set.all %}
-                        
-                        <!-- CLICKABLE REP -->
-                        <a href="{% url 'rep_detail' rep.Bioguide_id %}">
-                            <div class="rep-card mb-2 p-3">
-                                <div class="d-flex justify-content-between align-items-center">
+<div class="row g-4 mt-2 py-4">
 
-                                    <div class="rep-info">
-                                        <div class="rep-name">{{ rep.name }}</div>
+<div class="col-md-6">
+<div class="overview-box">
 
-                                        <div class="rep-role text-muted">
-                                            {% if rep.type == 'representative' %}
-                                                {{ rep.state }} - District {{ rep.district_number }}
-                                            {% else %}
-                                                {{ rep.state }} - U.S. Senator
-                                            {% endif %}
-                                        </div>
-                                    </div>
+<p class="text-start fs-5">Your Representatives</p>
 
-                                    <div class="rep-party-container">
-                                        <span class="rep-party">{{ rep.party }}</span>
-                                    </div>
+{% for rep in user.representative_set.all %}
 
-                                </div>
-                            </div>
+<a href="{% url 'rep_detail' rep.Bioguide_id %}">
 
-                        </a>
+<div class="rep-card mb-2 p-3">
 
-                        {% empty %}
-                            <p>No representatives found yet.</p>
-                        {% endfor %}
+<div class="d-flex justify-content-between align-items-center">
 
-                    </div>
-                </div>
+<div class="rep-info">
+<div class="rep-name">{{ rep.first_name }} {{ rep.last_name }}</div>
 
-                <!-- Bills Card -->
-                <div class="col-md-6">
-                    <div class="overview-box">
-                        <p class="text-start fs-5">Tracked Legislation</p>
-                        <p>No bills tracked yet.</p>
-                    </div>
-                </div>
+<div class="rep-role text-muted">
+{% if rep.type == 'representative' %}
+{{ rep.state }} - District {{ rep.district_number }}
+{% else %}
+{{ rep.state }} - U.S. Senator
+{% endif %}
+</div>
+</div>
 
-            </div>
-        </div>
-
-        <!-- My Reps -->
-        <div class="tab-pane fade" id="myreps" role="tabpanel" aria-labelledby="myreps-tab">
-
-            <div class="row g-4 mt-2 py-4">
-
-                {% for rep in user.representative_set.all %}
-
-                <div class="col-md-6">
-
-                    <div class="reps-box d-flex flex-column">
-
-                        <div class="rep-card mb-2 p-3">
-
-                            <div class="d-flex justify-content-between align-items-center">
-
-                                <div class="rep-info">
-                                    <div class="rep-name">{{ rep.name }}</div>
-                                </div>
-
-                                <!-- Toggle details -->
-                                <button
-                                    class="btn btn-sm btn-outline-primary"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#repDetails{{ rep.bioguide_id }}"
-                                    aria-expanded="false"
-                                    aria-controls="repDetails{{ rep.bioguide_id }}">
-
-                                    View More
-
-                                </button>
-
-                            </div>
-
-                            <!-- Collapsible Details -->
-                            <div class="collapse mt-2" id="repDetails{{ rep.bioguide_id }}">
-
-                                <div class="pt-2">
-
-                                    <p><strong>State:</strong> {{ rep.state }}</p>
-
-                                    {% if rep.district_number %}
-                                        <p><strong>District:</strong> {{ rep.district_number }}</p>
-                                    {% endif %}
-
-                                    <p><strong>Party:</strong> {{ rep.party }}</p>
-
-                                    <h6>More details coming soon!</h6>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {% empty %}
-                    <p>No representatives found yet.</p>
-                {% endfor %}
-
-            </div>
-
-        </div>
-
-        <!-- My Bills -->
-        <div class="tab-pane fade" id="mybills" role="tabpanel" aria-labelledby="mybills-tab">
-            <p>My Bills:</p>
-        </div>
-
-        <!-- Settings -->
-        <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
-
-            <div class="overview-box">
-
-                <p>My Profile:</p>
-
-                <h5>Change Password</h5>
-
-                <a href="{% url 'passwordChange' %}" class="btn btn-secondary">
-                    Change Password
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
+<div class="rep-party-container">
+<span class="rep-party">{{ rep.party }}</span>
+</div>
 
 </div>
-{% endblock content %}
+
+</div>
+
+</a>
+
+{% empty %}
+<p>No representatives found yet.</p>
+{% endfor %}
+
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="overview-box">
+<p class="text-start fs-5">Tracked Legislation</p>
+<p>No bills tracked yet.</p>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- My Reps -->
+
+<div class="tab-pane fade" id="myreps">
+
+<div class="row g-4 mt-2 py-4">
+
+{% for rep in user.representative_set.all %}
+
+<div class="col-md-6">
+
+<div class="reps-box d-flex flex-column">
+
+<div class="rep-card mb-2 p-3">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<div class="rep-info">
+<div class="rep-name">{{ rep.first_name }} {{ rep.last_name }}</div>
+</div>
+
+<button class="btn btn-sm btn-outline-primary"
+type="button"
+data-bs-toggle="collapse"
+data-bs-target="#repDetails{{ rep.Bioguide_id }}">
+View More
+</button>
+
+</div>
+
+<div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
+
+<p><strong>State:</strong> {{ rep.state }}</p>
+
+{% if rep.district_number %}
+<p><strong>District:</strong> {{ rep.district_number }}</p>
+{% endif %}
+
+<p><strong>Party:</strong> {{ rep.party }}</p>
+
+<h6>More details coming soon!</h6>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+<p>No representatives found yet.</p>
+{% endfor %}
+
+</div>
+
+</div>
+
+<!-- Bills -->
+
+<div class="tab-pane fade" id="mybills">
+<p>My Bills:</p>
+</div>
+
+<!-- Settings -->
+
+<div class="tab-pane fade" id="setting">
+
+<div class="overview-box">
+
+<p>My Profile:</p>
+
+<h5>Change Password</h5>
+
+<a href="{% url 'passwordChange' %}" class="btn btn-secondary">
+Change Password
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+{% endblock %}

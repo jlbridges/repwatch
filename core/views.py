@@ -11,11 +11,10 @@ from .models import Representative, Profile
 
 # Homepage
 def homepage(request):
-    context = {
-        "show_layout": True,
-        "page": "homepage"
-    }
-    return render(request, "homepage.html", context)
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    else:
+        return render(request, "homepage.html", {"show_layout": True, "page": "homepage"})
 
 
 # Dashboard
@@ -34,12 +33,20 @@ def dashboard(request):
 
     address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
 
-    reps = get_representatives_from_address(address)
+    print("ADDRESS:", address)
+
+    # Fetch representatives
+    try:
+        reps = get_representatives_from_address(address)
+        print("REPS:", reps)
+    except Exception as e:
+        print(f"Error fetching representatives: {e}")
+        reps = None
 
     if reps:
         for rep in reps:
             rep_obj, created = Representative.objects.update_or_create(
-                Bioguide_id=rep["bioguide_id"],   # IMPORTANT
+                Bioguide_id=rep["bioguide_id"],
                 defaults={
                     "name": rep["name"],
                     "district_number": rep["district_number"],
@@ -100,7 +107,7 @@ def registration(request):
 
     return render(request, "signup.html", {
         "form": form,
-        "show_layout": False,
+        "show_layout": True,
         "page": "signup",
     })
 
@@ -118,7 +125,7 @@ def login_view(request):
 
     return render(request, "login.html", {
         "form": form,
-        "show_layout": False,
+        "show_layout": True,
         "page": "login"
     })
 

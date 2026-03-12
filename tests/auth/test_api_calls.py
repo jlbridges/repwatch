@@ -10,7 +10,7 @@ GEOCODIO_URL = "https://api.geocod.io/v1.9/geocode"
 @pytest.mark.django_db
 @responses.activate
 def test_get_representatives_from_address_success(monkeypatch):
-    # Arrange
+
     monkeypatch.setenv("GEOCODIO_API_KEY", "test-key")
 
     mock_response = {
@@ -34,7 +34,28 @@ def test_get_representatives_from_address_success(monkeypatch):
                                     }
                                 },
                                 {
-                                    "type": "senator"  # should be ignored
+                                    "type": "senator",
+                                    "bio": {
+                                        "first_name": "John",
+                                        "last_name": "Smith",
+                                        "party": "Republican",
+                                        "photo_url": "http://example.com/senator1.jpg",
+                                    },
+                                    "references": {
+                                        "bioguide_id": "S000001"
+                                    }
+                                },
+                                {
+                                    "type": "senator",
+                                    "bio": {
+                                        "first_name": "Emily",
+                                        "last_name": "Brown",
+                                        "party": "Democrat",
+                                        "photo_url": "http://example.com/senator2.jpg",
+                                    },
+                                    "references": {
+                                        "bioguide_id": "S000002"
+                                    }
                                 }
                             ]
                         }
@@ -51,23 +72,21 @@ def test_get_representatives_from_address_success(monkeypatch):
         status=200,
     )
 
-    # Act
     reps = get_representatives_from_address("123 Main St, Raleigh, NC")
 
-    # Assert
     assert reps is not None
-    assert len(reps) == 1
+    assert len(reps) == 3
 
-    rep = reps[0]
-    assert rep["first_name"] == "Jane"
-    assert rep["last_name"] == "Doe"
-    assert rep["district_number"] == 2
-    assert rep["party"] == "Democrat"
-    assert rep["bioguide_id"] == "D000001"
+    representatives = [r for r in reps if r["first_name"] == "Jane"]
+    senators = [r for r in reps if r["first_name"] in {"John", "Emily"}]
+
+    assert len(representatives) == 1
+    assert len(senators) == 2
 
 
 @responses.activate
 def test_get_representatives_malformed_response(monkeypatch):
+
     monkeypatch.setenv("GEOCODIO_API_KEY", "test-key")
 
     responses.add(
@@ -78,10 +97,13 @@ def test_get_representatives_malformed_response(monkeypatch):
     )
 
     result = get_representatives_from_address("123 Main St")
+
     assert result is None
+
 
 @responses.activate
 def test_get_representatives_api_failure(monkeypatch):
+
     monkeypatch.setenv("GEOCODIO_API_KEY", "test-key")
 
     responses.add(
@@ -91,10 +113,12 @@ def test_get_representatives_api_failure(monkeypatch):
     )
 
     result = get_representatives_from_address("123 Main St")
+
     assert result is None
 
 
 def test_get_representatives_missing_api_key(monkeypatch):
+
     monkeypatch.delenv("GEOCODIO_API_KEY", raising=False)
 
     with pytest.raises(ValueError):

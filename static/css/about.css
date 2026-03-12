@@ -11,12 +11,31 @@
   box-sizing: border-box;
   margin: 2rem 0 0 0; /* top | right | bottom | left */
 }
+
+[data-bs-theme="dark"] .numbers-section {
+  background-color: #2d2d2d;
+}
+
 .numbers-title { text-align: center; margin-bottom: 1rem; }
 .numbers-title h2 { font-size: 1.6rem; font-weight: 700; margin: 0; }
+
+[data-bs-theme="dark"] .numbers-title h2 {
+  color: #ffffff;
+}
+
 .numbers-grid { display: flex; gap: 1rem; justify-content: center; align-items: stretch; }
 .number-card { background: transparent; border-radius: 6px; flex: 1 1 0; min-width: 160px; }
 .number-value { font-size: 2.25rem; font-weight: 800; color: #07203a; }
+
+[data-bs-theme="dark"] .number-value {
+  color: #ffffff;
+}
+
 .number-label { font-size: 1rem; color: #313f49; margin-top: 0.5rem; }
+
+[data-bs-theme="dark"] .number-label {
+  color: #b0b0b0;
+}
 
 /* CTA section */
 .cta-section {
@@ -28,6 +47,11 @@
   text-align: center;
   box-sizing: border-box;
   margin: 0 0 0 0; /* top | right | bottom | left */
+}
+
+[data-bs-theme="dark"] .cta-section {
+  background-color: #051738;
+  color: #ffffff;
 }
 
 .cta-section h2 {
@@ -48,12 +72,15 @@
   color: #9fb3d6;
 }
 
+[data-bs-theme="dark"] .text-blue {
+  color: #7fa8d1;
+}
+
 /* Button hover effect */
 .btn.btn-white-hover {
   background-color: #ffffff;
   color: #000000;
   border: 1px solid #000000;
-  transition: background-color 0.3s ease;
 }
 
 .btn.btn-white-hover:hover {
