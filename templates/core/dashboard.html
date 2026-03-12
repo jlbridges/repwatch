@@ -84,7 +84,7 @@
                             <div class="rep-card mb-2 p-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="rep-info">
-                                        <div class="rep-name">{{ rep.name }}</div>
+                                        <div class="rep-name">{{ rep.first_name }} {{ rep.last_name }}</div>
                                         <div class="rep-role text-muted">
                                             {% if rep.type == 'representative' %}
                                                  {{ rep.state }} - District {{ rep.district_number }}
@@ -126,7 +126,7 @@
                             <div class="rep-card mb-2 p-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="rep-info">
-                                        <div class="rep-name">{{ rep.name }}</div>
+                                        <div class="rep-name">{{ rep.first_name }} {{ rep.last_name }}</div>
                                     </div>
                                     <!-- Populate button -->
                                     <button 

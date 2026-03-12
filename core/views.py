@@ -53,7 +53,7 @@ def dashboard(request):
                     "photo_url": rep["photo_url"],
                 }
             )
-
+            
             rep_obj.constituents.add(user)
 
     return render(request, "core/dashboard.html", {"show_layout": True, "page": "dashboard"})
