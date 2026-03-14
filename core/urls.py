@@ -2,23 +2,23 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.urls import path, reverse_lazy
 
-from .views import homepage, dashboard, about, login_view, rep_detail
-
+from .views import homepage, dashboard, about, login_view, representative_detail
 
 urlpatterns = [
     path("", homepage, name="homepage"),
+
     path("dashboard/", dashboard, name="dashboard"),
+
     path("about/", about, name="about"),
+
     path("login/", login_view, name="login"),
 
-    # Representative Detail Page
     path(
         "representatives/<str:bioguide_id>/",
-        login_required(rep_detail),
+        login_required(representative_detail),
         name="rep_detail",
     ),
 
-    # Password change views
     path(
         "password/change/",
         login_required(
