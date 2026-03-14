@@ -60,3 +60,21 @@ class rep_detail(models.Model):
 
      def __str__(self):
         return f"{self.Bioguide_id}"
+     
+class committees(models.Model):
+    committee_name = models.CharField(max_length=35,null=True,blank=True)
+    rep_detail_id = models.ForeignKey(rep_detail, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.committee_name}"
+    
+
+class bill_headers:
+    number = models.IntegerField(null=False, blank=True)
+    congress = models.ImageField(null=False,blank=True)
+    orginChamberCode = models.CharField(max_length=15,null=False,blank=True)
+    type = models.CharField(max_length=10,null=False,blank=True)
+    title = models.CharField(max_length=35,null=False,blank=True)
+
+    def __str__(self):
+        return f"{self.title}"
