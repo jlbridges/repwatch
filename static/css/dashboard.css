@@ -157,7 +157,8 @@ a {
 
 /* Photo Reps */
 .rep-photo {
-    width: 70px;
-    height: 70px;
+    width: 110px;
+    height: 160px;
     object-fit: cover;
+    border-radius: 8px;
 }
