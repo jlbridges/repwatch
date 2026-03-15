@@ -79,6 +79,10 @@
     border: none;
 }
 
+a {
+    text-decoration: none; /* remove underline */ 
+}
+
 .rep-info {
     display: flex;
     flex-direction: column;
@@ -148,4 +152,12 @@
 .reps-box:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+
+/* Photo Reps */
+.rep-photo {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
 }
