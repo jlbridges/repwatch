@@ -33,7 +33,7 @@ class Representative(models.Model):
     state = models.CharField(max_length=2, blank=False, null=False)
     party = models.CharField(max_length=25,blank= False)
     type = models.CharField(max_length=25, blank= False)
-    photo_url = models.URLField(max_length=40)
+    photo_url = models.URLField(max_length=75)
     image = models.ImageField()
     
     class Meta:
@@ -47,6 +47,7 @@ class Representative(models.Model):
 
 class rep_detail(models.Model):
      Bioguide_id = models.ForeignKey(Representative, on_delete=models.CASCADE,related_name='rep_details')
+     thomas_id = models.CharField(max_length=10,null=True,blank=True)
      currentMember = models.BooleanField()
      district_number = models.CharField(max_length=2,null=True,blank=True)
      congress = models.CharField(max_length=3,blank=True,null=True)
@@ -55,11 +56,11 @@ class rep_detail(models.Model):
      type = models.CharField(max_length=15,null=True,blank=True)
      count_sponsoredLegislation = models.IntegerField(null=True,blank=True)
      count_cosponsoredLegislation = models.ImageField(null=True,blank=True)
-     officalWebsiteUrl = models.URLField(max_length=50,null=True,blank=True)
-     contract_form = models.CharField(max_length=20,null=True,blank=True)
+     officialWebsiteUrl = models.URLField(max_length=50,null=True,blank=True)
+     contact_form = models.CharField(max_length=20,null=True,blank=True)
 
      def __str__(self):
-        return f"{self.Bioguide_id}"
+        return f"Details for{self.Bioguide_id}"
      
 class committees(models.Model):
     committee_name = models.CharField(max_length=35,null=True,blank=True)
