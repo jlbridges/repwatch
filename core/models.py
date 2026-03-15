@@ -1,30 +1,32 @@
-# database models will be initialized here
 from django.db import models
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
 
 
-class Profile(models.Model): 
-    STATE_LIST = {
-        "NC": "North Carolina",
-    }
+class Profile(models.Model):
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # Link to auth user
+    STATE_LIST = (
+        ("NC", "North Carolina"),
+    )
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
     address_line1 = models.CharField(max_length=35)
-    address_line2 = models.CharField(max_length=35, blank=True) # optional to fill out
+    address_line2 = models.CharField(max_length=35, blank=True)
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=2, choices=STATE_LIST)
     zipcode = models.CharField(max_length=10)
 
     class Meta:
         db_table = "repwatch_profile"
-       
 
     def __str__(self):
         return f"{self.user.username}'s profile"
 
 
 class Representative(models.Model):
-    Bioguide_id = models.CharField(max_length=10,blank=False, null=False, primary_key=True)
+
+    Bioguide_id = models.CharField(max_length=10, primary_key=True)
+
     constituents = models.ManyToManyField(User)
     name = models.CharField(max_length=70,blank=False)
     district_number = models.IntegerField(null=False)
@@ -43,7 +45,8 @@ class Representative(models.Model):
             models.Index(fields=["Bioguide_id"],name="Bio_idx"),
         ]
     def __str__(self):
-        return f"{self.Bioguide_id}"
+        return f"{self.first_name} {self.last_name}"
+
 
 class rep_detail(models.Model):
      Bioguide_id = models.ForeignKey(Representative, on_delete=models.CASCADE,related_name='rep_details')
