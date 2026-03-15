@@ -40,25 +40,7 @@ class CustomUserRegister(UserCreationForm):
         max_length=10
         ) 
     
-    def clean(self):
-        cleaned = super().clean()
-
-        address = cleaned.get("address_line1")
-        city = cleaned.get("city")
-        state = cleaned.get("state")
-        zipcode = cleaned.get("zipcode")
-
-        # Only validate if fields are present
-        if address and city and state and zipcode:
-
-            result = validate_address(address, city, state, zipcode)
-
-            if not result:
-                raise forms.ValidationError(
-                    "Address could not be validated."
-            )
-
-        return cleaned
+ 
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -120,25 +102,25 @@ class EmailLoginForm(forms.Form): # custom login form that uses email instead of
     email = forms.EmailField(required=True)
     password = forms.CharField(widget=forms.PasswordInput, required=True)
 
-def clean(self):
-    cleaned = super().clean()
+    def clean(self):
+        cleaned = super().clean()
 
-    address = cleaned.get("address_line1")
-    city = cleaned.get("city")
-    state = cleaned.get("state")
-    zipcode = cleaned.get("zipcode")
+        address = cleaned.get("address_line1")
+        city = cleaned.get("city")
+        state = cleaned.get("state")
+        zipcode = cleaned.get("zipcode")
 
-    # Only validate if fields are present
-    if address and city and state and zipcode:
+        # Only validate if fields are present
+        if address and city and state and zipcode:
 
-        result = validate_address(address, city, state, zipcode)
+            result = validate_address(address, city, state, zipcode)
 
-        if not result:
-            raise forms.ValidationError(
-                "Address could not be validated."
-            )
+            if not result:
+                raise forms.ValidationError(
+                    "Address could not be validated."
+                )
 
-    return cleaned
+        return cleaned
 
 
 # For django-allauth: this is what ACCOUNT_SIGNUP_FORM_CLASS points to.
