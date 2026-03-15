@@ -42,9 +42,11 @@ def dashboard(request):
 
     if reps:
         for rep in reps:
+
             rep_obj, created = Representative.objects.update_or_create(
                 Bioguide_id=rep["bioguide_id"],
                 defaults={
+                    "thomas_id": rep.get("thomas_id"),   # NEW FIELD
                     "name": rep["name"],
                     "district_number": rep.get("district_number"),
                     "first_name": rep["first_name"],
@@ -80,7 +82,6 @@ def representative_detail(request, bioguide_id):
 
     print("MEMBER DETAILS:", member_details)
 
-    # Important: protect against None
     if member_details is None:
         member_details = {}
 

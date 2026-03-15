@@ -27,6 +27,9 @@ class Representative(models.Model):
 
     Bioguide_id = models.CharField(max_length=10, primary_key=True)
 
+    # NEW FIELD Jacob asked for
+    thomas_id = models.CharField(max_length=20, null=True, blank=True)
+
     constituents = models.ManyToManyField(User)
 
     name = models.CharField(max_length=70)

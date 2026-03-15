@@ -7,7 +7,7 @@ BASE_URL = "https://api.geocod.io/v1.9/geocode"
 def get_representatives_from_address(address):
     """
     Calls the Geocodio API and returns structured representative data
-    matching the reps model.
+    matching the Representative model.
     """
 
     api_key = os.getenv("GEOCODIO_API_KEY")
@@ -33,34 +33,46 @@ def get_representatives_from_address(address):
 
     try:
         result = data["results"][0]
+
         district_info = result["fields"]["congressional_districts"][0]
 
         district_number = district_info["district_number"]
-        district_name = district_info.get("name")  # NEW
-        congress_number = district_info.get("congress_number")  # NEW
+        district_name = district_info.get("name")
+        congress_number = district_info.get("congress_number")
 
         legislators = district_info["current_legislators"]
 
         reps = []
 
         for person in legislators:
-            if person.get("type") == "representative" or person.get("type") == "senator":
+
+            if person.get("type") in ["representative", "senator"]:
 
                 bio = person.get("bio", {})
                 references = person.get("references", {})
 
                 rep_data = {
+
+                    # IDs
                     "bioguide_id": references.get("bioguide_id"),
+                    "thomas_id": references.get("thomas_id"),   # NEW FIELD
+
+                    # district info
                     "district_number": district_number,
-                    "congress_number": congress_number,  # NEW FIELD
+                    "congress_number": congress_number,
+
+                    # names
                     "first_name": bio.get("first_name"),
                     "last_name": bio.get("last_name"),
 
-                    # CHANGED: use district name instead of rep full name
+                    # district label
                     "name": district_name,
 
+                    # political info
                     "party": bio.get("party"),
                     "type": person.get("type"),
+
+                    # image
                     "photo_url": bio.get("photo_url")
                 }
 
