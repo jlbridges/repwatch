@@ -1,13 +1,11 @@
 # core/forms.py
-from unittest import result
-
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
 import re
 
-from core.services.smarty_address_service import validate_address
+from core.services.test_usps_service import validate_address
 
 from .models import Profile
 
@@ -91,24 +89,25 @@ class CustomUserRegister(UserCreationForm):
 
         return user
     
-    def clean(self):
-        cleaned = super().clean()
+    #code for usps address validation on user registration. Commented out until team reviews.
 
-        result = validate_address(
-           cleaned.get("address_line1"),
-           cleaned.get("city"),
-           cleaned.get("state"),
-           cleaned.get("zipcode")
-    )
+    #def clean(self):
+     #   cleaned = super().clean()
 
-        if not result:
-            raise forms.ValidationError(
-                "Address could not be validated."
-            )
+      #  address = cleaned.get("address_line1")
+       # city = cleaned.get("city")
+        #state = cleaned.get("state")
+        #zipcode = cleaned.get("zipcode")
 
-        return cleaned
-    
- 
+        #if address and city and state and zipcode:
+         #   validated = validate_address(address, city, state, zipcode)
+
+          #  if not validated:
+           #     raise forms.ValidationError(
+            #        "Address could not be validated by USPS."
+             #   )
+
+        #return cleaned
 
 
 class EmailLoginForm(forms.Form): # custom login form that uses email instead of username
