@@ -1,5 +1,5 @@
 # core/forms.py
-
+from unittest import result
 
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
@@ -39,26 +39,6 @@ class CustomUserRegister(UserCreationForm):
         required=True, # zipcode required 
         max_length=10
         ) 
-    
-    def clean(self):
-        cleaned = super().clean()
-
-        address = cleaned.get("address_line1")
-        city = cleaned.get("city")
-        state = cleaned.get("state")
-        zipcode = cleaned.get("zipcode")
-
-        # Only validate if fields are present
-        if address and city and state and zipcode:
-
-            result = validate_address(address, city, state, zipcode)
-
-            if not result:
-                raise forms.ValidationError(
-                    "Address could not be validated."
-            )
-
-        return cleaned
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -111,7 +91,22 @@ class CustomUserRegister(UserCreationForm):
 
         return user
     
+    def clean(self):
+        cleaned = super().clean()
 
+        result = validate_address(
+           cleaned.get("address_line1"),
+           cleaned.get("city"),
+           cleaned.get("state"),
+           cleaned.get("zipcode")
+    )
+
+        if not result:
+            raise forms.ValidationError(
+                "Address could not be validated."
+            )
+
+        return cleaned
     
  
 
@@ -120,25 +115,18 @@ class EmailLoginForm(forms.Form): # custom login form that uses email instead of
     email = forms.EmailField(required=True)
     password = forms.CharField(widget=forms.PasswordInput, required=True)
 
-def clean(self):
-    cleaned = super().clean()
+    def clean(self):
+        cleaned = super().clean()
+        email = (cleaned.get("email") or "").strip().lower()
+        password = (cleaned.get("password") or "").strip()
 
-    address = cleaned.get("address_line1")
-    city = cleaned.get("city")
-    state = cleaned.get("state")
-    zipcode = cleaned.get("zipcode")
+        if email and password:
+            user = authenticate(username=email, password=password)
+            if user is None:
+                raise forms.ValidationError("Invalid email or password.")
+            self.user = user
 
-    # Only validate if fields are present
-    if address and city and state and zipcode:
-
-        result = validate_address(address, city, state, zipcode)
-
-        if not result:
-            raise forms.ValidationError(
-                "Address could not be validated."
-            )
-
-    return cleaned
+        return cleaned
 
 
 # For django-allauth: this is what ACCOUNT_SIGNUP_FORM_CLASS points to.
