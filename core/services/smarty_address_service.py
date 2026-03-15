@@ -45,11 +45,6 @@ def validate_address(address, city, state, zipcode):
 
     candidate = data[0]
 
-    dpv = candidate.get("analysis", {}).get("dpv_match_code")
-
-    if dpv != "Y":
-        return None
-
     return {
         "address": candidate["delivery_line_1"],
         "city": candidate["components"]["city_name"],
@@ -57,4 +52,3 @@ def validate_address(address, city, state, zipcode):
         "zipcode": candidate["components"]["zipcode"],
         "zip4": candidate["components"]["plus4_code"]
     }
-
