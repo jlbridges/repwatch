@@ -39,7 +39,7 @@ class Representative(models.Model):
     party = models.CharField(max_length=25,blank= False)
     type = models.CharField(max_length=25, blank= False)
     photo_url = models.URLField(max_length=75)
-    image = models.ImageField()
+    image = models.ImageField(default="default.jpg")  
     
     class Meta:
         indexes = [

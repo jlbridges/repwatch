@@ -57,6 +57,28 @@ def dashboard(request):
                     "photo_url": rep["photo_url"],
                 }
             )
+            
+            try:
+                member_details = get_member_details(rep["bioguide_id"])
+            except Exception as e:
+                print("CONGRESS API ERROR:", e)
+                member_details = {}
+
+            rep_detail.objects.update_or_create(
+                Bioguide_id=rep_obj,
+                defaults={
+                    "currentMember": member_details.get("currentMember", False),
+                    "district_number": member_details.get("district"),
+                    "congress": member_details.get("congress"),
+                    "state": member_details.get("state"),
+                    "party": member_details.get("party"),
+                    "type": member_details.get("type"),
+                    "count_sponsoredLegislation": member_details.get("sponsoredLegislation", {}).get("count", 0),
+                    "count_cosponsoredLegislation": member_details.get("cosponsoredLegislation", {}).get("count", 0),
+                    "officialWebsiteUrl": member_details.get("officialWebsiteUrl"),
+                    "contact_form": member_details.get("contact_form"),
+                }
+            )
 
             rep_obj.constituents.add(user)
 
@@ -82,6 +104,7 @@ def representative_detail(request, bioguide_id):
 
     print("MEMBER DETAILS:", member_details)
 
+    # Important: protect against None
     if member_details is None:
         member_details = {}
 
