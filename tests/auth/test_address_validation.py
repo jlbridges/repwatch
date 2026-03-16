@@ -1,77 +1,79 @@
 import pytest
+from unittest.mock import patch
 from django.urls import reverse
 
 
-# address validation on the registration page
-
-
 @pytest.mark.django_db
-def test_registration_valid_address(client):
-    url = reverse("registration")
+@patch("core.forms.validate_address")
+def test_registration_valid_address(mock_validate, client):
+    """Registration should succeed when Smarty validates the address."""
 
-    response = client.post(url, {
-        "first_name": "Kevin",
-        "last_name": "Smith",
-        "email": "kevin@example.com",
+    mock_validate.return_value = {
+        "address_line1": "1101 Oberlin Rd",
+        "city": "Raleigh",
+        "state": "NC",
+        "zipcode": "27605",
+    }
+
+    response = client.post(reverse("registration"), {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
         "password1": "StrongPass123!",
         "password2": "StrongPass123!",
-        "address_line1": "123 Main St",
+        "address_line1": "1101 Oberlin Rd",
         "address_line2": "",
         "city": "Raleigh",
         "state": "NC",
-        "zipcode": "27603",
+        "zipcode": "27605",
     })
 
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_registration_invalid_zipcode(client):
-    url = reverse("registration")
+@patch("core.forms.validate_address")
+def test_registration_invalid_zipcode(mock_validate, client):
+    """Registration should fail if Smarty rejects the address."""
 
-    response = client.post(url, {
-        "first_name": "Kevin",
-        "last_name": "Smith",
-        "email": "kevin@example.com",
+    mock_validate.return_value = None
+
+    response = client.post(reverse("registration"), {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
         "password1": "StrongPass123!",
         "password2": "StrongPass123!",
-        "address_line1": "123 Main St",
+        "address_line1": "123 Fake St",
         "address_line2": "",
         "city": "Raleigh",
         "state": "NC",
-        "zipcode": "ABC123",  # invalid
+        "zipcode": "99999",
     })
 
-    # Form should re-render
     assert response.status_code == 200
+    assert "Address could not be validated" in response.content.decode()
 
-    # Exact message from clean_zipcode
-    assert b"Enter a valid 5-digit ZIP code." in response.content
-
-import pytest
-from django.urls import reverse
 
 @pytest.mark.django_db
-def test_registration_invalid_state(client):
-    url = reverse("registration")
+@patch("core.forms.validate_address")
+def test_registration_invalid_state(mock_validate, client):
 
-    response = client.post(url, {
-        "first_name": "Kevin",
-        "last_name": "Smith",
-        "email": "kevin@example.com",
+    mock_validate.return_value = None
+
+    response = client.post(reverse("registration"), {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
         "password1": "StrongPass123!",
         "password2": "StrongPass123!",
-        "address_line1": "123 Main St",
+        "address_line1": "1101 Oberlin Rd",
         "address_line2": "",
         "city": "Raleigh",
-        "state": "CA",  # invalid
-        "zipcode": "27603",
+        "state": "CA",
+        "zipcode": "90210",
     })
 
     assert response.status_code == 200
-
-    form = response.context["form"]
-    assert "state" in form.errors
-    assert form.errors["state"] == [
-    "Select a valid choice. CA is not one of the available choices."
-]
+    assert "state" in response.context["form"].errors
+    assert "Select a valid choice" in response.context["form"].errors["state"][0]

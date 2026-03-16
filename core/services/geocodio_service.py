@@ -85,3 +85,4 @@ def get_representatives_from_address(address):
 
     except (KeyError, IndexError):
         return None
+    
