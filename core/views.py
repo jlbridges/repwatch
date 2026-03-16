@@ -44,7 +44,7 @@ def dashboard(request):
         rep_obj, _ = Representative.objects.update_or_create(
             Bioguide_id=rep["bioguide_id"],
             defaults={
-                "thomas_id": rep.get("thomas_id"),
+               #"thomas_id": rep.get("thomas_id"),
                 "name": rep["name"],
                 "district_number": rep.get("district_number"),
                 "first_name": rep["first_name"],
@@ -68,16 +68,16 @@ def dashboard(request):
         rep_detail.objects.update_or_create(
             Bioguide_id=rep_obj,
             defaults={
-                "currentMember": member_details.get("currentMember", True),
-                "district_number": member_details.get("district"),
-                "congress": member_details.get("congress"),
-                "state": member_details.get("state"),
-                "party": member_details.get("party"),
-                "type": member_details.get("type"),
-                "count_sponsoredLegislation": member_details.get("sponsoredLegislation", {}).get("count", 0),
-                "count_cosponsoredLegislation": member_details.get("cosponsoredLegislation", {}).get("count", 0),
-                "officialWebsiteUrl": member_details.get("officialWebsiteUrl"),
-                "contact_form": member_details.get("contact_form"),
+                "currentMember": member_details.get("currentMember", True), #congress
+               # "district_number": member_details.get("district"), # reps model
+                #"congress": member_details.get("congress"), # reps model
+                # "state": member_details.get("state"), # reps model
+                # "party": member_details.get("party"), reps model
+                # "type": member_details.get("type"), reps model
+                "count_sponsoredLegislation": member_details.get("sponsoredLegislation", {}).get("count", 0), # congress
+                "count_cosponsoredLegislation": member_details.get("cosponsoredLegislation", {}).get("count", 0), # congress
+                "officialWebsiteUrl": member_details.get("officialWebsiteUrl"), #congress
+                "contact_form": member_details.get("contact_form"), #geocodio
             }
         )
 
@@ -95,50 +95,50 @@ def dashboard(request):
 
 # Representative Detail Page
 @login_required
-def representative_detail(request, bioguide_id):
+# def representative_detail(request, bioguide_id):
 
-    rep = get_object_or_404(Representative, Bioguide_id=bioguide_id)
+#     rep = get_object_or_404(Representative, Bioguide_id=bioguide_id)
 
-    print("BIOGUIDE:", bioguide_id)
+#     print("BIOGUIDE:", bioguide_id)
 
-    try:
-        member_details = get_member_details(bioguide_id)
-    except Exception as e:
-        print("CONGRESS API ERROR:", e)
-        member_details = None
+#     try:
+#         member_details = get_member_details(bioguide_id)
+#     except Exception as e:
+#         print("CONGRESS API ERROR:", e)
+#         member_details = None
 
-    print("MEMBER DETAILS:", member_details)
+#     print("MEMBER DETAILS:", member_details)
 
-    # Important: protect against None
-    if member_details is None:
-        member_details = {}
+#     # Important: protect against None
+#     if member_details is None:
+#         member_details = {}
 
-    rep_detail.objects.update_or_create(
-        Bioguide_id=rep,
-        defaults={
-            "currentMember": member_details.get("currentMember"),
-            "district_number": member_details.get("district"),
-            "congress": member_details.get("congress"),
-            "state": member_details.get("state"),
-            "party": member_details.get("party"),
-            "type": member_details.get("type"),
-            "count_sponsoredLegislation": member_details.get("sponsoredLegislation", {}).get("count"),
-            "count_cosponsoredLegislation": member_details.get("cosponsoredLegislation", {}).get("count"),
-            "officalWebsiteUrl": member_details.get("officialWebsiteUrl"),
-            "contract_form": member_details.get("contact_form"),
-        }
-    )
+#     rep_detail.objects.update_or_create(
+#         Bioguide_id=rep,
+#         defaults={
+#             "currentMember": member_details.get("currentMember"),
+#             "district_number": member_details.get("district"),
+#             "congress": member_details.get("congress"),
+#             "state": member_details.get("state"),
+#             "party": member_details.get("party"),
+#             "type": member_details.get("type"),
+#             "count_sponsoredLegislation": member_details.get("sponsoredLegislation", {}).get("count"),
+#             "count_cosponsoredLegislation": member_details.get("cosponsoredLegislation", {}).get("count"),
+#             "officialWebsiteUrl": member_details.get("officialWebsiteUrl"),
+#             "contact_form": member_details.get("contact_form"),
+#         }
+#     )
 
-    print("REP DETAIL SAVED")
+#     print("REP DETAIL SAVED")
 
-    context = {
-        "rep": rep,
-        "member_details": member_details,
-        "show_layout": True,
-        "page": "rep_detail"
-    }
+#     context = {
+#         "rep": rep,
+#         "member_details": member_details,
+#         "show_layout": True,
+#         "page": "rep_detail"
+#     }
 
-    return render(request, "core/rep_detail.html", context)
+#     # return render(request, "core/rep_detail.html", context)
 
 
 # About

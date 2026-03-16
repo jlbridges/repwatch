@@ -17,45 +17,35 @@
         </div>
     </div>
 
-    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3"
-        id="dashboardTab" role="tablist">
+    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3" id="dashboardTab"
+        role="tablist">
 
         <li class="nav-item">
-            <button class="nav-link active rounded-5"
-                    data-bs-toggle="tab"
-                    data-bs-target="#overview">
+            <button class="nav-link active rounded-5" data-bs-toggle="tab" data-bs-target="#overview">
                 Overview
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5"
-                    data-bs-toggle="tab"
-                    data-bs-target="#myreps">
+            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#myreps">
                 My Reps
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5"
-                    data-bs-toggle="tab"
-                    data-bs-target="#mybills">
+            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#mybills">
                 My Bills
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5"
-                    data-bs-toggle="tab"
-                    data-bs-target="#mysearch">
+            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#mysearch">
                 My Search
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5"
-                    data-bs-toggle="tab"
-                    data-bs-target="#setting">
+            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#setting">
                 Settings
             </button>
         </li>
@@ -74,35 +64,35 @@
 
                         <p class="text-start fs-5">Your Representatives</p>
 
-                        {% for rep in user.representative_set.all %}
+                        {% for rep in reps %}
 
-                        <a href="{% url 'rep_detail' rep.Bioguide_id %}">
 
-                            <div class="rep-card mb-2 p-3">
 
-                                <div class="d-flex justify-content-between align-items-center">
+                        <div class="rep-card mb-2 p-3">
 
-                                    <div class="rep-info">
-                                        <div class="rep-name">
-                                            {{ rep.first_name }} {{ rep.last_name }}
-                                        </div>
+                            <div class="d-flex justify-content-between align-items-center">
 
-                                        <div class="rep-role text-muted">
-                                            {% if rep.type == 'representative' %}
-                                                {{ rep.state }} - District {{ rep.district_number }}
-                                            {% else %}
-                                                {{ rep.state }} - U.S. Senator
-                                            {% endif %}
-                                        </div>
+                                <div class="rep-info">
+                                    <div class="rep-name">
+                                        {{ rep.first_name }} {{ rep.last_name }}
                                     </div>
 
-                                    <div class="rep-party-container">
-                                        <span class="rep-party">{{ rep.party }}</span>
+                                    <div class="rep-role text-muted">
+                                        {% if rep.type == 'representative' %}
+                                        {{ rep.state }} - District {{ rep.district_number }}
+                                        {% else %}
+                                        {{ rep.state }} - U.S. Senator
+                                        {% endif %}
                                     </div>
+                                </div>
 
+                                <div class="rep-party-container">
+                                    <span class="rep-party">{{ rep.party }}</span>
                                 </div>
 
                             </div>
+
+                        </div>
 
                         </a>
 
@@ -138,7 +128,7 @@
                         <div class="rep-card mb-2 p-3">
 
                             <div class="d-flex justify-content-between align-items-center">
-                                
+
                                 <div class="d-flex align-items-center gap-3">
                                     <!-- Representative Photo -->
                                     <img src="{{ rep.photo_url }}" class="rep-photo rounded shadow">
@@ -147,39 +137,38 @@
                                         {{ rep.first_name }} {{ rep.last_name }}
                                     </div>
                                 </div>
-                                
+
                                 <!-- Representative Button -->
-                                <button class="btn btn-sm btn-secondary"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#repDetails{{ rep.Bioguide_id }}">
+                                <button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#repDetails{{ rep.Bioguide_id }}">
                                     View More
                                 </button>
 
                             </div>
 
                             <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
-                                {% for member_details in rep.rep_details.all %}
-                                    {% if member_details.currentMember %}
-                                        <p><strong>Congress:</strong> {{ member_details.congress|default:"N/A" }}</p>
-                                        <p><strong>State:</strong> {{ member_details.state|default:"N/A" }}</p>
-                                        <p><strong>District:</strong> {{ member_details.district_number|default:"N/A" }}</p>
-                                        <p><strong>Party:</strong> {{ member_details.party|default:"N/A" }}</p>
-                                        <p><strong>Type:</strong> {{ member_details.type|default:"N/A" }}</p>
-                                        <p>
-                                            <strong>Sponsorships:</strong> 
-                                            Sponsored {{ member_details.count_sponsoredLegislation|default:"0" }}, 
-                                            Cosponsored {{ member_details.count_cosponsoredLegislation|default:"0" }}
-                                        </p>
-                                        {% if member_details.officialWebsiteUrl %}
-                                            <p><a href="{{ member_details.officialWebsiteUrl }}" target="_blank">Official Website</a></p>
-                                        {% endif %}
-                                        {% if member_details.contact_form %}
-                                            <p>Contact: {{ member_details.contact_form }}</p>
-                                        {% endif %}
-                                    {% endif %}
+                                {% for member_details in reps %}
+
+                                <p><strong>Congress:</strong> {{ member_details.congress|default:"N/A" }}</p>
+                                <p><strong>State:</strong> {{ member_details.state|default:"N/A" }}</p>
+                                <p><strong>District:</strong> {{ member_details.district_number|default:"N/A" }}</p>
+                                <p><strong>Party:</strong> {{ member_details.party|default:"N/A" }}</p>
+                                <p><strong>Type:</strong> {{ member_details.type|default:"N/A" }}</p>
+                                <p>
+                                    <strong>Sponsorships:</strong>
+                                    Sponsored {{ member_details.count_sponsoredLegislation|default:"0" }},
+                                    Cosponsored {{ member_details.count_cosponsoredLegislation|default:"0" }}
+                                </p>
+                                {% if member_details.officialWebsiteUrl %}
+                                <p><a href="{{ member_details.officialWebsiteUrl }}" target="_blank">Official
+                                        Website</a></p>
+                                {% endif %}
+                                {% if member_details.contact_form %}
+                                <p>Contact: {{ member_details.contact_form }}</p>
+                                {% endif %}
+
                                 {% empty %}
-                                    <p>No member details available</p>
+                                <p>No member details available</p>
                                 {% endfor %}
                             </div>
                         </div>

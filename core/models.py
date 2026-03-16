@@ -26,13 +26,9 @@ class Profile(models.Model):
 class Representative(models.Model):
 
     Bioguide_id = models.CharField(max_length=10, primary_key=True)
-
-    # NEW FIELD Jacob asked for
-    thomas_id = models.CharField(max_length=20, null=True, blank=True)
-
     constituents = models.ManyToManyField(User)
     name = models.CharField(max_length=70,blank=False)
-    district_number = models.IntegerField(null=False)
+    district_number = models.IntegerField(null=False, default=0)
     first_name = models.CharField(max_length=35,blank=False, null=False)
     last_name = models.CharField(max_length=35, blank=False,null=False)
     state = models.CharField(max_length=2, blank=False, null=False)
@@ -54,14 +50,9 @@ class Representative(models.Model):
 class rep_detail(models.Model):
      Bioguide_id = models.ForeignKey(Representative, on_delete=models.CASCADE,related_name='rep_details')
      thomas_id = models.CharField(max_length=10,null=True,blank=True)
-     currentMember = models.BooleanField()
-     district_number = models.CharField(max_length=2,null=True,blank=True)
-     congress = models.CharField(max_length=3,blank=True,null=True)
-     state = models.CharField(max_length=2,blank=True,null=True)
-     party = models.CharField(max_length=25,null=True,blank=True)
-     type = models.CharField(max_length=15,null=True,blank=True)
+     currentMember = models.BooleanField(blank=True, null=True)
      count_sponsoredLegislation = models.IntegerField(null=True,blank=True)
-     count_cosponsoredLegislation = models.ImageField(null=True,blank=True)
+     count_cosponsoredLegislation = models.IntegerField(null=True,blank=True)
      officialWebsiteUrl = models.URLField(max_length=50,null=True,blank=True)
      contact_form = models.CharField(max_length=20,null=True,blank=True)
 
