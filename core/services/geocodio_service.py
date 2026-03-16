@@ -55,7 +55,7 @@ def get_representatives_from_address(address):
 
                     # IDs
                     "bioguide_id": references.get("bioguide_id"),
-                    "thomas_id": references.get("thomas_id"),   # NEW FIELD
+                    "thomas_id": references.get("thomas_id"),
 
                     # district info
                     "district_number": district_number,
@@ -73,7 +73,10 @@ def get_representatives_from_address(address):
                     "type": person.get("type"),
 
                     # image
-                    "photo_url": bio.get("photo_url")
+                    "photo_url": bio.get("photo_url"),
+
+                    # contact form (from Geocodio)
+                    "contact_form": person.get("contact_form")
                 }
 
                 reps.append(rep_data)
