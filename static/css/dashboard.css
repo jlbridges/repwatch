@@ -162,3 +162,81 @@ a {
     object-fit: cover;
     border-radius: 8px;
 }
+
+/* Settings Box */
+.settings-box {
+    background-color: var(--bg-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+
+[data-bs-theme="dark"] .settings-box {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: #444444;
+    background-color: var(--bg-color);
+}
+
+.settings-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+[data-bs-theme="dark"] .settings-box:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.settings-section {
+    margin-bottom: 0.25rem;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.75rem;
+}
+
+.settings-box .form-label {
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 0.35rem;
+}
+
+.settings-box .form-control,
+.settings-box .form-select {
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.settings-box .form-control:focus,
+.settings-box .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: none;
+}
+
+.settings-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 1.5rem 0;
+}
+
+[data-bs-theme="dark"] .settings-divider {
+    background-color: #444444;
+}
+
+.settings-form-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.settings-form-actions .btn {
+    min-width: 160px;
+    border-radius: 10px;
+}
+

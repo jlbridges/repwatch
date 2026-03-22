@@ -66,8 +66,6 @@
 
                         {% for rep in reps %}
 
-
-
                         <div class="rep-card mb-2 p-3">
 
                             <div class="d-flex justify-content-between align-items-center">
@@ -195,22 +193,137 @@
 
         <!-- Settings -->
         <div class="tab-pane fade" id="setting">
+            <div class="row g-4 mt-2 py-4">
+                <div class="col-12">
+                    <div class="settings-box">
 
-            <div class="overview-box">
+                        <p class="text-start fs-5 mb-4">Account Settings</p>
 
-                <p>My Profile:</p>
 
-                <h5>Change Password</h5>
+                        <!-- Personal Info -->
+                        <form method="post" class="settings-form p-4">
+                            {% csrf_token %}
 
-                <a href="{% url 'passwordChange' %}" class="btn btn-secondary">
-                    Change Password
-                </a>
+                            <h5 class="section-title mb-4">My Personal Info</h5>
 
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="id_first_name" class="form-label">First Name</label>
+                                    <input type="text" name="first_name" id="id_first_name"
+                                        class="form-control" value="{{ user.first_name }}">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_last_name" class="form-label">Last Name</label>
+                                    <input type="text" name="last_name" id="id_last_name"
+                                        class="form-control" value="{{ user.last_name }}">
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="id_email" class="form-label">Email</label>
+                                    <input type="email" name="email" id="id_email"
+                                        class="form-control" value="{{ user.email }}">
+                                </div>
+                            </div>
+
+                            <div class="settings-form-actions">
+                                <button type="submit" 
+                                    class="btn px-4 flex-shrink-0"
+                                    style="background-color: #1d1066; color: white !important; border: none;">
+                                    Save New Personal Info
+                                </button>
+                            </div>
+                        </form>
+
+
+                        <div class="settings-divider"></div>
+
+
+                        <!-- Address -->
+                        <form method="post" class="settings-form p-4">
+                            {% csrf_token %}
+
+                            <h5 class="section-title mb-4">My Current Address</h5>
+
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="id_address_line1" class="form-label">Address Line 1</label>
+                                    <input type="text" name="address_line1" id="id_address_line1"
+                                        class="form-control" value="{{ user.profile.address_line1|default:'' }}">
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="id_address_line2" class="form-label">Address Line 2</label>
+                                    <input type="text" name="address_line2" id="id_address_line2"
+                                        class="form-control" value="{{ user.profile.address_line2|default:'' }}">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_city" class="form-label">City</label>
+                                    <input type="text" name="city" id="id_city"
+                                        class="form-control" value="{{ user.profile.city|default:'' }}">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="id_state" class="form-label">State</label>
+                                    <select name="state" id="id_state" class="form-select">
+                                        <option value="NC" {% if user.profile.state == "NC" %}selected{% endif %}>NC</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="id_zipcode" class="form-label">Zip Code</label>
+                                    <input type="text" name="zipcode" id="id_zipcode"
+                                        class="form-control" value="{{ user.profile.zipcode|default:'' }}">
+                                </div>
+                            </div>
+
+                            <div class="settings-form-actions">
+                                <button type="submit" 
+                                    class="btn px-4 flex-shrink-0"
+                                    style="background-color: #1d1066; color: white !important; border: none;">
+                                    Save New Address
+                                </button>
+                            </div>
+                        </form>
+
+
+                        <div class="settings-divider"></div>
+
+
+                        <!-- Password chnage CTA -->
+                        <div class="settings-section p-4">
+                            <h5 class="section-title mb-2">My Password</h5>
+                            <p class="text-muted mb-3">
+                                Would you like to change your password?
+                            </p>
+
+                            <a href="{% url 'passwordChange' %}" class="btn btn-secondary">
+                                Change My Password
+                            </a>
+                        </div>
+
+
+                        <div class="settings-divider"></div>
+
+
+                        <!-- Delete Profile -->
+                        <div class="settings-section p-4">
+                            <h5 class="section-title text-danger mb-2">Delete My Profile</h5>
+                            <p class="text-muted mb-3">
+                                This action will permanently delete your profile and cannot be undone.
+                            </p>
+
+                            <button type="button" class="btn btn-outline-danger">
+                                Delete My Profile
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-
         </div>
-
+    
     </div>
-
 </div>
 {% endblock %}
