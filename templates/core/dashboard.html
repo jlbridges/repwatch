@@ -62,7 +62,7 @@
                 <div class="col-md-6">
                     <div class="overview-box">
 
-                        <p class="text-start fs-5">Your Representatives</p>
+                        <p class="text-start fs-5 mb-5">Your Representatives</p>
 
                         {% for rep in reps %}
 
@@ -103,7 +103,7 @@
 
                 <div class="col-md-6">
                     <div class="overview-box">
-                        <p class="text-start fs-5">Tracked Legislation</p>
+                        <p class="text-start fs-5 mb-5">Tracked Legislation</p>
                         <p>No bills tracked yet.</p>
                     </div>
                 </div>
@@ -188,7 +188,55 @@
 
         <!-- Search -->
         <div class="tab-pane fade" id="mysearch">
-            <p>My Search:</p>
+            <div class="row g-4 mt-2 py-4">
+                <div class="col-12">
+                    <div class="search-box">
+                        <p class="text-start fs-5 mb-3">Search Legislation</p>
+
+                        <div class="search-form">
+                            <div class="row g-3 mb-3">
+                                <div class="col-12">
+                                    <label for="id_search_query" class="form-label p-4">Search Term</label>
+                                    <input type="text"
+                                        name="q"
+                                        id="id_search_query"
+                                        class="form-control"
+                                        placeholder="Bill number, keyword, or sponsor name">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="id_congress" class="form-label">Congress</label>
+                                    <select name="congress" id="id_congress" class="form-select">
+                                        <option value="">Any Congress</option>
+                                        <option value="118">118th Congress</option>
+                                        <option value="117">117th Congress</option>
+                                        <!-- and more maybe -->
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_bill_type" class="form-label">Bill Type</label>
+                                    <select name="bill_type" id="id_bill_type" class="form-select">
+                                        <option value="">Any type</option>
+                                        <option value="h">House</option>
+                                        <option value="s">Senate</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="search-actions">
+                                <button type="submit"
+                                        class="btn px-4 flex-shrink-0"
+                                        style="background-color: #1d1066; color: white !important; border: none;">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Settings -->
@@ -196,9 +244,7 @@
             <div class="row g-4 mt-2 py-4">
                 <div class="col-12">
                     <div class="settings-box">
-
-                        <p class="text-start fs-5 mb-4">Account Settings</p>
-
+                        <p class="text-start fs-5 mb-3">Account Settings</p>
 
                         <!-- Personal Info -->
                         <form method="post" class="settings-form p-4">
@@ -237,7 +283,6 @@
 
 
                         <div class="settings-divider"></div>
-
 
                         <!-- Address -->
                         <form method="post" class="settings-form p-4">

@@ -52,7 +52,7 @@
     border-radius: 16px;
     aspect-ratio: 1 / 1; /* makes it a square */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 20px;
+    padding: 32px 28px;
     border: 1px solid var(--border-color);
 }
 
@@ -144,9 +144,10 @@ a {
     background-color: var(--bg-color);
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 20px;
+    padding: 32px 28px;
     height: auto !important;      /* Key: allows expansion */
     min-height: 200px;            /* Collapsed starting size */
+    border: 1px solid var(--border-color);
 }
 
 .reps-box:hover {
@@ -168,7 +169,7 @@ a {
     background-color: var(--bg-color);
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 20px;
+    padding: 32px 28px;
     border: 1px solid var(--border-color);
 }
 
@@ -240,3 +241,25 @@ a {
     border-radius: 10px;
 }
 
+/* Search Box */
+.search-box {
+    background-color: var(--bg-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-color);
+    padding: 32px 28px;
+}
+
+[data-bs-theme="dark"] .search-box {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: #444444;
+}
+
+.search-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+[data-bs-theme="dark"] .search-box:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
