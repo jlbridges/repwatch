@@ -6,8 +6,8 @@ BASE_URL = "https://api.geocod.io/v1.9/geocode"
 
 def get_representatives_from_address(address):
     """
-    Calls the Geocodio API and returns structured representative data
-    matching the reps model.
+    Calls the Geocodio API and returns structured legislator data
+    (representatives + senators).
     """
 
     api_key = os.getenv("GEOCODIO_API_KEY")
@@ -35,31 +35,40 @@ def get_representatives_from_address(address):
         result = data["results"][0]
         district_info = result["fields"]["congressional_districts"][0]
 
-        district_number = district_info["district_number"]
-        legislators = district_info["current_legislators"]
+        district_number = district_info.get("district_number")
+        legislators = district_info.get("current_legislators", [])
 
         reps = []
 
         for person in legislators:
-            #TEST TO SEE IF OR STATEMENT ADDS SENTATORS
-            if person.get("type") == "representative" or person.get("type") == "senator":
+            # ✅ Include BOTH representatives and senators
+            if person.get("type") not in ["representative", "senator"]:
+                continue
 
-                bio = person.get("bio", {})
-                references = person.get("references", {})
+            bio = person.get("bio", {})
+            references = person.get("references", {})
 
-                rep_data = {
-                    "bioguide_id": references.get("bioguide_id"),
-                    "district_number": district_number,
-                    "first_name": bio.get("first_name"),
-                    "last_name": bio.get("last_name"),
-                    "name": f"{bio.get('first_name')} {bio.get('last_name')}",
-                    "party": bio.get("party"),
-                    "photo_url": bio.get("photo_url")
-                }
+            # ✅ Skip completely empty entries (extra safety)
+            if not bio:
+                continue
 
-                reps.append(rep_data)
+            first = bio.get("first_name")
+            last = bio.get("last_name")
+
+            rep_data = {
+                "bioguide_id": references.get("bioguide_id"),
+                "district_number": district_number,
+                "first_name": first,
+                "last_name": last,
+                "name": f"{first} {last}" if first and last else None,
+                "party": bio.get("party"),
+                "photo_url": bio.get("photo_url"),
+                "type": person.get("type"),  # 🔥 helpful if you want to distinguish later
+            }
+
+            reps.append(rep_data)
 
         return reps
 
-    except (KeyError, IndexError):
+    except (KeyError, IndexError, TypeError):
         return None
