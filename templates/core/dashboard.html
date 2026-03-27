@@ -145,21 +145,22 @@
                             </div>
 
                             <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
-                                {% for member_details in reps %}
-
-                                <p><strong>Congress:</strong> {{ member_details.congress|default:"N/A" }}</p>
-                                <p><strong>State:</strong> {{ member_details.state|default:"N/A" }}</p>
-                                <p><strong>District:</strong> {{ member_details.district_number|default:"N/A" }}</p>
-                                <p><strong>Party:</strong> {{ member_details.party|default:"N/A" }}</p>
-                                <p><strong>Type:</strong> {{ member_details.type|default:"N/A" }}</p>
+                                <p><strong>Congress:</strong> {{ rep.congress|default:"N/A" }}</p>
+                                <p><strong>State:</strong> {{ rep.state|default:"N/A" }}</p>
+                                <p><strong>District:</strong> {{ rep.district_number|default:"N/A" }}</p>
+                                <p><strong>Party:</strong> {{ rep.party|default:"N/A" }}</p>
+                                <p><strong>Type:</strong> {{ rep.type|capfirst|default:"N/A" }}</p>
+                                
+                                {% for member_details in rep.rep_details.all %}
                                 <p>
                                     <strong>Sponsorships:</strong>
                                     Sponsored {{ member_details.count_sponsoredLegislation|default:"0" }},
                                     Cosponsored {{ member_details.count_cosponsoredLegislation|default:"0" }}
                                 </p>
                                 {% if member_details.officialWebsiteUrl %}
-                                <p><a href="{{ member_details.officialWebsiteUrl }}" target="_blank">Official
-                                        Website</a></p>
+                                <p>
+                                    <a href="{{ member_details.officialWebsiteUrl }}" target="_blank">Official Website</a>
+                                </p>
                                 {% endif %}
                                 {% if member_details.contact_form %}
                                 <p>Contact: {{ member_details.contact_form }}</p>
