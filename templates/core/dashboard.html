@@ -62,12 +62,10 @@
                 <div class="col-md-6">
                     <div class="overview-box">
 
-                        <p class="text-start fs-5 mb-5">Your Representatives</p>
+                        <p class="text-start fs-5">Your Representatives</p>
 
                         {% for rep in reps %}
-
                         <div class="rep-card mb-2 p-3">
-
                             <div class="d-flex justify-content-between align-items-center">
 
                                 <div class="rep-info">
@@ -76,7 +74,7 @@
                                     </div>
 
                                     <div class="rep-role text-muted">
-                                        {% if rep.type == 'representative' %}
+                                        {% if rep.type|lower == 'representative' %}
                                         {{ rep.state }} - District {{ rep.district_number }}
                                         {% else %}
                                         {{ rep.state }} - U.S. Senator
@@ -89,11 +87,7 @@
                                 </div>
 
                             </div>
-
                         </div>
-
-                        </a>
-
                         {% empty %}
                         <p>No representatives found yet.</p>
                         {% endfor %}
@@ -103,7 +97,7 @@
 
                 <div class="col-md-6">
                     <div class="overview-box">
-                        <p class="text-start fs-5 mb-5">Tracked Legislation</p>
+                        <p class="text-start fs-5">Tracked Legislation</p>
                         <p>No bills tracked yet.</p>
                     </div>
                 </div>
@@ -118,26 +112,21 @@
             <div class="row g-4 mt-2 py-4">
 
                 {% for rep in user.representative_set.all %}
-
                 <div class="col-md-6">
-
                     <div class="reps-box d-flex flex-column">
-
                         <div class="rep-card mb-2 p-3">
 
                             <div class="d-flex justify-content-between align-items-center">
 
                                 <div class="d-flex align-items-center gap-3">
-                                    <!-- Representative Photo -->
                                     <img src="{{ rep.photo_url }}" class="rep-photo rounded shadow">
-                                    <!-- Representative Name -->
                                     <div class="rep-name">
                                         {{ rep.first_name }} {{ rep.last_name }}
                                     </div>
                                 </div>
 
-                                <!-- Representative Button -->
-                                <button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse"
+                                <button class="btn btn-sm btn-secondary" type="button"
+                                    data-bs-toggle="collapse"
                                     data-bs-target="#repDetails{{ rep.Bioguide_id }}">
                                     View More
                                 </button>
@@ -145,35 +134,35 @@
                             </div>
 
                             <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
-                                <p><strong>Congress:</strong> {{ rep.congress|default:"N/A" }}</p>
-                                <p><strong>State:</strong> {{ rep.state|default:"N/A" }}</p>
-                                <p><strong>District:</strong> {{ rep.district_number|default:"N/A" }}</p>
-                                <p><strong>Party:</strong> {{ rep.party|default:"N/A" }}</p>
-                                <p><strong>Type:</strong> {{ rep.type|capfirst|default:"N/A" }}</p>
-                                
-                                {% for member_details in rep.rep_details.all %}
+                                {% for detail in rep.rep_details.all %}
+                                <p><strong>Congress:</strong> {{ detail.congress }}</p>
+                                <p><strong>State:</strong> {{ rep.state }}</p>
+                                <p><strong>District:</strong> {{ rep.district_number }}</p>
+                                <p><strong>Party:</strong> {{ rep.party }}</p>
+                                <p><strong>Type:</strong> {{ rep.type }}</p>
                                 <p>
                                     <strong>Sponsorships:</strong>
-                                    Sponsored {{ member_details.count_sponsoredLegislation|default:"0" }},
-                                    Cosponsored {{ member_details.count_cosponsoredLegislation|default:"0" }}
+                                    Sponsored {{ detail.count_sponsoredLegislation|default:"0" }},
+                                    Cosponsored {{ detail.count_cosponsoredLegislation|default:"0" }}
                                 </p>
-                                {% if member_details.officialWebsiteUrl %}
+                                {% if detail.officialWebsiteUrl %}
                                 <p>
-                                    <a href="{{ member_details.officialWebsiteUrl }}" target="_blank">Official Website</a>
+                                    <a href="{{ detail.officialWebsiteUrl }}" target="_blank">
+                                        Official Website
+                                    </a>
                                 </p>
                                 {% endif %}
-                                {% if member_details.contact_form %}
-                                <p>Contact: {{ member_details.contact_form }}</p>
+                                {% if detail.contact_form %}
+                                <p>Contact: {{ detail.contact_form }}</p>
                                 {% endif %}
-
                                 {% empty %}
                                 <p>No member details available</p>
                                 {% endfor %}
                             </div>
+
                         </div>
                     </div>
                 </div>
-
                 {% empty %}
                 <p>No representatives found yet.</p>
                 {% endfor %}
@@ -189,187 +178,21 @@
 
         <!-- Search -->
         <div class="tab-pane fade" id="mysearch">
-            <div class="row g-4 mt-2 py-4">
-                <div class="col-12">
-                    <div class="search-box">
-                        <p class="text-start fs-5 mb-3">Search Legislation</p>
-
-                        <div class="search-form">
-                            <div class="row g-3 mb-3">
-                                <div class="col-12">
-                                    <label for="id_search_query" class="form-label p-4">Search Term</label>
-                                    <input type="text"
-                                        name="q"
-                                        id="id_search_query"
-                                        class="form-control"
-                                        placeholder="Bill number, keyword, or sponsor name">
-                                </div>
-                            </div>
-
-                            <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label for="id_congress" class="form-label">Congress</label>
-                                    <select name="congress" id="id_congress" class="form-select">
-                                        <option value="">Any Congress</option>
-                                        <option value="118">118th Congress</option>
-                                        <option value="117">117th Congress</option>
-                                        <!-- and more maybe -->
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="id_bill_type" class="form-label">Bill Type</label>
-                                    <select name="bill_type" id="id_bill_type" class="form-select">
-                                        <option value="">Any type</option>
-                                        <option value="h">House</option>
-                                        <option value="s">Senate</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="search-actions">
-                                <button type="submit"
-                                        class="btn px-4 flex-shrink-0"
-                                        style="background-color: #1d1066; color: white !important; border: none;">
-                                    Search
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <p>My Search:</p>
         </div>
 
         <!-- Settings -->
         <div class="tab-pane fade" id="setting">
-            <div class="row g-4 mt-2 py-4">
-                <div class="col-12">
-                    <div class="settings-box">
-                        <p class="text-start fs-5 mb-3">Account Settings</p>
-
-                        <!-- Personal Info -->
-                        <form method="post" class="settings-form p-4">
-                            {% csrf_token %}
-
-                            <h5 class="section-title mb-4">My Personal Info</h5>
-
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="id_first_name" class="form-label">First Name</label>
-                                    <input type="text" name="first_name" id="id_first_name"
-                                        class="form-control" value="{{ user.first_name }}">
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="id_last_name" class="form-label">Last Name</label>
-                                    <input type="text" name="last_name" id="id_last_name"
-                                        class="form-control" value="{{ user.last_name }}">
-                                </div>
-
-                                <div class="col-md-12">
-                                    <label for="id_email" class="form-label">Email</label>
-                                    <input type="email" name="email" id="id_email"
-                                        class="form-control" value="{{ user.email }}">
-                                </div>
-                            </div>
-
-                            <div class="settings-form-actions">
-                                <button type="submit" 
-                                    class="btn px-4 flex-shrink-0"
-                                    style="background-color: #1d1066; color: white !important; border: none;">
-                                    Save New Personal Info
-                                </button>
-                            </div>
-                        </form>
-
-
-                        <div class="settings-divider"></div>
-
-                        <!-- Address -->
-                        <form method="post" class="settings-form p-4">
-                            {% csrf_token %}
-
-                            <h5 class="section-title mb-4">My Current Address</h5>
-
-                            <div class="row g-3">
-                                <div class="col-md-12">
-                                    <label for="id_address_line1" class="form-label">Address Line 1</label>
-                                    <input type="text" name="address_line1" id="id_address_line1"
-                                        class="form-control" value="{{ user.profile.address_line1|default:'' }}">
-                                </div>
-
-                                <div class="col-md-12">
-                                    <label for="id_address_line2" class="form-label">Address Line 2</label>
-                                    <input type="text" name="address_line2" id="id_address_line2"
-                                        class="form-control" value="{{ user.profile.address_line2|default:'' }}">
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="id_city" class="form-label">City</label>
-                                    <input type="text" name="city" id="id_city"
-                                        class="form-control" value="{{ user.profile.city|default:'' }}">
-                                </div>
-
-                                <div class="col-md-3">
-                                    <label for="id_state" class="form-label">State</label>
-                                    <select name="state" id="id_state" class="form-select">
-                                        <option value="NC" {% if user.profile.state == "NC" %}selected{% endif %}>NC</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-3">
-                                    <label for="id_zipcode" class="form-label">Zip Code</label>
-                                    <input type="text" name="zipcode" id="id_zipcode"
-                                        class="form-control" value="{{ user.profile.zipcode|default:'' }}">
-                                </div>
-                            </div>
-
-                            <div class="settings-form-actions">
-                                <button type="submit" 
-                                    class="btn px-4 flex-shrink-0"
-                                    style="background-color: #1d1066; color: white !important; border: none;">
-                                    Save New Address
-                                </button>
-                            </div>
-                        </form>
-
-
-                        <div class="settings-divider"></div>
-
-
-                        <!-- Password chnage CTA -->
-                        <div class="settings-section p-4">
-                            <h5 class="section-title mb-2">My Password</h5>
-                            <p class="text-muted mb-3">
-                                Would you like to change your password?
-                            </p>
-
-                            <a href="{% url 'passwordChange' %}" class="btn btn-secondary">
-                                Change My Password
-                            </a>
-                        </div>
-
-
-                        <div class="settings-divider"></div>
-
-
-                        <!-- Delete Profile -->
-                        <div class="settings-section p-4">
-                            <h5 class="section-title text-danger mb-2">Delete My Profile</h5>
-                            <p class="text-muted mb-3">
-                                This action will permanently delete your profile and cannot be undone.
-                            </p>
-
-                            <button type="button" class="btn btn-outline-danger">
-                                Delete My Profile
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
+            <div class="overview-box">
+                <p>My Profile:</p>
+                <h5>Change Password</h5>
+                <a href="{% url 'passwordChange' %}" class="btn btn-secondary">
+                    Change Password
+                </a>
             </div>
         </div>
-    
+
     </div>
+
 </div>
 {% endblock %}

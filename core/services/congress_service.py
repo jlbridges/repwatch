@@ -9,37 +9,60 @@ def get_member_details(bioguide_id):
     Fetch detailed information about a representative
     using the Congress API.
     """
-
     api_key = os.getenv("CONGRESS_API_KEY")
 
     if not api_key:
         raise ValueError("CONGRESS_API_KEY environment variable not set.")
 
     url = f"{BASE_URL}/{bioguide_id}"
-
     params = {
-        "api_key": api_key
+        "api_key": api_key,
+        "format": "json",
     }
 
     try:
         response = requests.get(url, params=params, timeout=10)
-    except requests.RequestException:
-        return None
-
-    if response.status_code != 200:
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print("REQUEST ERROR:", e)
         return None
 
     data = response.json()
+    print("CONGRESS RAW JSON:", data)
 
-    try:
-        member = data["member"]
-
-        return {
-            "official_website": member["depiction"]["officialWebsiteUrl"],
-            "sponsored_legislation": member["sponsoredLegislation"]["count"],
-            "cosponsored_legislation": member["cosponsoredLegislation"]["count"],
-            "current_member": member["currentMember"]
-        }
-
-    except (KeyError, IndexError):
+    member = data.get("member")
+    if not member:
+        print("ERROR: member key not found")
         return None
+
+    return {
+        "current_member": member.get("currentMember"),
+        "district": member.get("district"),
+        "state": member.get("state"),
+        "official_website": member.get("officialWebsiteUrl"),
+        "sponsored_legislation": (
+            member.get("sponsoredLegislation", {}).get("count")
+            if isinstance(member.get("sponsoredLegislation"), dict)
+            else None
+        ),
+        "cosponsored_legislation": (
+            member.get("cosponsoredLegislation", {}).get("count")
+            if isinstance(member.get("cosponsoredLegislation"), dict)
+            else None
+        ),
+        "party": (
+            member.get("partyHistory", [{}])[0].get("partyName")
+            if member.get("partyHistory")
+            else None
+        ),
+        "type": (
+            member.get("terms", [{}])[0].get("memberType")
+            if member.get("terms")
+            else None
+        ),
+        "congress": (
+            member.get("terms", [{}])[0].get("congress")
+            if member.get("terms")
+            else None
+        ),
+    }
