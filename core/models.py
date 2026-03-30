@@ -71,12 +71,45 @@ class committees(models.Model):
         return f"{self.committee_name}"
 
 
-class bill_headers(models.Model):
+class BillHeader(models.Model):
     number = models.IntegerField(null=False, blank=True)
     congress = models.IntegerField(null=False, blank=True)
-    orginChamberCode = models.CharField(max_length=15, null=False, blank=True)
+    originChamberCode = models.CharField(max_length=15, null=False, blank=True)
     type = models.CharField(max_length=10, null=False, blank=True)
     title = models.CharField(max_length=200, null=False, blank=True)
 
     def __str__(self):
         return f"{self.title}"
+    
+
+#added in BillDeatil model to store the details of the bill
+#linked it with a foreign key relationship to BillHeader
+class BillDetail(models.Model):
+    bill_header = models.ForeignKey(
+        BillHeader,
+        on_delete=models.CASCADE,
+        related_name="bill_details"
+    )
+
+    number = models.IntegerField(blank=True)
+    type = models.CharField(max_length=10, blank=True)
+    congress = models.IntegerField(blank=True)
+    introducedDate = models.DateField(null=True, blank=True)
+
+    bill_subject = models.CharField(max_length=100, null=True, blank=True)
+
+    sponsor_bioguideId = models.CharField(max_length=10, blank=True)
+    firstName = models.CharField(max_length=35, blank=True)
+    lastName = models.CharField(max_length=35, blank=True)
+    party = models.CharField(max_length=20, blank=True)
+
+    bill_summary = models.CharField(max_length=200, blank=True)
+
+    originChamber = models.CharField(max_length=15, blank=True)
+    currentChamber = models.CharField(max_length=15, blank=True)
+
+    actionDesc = models.CharField(max_length=50, blank=True)
+    bill_status = models.CharField(max_length=30, blank=True)
+
+    def __str__(self):
+        return f"{self.type} {self.number}"
