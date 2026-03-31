@@ -2,11 +2,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
+from smartystreets_python_sdk import request
 
 from .forms import CustomUserRegister, EmailLoginForm
 from .services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
-from .models import Representative, Profile, rep_detail
+from .models import BillHeader, Representative, Profile, rep_detail
 
 
 # Homepage
@@ -27,18 +28,26 @@ def dashboard(request):
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
-        return render(request, "core/dashboard.html", {
-            "show_layout": True,
-            "page": "dashboard"
-        })
+        profile = None     #handling none returns in test cases where profile is not created yet
+    
+    #removed for testing to handle no profile existing
 
-    address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
+    if profile:
+        address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
+    else:        
+        address = None
 
-    try:
-        reps_data = get_representatives_from_address(address)
-    except Exception as e:
-        print("GEOCODIO ERROR:", e)
+    #Testing fixes for guarding API calls with try/except and handling None returns
+
+    if address:
+        try:
+            reps_data = get_representatives_from_address(address)
+        except Exception:
+            reps_data = []
+    else:
         reps_data = []
+
+    #removed duplicate API call
 
     for rep in reps_data:
         rep_obj, _ = Representative.objects.update_or_create(
@@ -82,10 +91,28 @@ def dashboard(request):
 
     reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
 
+    #search
+    q = request.GET.get("q")
+    congress = request.GET.get("congress")
+    bill_type = request.GET.get("bill_type")
+
+    bills = BillHeader.objects.all()
+
+    if q:
+        bills = bills.filter(title__icontains=q)
+
+    if congress:
+        bills = bills.filter(congress=int(congress))
+
+    if bill_type:
+        bills = bills.filter(type=bill_type)
+
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "page": "dashboard",
-        "reps": reps
+        "reps": reps,
+        #adding in for bill search
+        "bills": bills,
     })
 
 
@@ -147,3 +174,4 @@ def login_view(request):
 def accountlogout(request):
     logout(request)
     return redirect("homepage")
+
