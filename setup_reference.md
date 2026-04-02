@@ -45,9 +45,15 @@ These are commands you will use often.
 ### Django shell  
 `py manage.py shell`
 
+### Load Committees
+`py manage.py sync_committees`
+
+*Given how intensive this operation is, I believe it is best suited to put be on a timed cron rather than on user request.*
+
 ## Current functioning URLs
 
 http://127.0.0.1:8000 - Root URL, redirects to login when logged out
 http://127.0.0.1:8000/accounts/login - Login (logging in takes you to dashboard view)
 http://127.0.0.1:8000/accounts/signup/ - Register
 http://127.0.0.1:8000/admin/ - Default django admin console
+

@@ -63,12 +63,53 @@ class rep_detail(models.Model):
         return f"Details for {self.Bioguide_id}"
 
 
-class committees(models.Model):
-    committee_name = models.CharField(max_length=35, null=True, blank=True)
-    rep_detail_id = models.ForeignKey(rep_detail, on_delete=models.CASCADE)
+class Committee(models.Model):
+    committee_id = models.CharField(max_length=20, primary_key=True)
+
+    committee_name = models.CharField(max_length=255, null=True, blank=True)
+    committee_type = models.CharField(max_length=20, null=True, blank=True)
+    url = models.URLField(null=True, blank=True)
+
+    parent_committee = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="subcommittees"
+    )
+
+    is_subcommittee = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.committee_name}"
+        return f"{self.committee_id} - {self.committee_name}"
+    
+class CommitteeMembership(models.Model):
+    representative = models.ForeignKey(
+        "Representative",
+        on_delete=models.CASCADE,
+        related_name="committee_memberships"
+    )
+    committee = models.ForeignKey(
+        Committee,
+        on_delete=models.CASCADE,
+        related_name="memberships"
+    )
+
+    role = models.CharField(max_length=50, null=True, blank=True)
+    rank = models.IntegerField(null=True, blank=True)
+
+    synced_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "repwatch_committee_membership"
+        unique_together = ("representative", "committee")
+        indexes = [
+            models.Index(fields=["representative"]),
+            models.Index(fields=["committee"]),
+        ]
+
+    def __str__(self):
+        return f"{self.representative_id} -> {self.committee_id}"
 
 
 class BillHeader(models.Model):
@@ -113,3 +154,9 @@ class BillDetail(models.Model):
 
     def __str__(self):
         return f"{self.type} {self.number}"
+    
+    
+class DataSourceState(models.Model):
+    key = models.CharField(max_length=100, unique=True)
+    checksum = models.CharField(max_length=64)
+    updated_at = models.DateTimeField(auto_now=True)
