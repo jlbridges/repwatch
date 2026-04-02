@@ -19,53 +19,6 @@ def homepage(request):
         "page": "homepage"
     })
 
-# Helper function to build out hierarchial list for rep committee membership
-def build_committee_tree(memberships):
-    parents = {}
-    ordered = []
-    
-    print("Building committee tree")
-
-    for m in memberships:
-        committee = m.committee
-
-        if committee.is_subcommittee and committee.parent_committee:
-            parent = committee.parent_committee
-            parent_id = parent.committee_id
-
-            if parent_id not in parents:
-                parents[parent_id] = {
-                    "committee": parent,
-                    "role": None,
-                    "rank": None,
-                    "subs": []
-                }
-                ordered.append(parents[parent_id])
-
-            parents[parent_id]["subs"].append({
-                "committee": committee,
-                "role": m.role,
-                "rank": m.rank
-            })
-
-        else:
-            cid = committee.committee_id
-
-            if cid not in parents:
-                entry = {
-                    "committee": committee,
-                    "role": m.role,
-                    "rank": m.rank,
-                    "subs": []
-                }
-                parents[cid] = entry
-                ordered.append(entry)
-            else:
-                parents[cid]["role"] = m.role
-                parents[cid]["rank"] = m.rank
-
-    return ordered
-
 
 # Dashboard
 @login_required
@@ -136,18 +89,30 @@ def dashboard(request):
 
         rep_obj.constituents.add(user)
 
-    representatives = list(
-        Representative.objects
-        .filter(constituents=user)
-        .prefetch_related("rep_details", "committee_memberships__committee__parent_committee")
-    )
-    for rep in representatives:
-        rep.committee_tree = build_committee_tree(rep.committee_memberships.all())
+    reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
+
+    #search
+    q = request.GET.get("q")
+    congress = request.GET.get("congress")
+    bill_type = request.GET.get("bill_type")
+
+    bills = BillHeader.objects.all()
+
+    if q:
+        bills = bills.filter(title__icontains=q)
+
+    if congress:
+        bills = bills.filter(congress=int(congress))
+
+    if bill_type:
+        bills = bills.filter(type=bill_type)
 
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "page": "dashboard",
-        "representatives": representatives
+        "reps": reps,
+        #adding in for bill search
+        "bills": bills,
     })
 
 
