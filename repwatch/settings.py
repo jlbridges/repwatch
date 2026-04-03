@@ -9,6 +9,11 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 
 from pathlib import Path
 
@@ -40,7 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "allauth",
     "allauth.account",
-    "core.apps.CoreConfig"
+    "core.apps.CoreConfig",
+    "widget_tweaks"
 ]
 
 MIDDLEWARE = [
@@ -54,6 +60,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware"
 ]
 
+#made changes here for testing
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
@@ -64,7 +71,7 @@ ROOT_URLCONF = "repwatch.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -94,8 +101,9 @@ DATABASES = {
 
 
 # Authentication
+#made change here to match the urls.py and login.html
 
-LOGIN_URL = "/accounts/login/"
+LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 
@@ -152,3 +160,11 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 ACCOUNT_USER_MODEL_EMAIL_FIELD = "email"
+
+# for the drop down
+ACCOUNT_SIGNUP_FORM_CLASS = "core.forms.CustomSignupForm"
+
+
+
+
+
