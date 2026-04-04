@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST
 from .forms import CustomUserRegister, EmailLoginForm
 from .services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
+from core.services.bill_service import get_bill_headers
 from .models import Representative, Profile, rep_detail
 
 
@@ -24,46 +25,59 @@ def homepage(request):
 def dashboard(request):
     user = request.user
 
-    try:
-        profile = Profile.objects.get(user=user)
-    except Profile.DoesNotExist:
-        return render(request, "core/dashboard.html", {
-            "show_layout": True,
-            "page": "dashboard"
-        })
+    # 🔥 Make sure profile exists
+    profile, created = Profile.objects.get_or_create(user=user)
 
-    address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
+    # 🔥 HANDLE POST (THIS WAS MISSING)
+    if request.method == "POST":
+        profile.address_line1 = request.POST.get("address_line1", "")
+        profile.address_line2 = request.POST.get("address_line2", "")
+        profile.city = request.POST.get("city", "")
+        profile.state = request.POST.get("state", "")
+        profile.zipcode = request.POST.get("zipcode", "")
+        profile.save()
 
+        print("✅ PROFILE UPDATED")
+
+    # 🔥 Call Bill API (working already)
     try:
-        reps_data = get_representatives_from_address(address)
+        get_bill_headers()
     except Exception as e:
-        print("GEOCODIO ERROR:", e)
-        reps_data = []
+        print("BILL API ERROR:", e)
 
+    # 🔥 Build address
+    address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
+    print("ADDRESS:", address)
+
+    # 🔥 Call Geocodio
+    reps_data = get_representatives_from_address(address)
+    print("REPS DATA:", reps_data)
+
+    # 🔥 Save representatives
     for rep in reps_data:
+
+        if not rep.get("bioguide_id"):
+            continue
+
         rep_obj, _ = Representative.objects.update_or_create(
             Bioguide_id=rep["bioguide_id"],
             defaults={
-                "name": rep["name"],
+                "name": rep.get("name"),
                 "district_number": rep.get("district_number"),
-                "first_name": rep["first_name"],
-                "last_name": rep["last_name"],
+                "first_name": rep.get("first_name"),
+                "last_name": rep.get("last_name"),
                 "state": profile.state,
-                "party": rep["party"],
-                "type": rep["type"],
-                "photo_url": rep["photo_url"],
+                "party": rep.get("party"),
+                "type": rep.get("type"),
+                "photo_url": rep.get("photo_url"),
             }
         )
 
+        # 🔥 Congress API
         try:
             member_details = get_member_details(rep["bioguide_id"])
         except Exception as e:
             print("CONGRESS API ERROR:", e)
-            member_details = {}
-
-        print("MEMBER DETAILS:", member_details)
-
-        if member_details is None:
             member_details = {}
 
         rep_detail.objects.update_or_create(
@@ -80,6 +94,7 @@ def dashboard(request):
 
         rep_obj.constituents.add(user)
 
+    # 🔥 Fetch reps for display
     reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
 
     return render(request, "core/dashboard.html", {
@@ -104,7 +119,7 @@ def registration(request):
 
         if form.is_valid():
             user = form.save()
-            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+            login(request, user)
             return redirect("dashboard")
     else:
         form = CustomUserRegister()
@@ -127,7 +142,7 @@ def login_view(request):
 
             user = authenticate(request, username=email, password=password)
 
-            if user is not None:
+            if user:
                 login(request, user)
                 return redirect("dashboard")
             else:
