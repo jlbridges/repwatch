@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1">
 {% endblock %}
 
 {% block content %}
@@ -17,8 +17,8 @@
         </div>
     </div>
 
-    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3" id="dashboardTab"
-        role="tablist">
+    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3"
+        id="dashboardTab" role="tablist">
 
         <li class="nav-item">
             <button class="nav-link active rounded-5" data-bs-toggle="tab" data-bs-target="#overview">
@@ -56,40 +56,38 @@
 
         <!-- Overview -->
         <div class="tab-pane fade show active" id="overview">
-
             <div class="row g-4 mt-2 py-4">
 
                 <div class="col-md-6">
                     <div class="overview-box">
-
                         <p class="text-start fs-5">Your Representatives</p>
 
                         {% for rep in reps %}
-                        <div class="rep-card mb-2 p-3">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="rep-card mb-2 p-3">
+                                <div class="d-flex justify-content-between align-items-center">
 
-                                <div class="rep-info">
-                                    <div class="rep-name">
-                                        {{ rep.first_name }} {{ rep.last_name }}
+                                    <div class="rep-info">
+                                        <div class="rep-name">
+                                            {{ rep.first_name }} {{ rep.last_name }}
+                                        </div>
+
+                                        <div class="rep-role text-muted">
+                                            {% if rep.type|lower == 'representative' %}
+                                                {{ rep.state }} - District {{ rep.district_number }}
+                                            {% else %}
+                                                {{ rep.state }} - U.S. Senator
+                                            {% endif %}
+                                        </div>
                                     </div>
 
-                                    <div class="rep-role text-muted">
-                                        {% if rep.type|lower == 'representative' %}
-                                        {{ rep.state }} - District {{ rep.district_number }}
-                                        {% else %}
-                                        {{ rep.state }} - U.S. Senator
-                                        {% endif %}
+                                    <div class="rep-party-container">
+                                        <span class="rep-party">{{ rep.party }}</span>
                                     </div>
-                                </div>
 
-                                <div class="rep-party-container">
-                                    <span class="rep-party">{{ rep.party }}</span>
                                 </div>
-
                             </div>
-                        </div>
                         {% empty %}
-                        <p>No representatives found yet.</p>
+                            <p>No representatives found yet.</p>
                         {% endfor %}
 
                     </div>
@@ -98,6 +96,7 @@
                 <div class="col-md-6">
                     <div class="overview-box">
                         <p class="text-start fs-5">Tracked Legislation</p>
+
                         {% if bills %}
                             {% for bill in bills %}
                                 <div class="bill-card mb-2 p-2">
@@ -107,130 +106,195 @@
                         {% else %}
                             <p>No bills found.</p>
                         {% endif %}
+
                     </div>
                 </div>
 
             </div>
-
         </div>
 
         <!-- My Reps -->
         <div class="tab-pane fade" id="myreps">
-
             <div class="row g-4 mt-2 py-4">
 
                 {% for rep in user.representative_set.all %}
-                <div class="col-md-6">
-                    <div class="reps-box d-flex flex-column">
-                        <div class="rep-card mb-2 p-3">
+                    <div class="col-md-6">
+                        <div class="reps-box d-flex flex-column">
+                            <div class="rep-card mb-2 p-3">
 
-                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between align-items-center">
 
-                                <div class="d-flex align-items-center gap-3">
-                                    <img src="{{ rep.photo_url }}" class="rep-photo rounded shadow">
-                                    <div class="rep-name">
-                                        {{ rep.first_name }} {{ rep.last_name }}
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="{{ rep.photo_url }}" class="rep-photo rounded shadow">
+                                        <div class="rep-name">
+                                            {{ rep.first_name }} {{ rep.last_name }}
+                                        </div>
                                     </div>
+
+                                    <button class="btn btn-sm btn-secondary"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#repDetails{{ rep.Bioguide_id }}">
+                                        View More
+                                    </button>
+
                                 </div>
 
-                                <button class="btn btn-sm btn-secondary" type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#repDetails{{ rep.Bioguide_id }}">
-                                    View More
-                                </button>
+                                <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
+                                    {% for detail in rep.rep_details.all %}
+                                        <p><strong>Congress:</strong> {{ detail.congress }}</p>
+                                        <p><strong>State:</strong> {{ rep.state }}</p>
+                                        <p><strong>District:</strong> {{ rep.name }}</p>
+                                        <p><strong>Party:</strong> {{ rep.party }}</p>
+                                        <p><strong>Type:</strong> {{ rep.type }}</p>
+                                        <p>
+                                            <strong>Sponsorships:</strong>
+                                            Sponsored {{ detail.count_sponsoredLegislation|default:"0" }},
+                                            Cosponsored {{ detail.count_cosponsoredLegislation|default:"0" }}
+                                        </p>
+
+                                        {% if detail.officialWebsiteUrl %}
+                                            <p>
+                                                <a href="{{ detail.officialWebsiteUrl }}" target="_blank">
+                                                    Official Website
+                                                </a>
+                                            </p>
+                                        {% endif %}
+
+                                        {% if detail.contact_form %}
+                                            <p>Contact: {{ detail.contact_form }}</p>
+                                        {% endif %}
+
+                                    {% empty %}
+                                        <p>No member details available</p>
+                                    {% endfor %}
+                                </div>
 
                             </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No representatives found yet.</p>
+                {% endfor %}
 
-                            <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
-                                {% for detail in rep.rep_details.all %}
-                                <p><strong>Congress:</strong> {{ detail.congress }}</p>
-                                <p><strong>State:</strong> {{ rep.state }}</p>
-                                <p><strong>District:</strong> {{ rep.district_number }}</p>
-                                <p><strong>Party:</strong> {{ rep.party }}</p>
-                                <p><strong>Type:</strong> {{ rep.type }}</p>
-                                <p>
-                                    <strong>Sponsorships:</strong>
-                                    Sponsored {{ detail.count_sponsoredLegislation|default:"0" }},
-                                    Cosponsored {{ detail.count_cosponsoredLegislation|default:"0" }}
-                                </p>
-                                {% if detail.officialWebsiteUrl %}
-                                <p>
-                                    <a href="{{ detail.officialWebsiteUrl }}" target="_blank">
-                                        Official Website
-                                    </a>
-                                </p>
-                                {% endif %}
-                                {% if detail.contact_form %}
-                                <p>Contact: {{ detail.contact_form }}</p>
-                                {% endif %}
+            </div>
+        </div>
+
+        <!-- My Bills -->
+        <div class="tab-pane fade" id="mybills">
+            <p>My Bills Section</p>
+        </div>
+
+        <!-- Search -->
+        <div class="tab-pane fade" id="mysearch">
+            <div class="search-box legislation-search-layout">
+                <div class="row g-4">
+
+                    <!-- Filters -->
+                    <div class="col-lg-4">
+                        <div class="search-filters-panel">
+
+                            <h5 class="section-title mb-3">Search Filters</h5>
+
+                            <div class="mb-3">
+                                <label class="form-label">Keyword</label>
+                                <input type="text" class="form-control" placeholder="Enter bill title or keyword">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Congress</label>
+                                <select class="form-select">
+                                    <option selected>All Congress</option>
+                                    <option>118</option>
+                                    <option>119</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Bill Type</label>
+                                <select class="form-select">
+                                    <option selected>All Types</option>
+                                    <option>HR</option>
+                                    <option>S</option>
+                                    <option>HJRES</option>
+                                    <option>SJRES</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Chamber</label>
+                                <select class="form-select">
+                                    <option selected>All Chambers</option>
+                                    <option>House</option>
+                                    <option>Senate</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select">
+                                    <option selected>All Status</option>
+                                    <option>Introduced</option>
+                                    <option>Passed House</option>
+                                    <option>Passed Senate</option>
+                                </select>
+                            </div>
+
+                            <button type="button"
+                                    class="btn btn-primary w-100 mt-2"
+                                    style="background-color: #1d1066; color: white !important; border: none;">
+                                Search
+                            </button>
+
+                        </div>
+                    </div>
+
+                    <!-- Results -->
+                    <div class="col-lg-8">
+                        <div class="search-results-panel">
+
+                            <div class="results-header">
+                                <h5 class="section-title mb-0">Bills</h5>
+                                <span class="results-count">Results</span>
+                            </div>
+
+                            <div class="bill-list">
+                                {% for bill in bills %}
+                                    <div class="bill-card">
+
+                                        <div class="bill-card-top">
+                                            <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
+                                            <span class="bill-status">
+                                                {{ bill.bill_details.first.bill_status }}
+                                            </span>
+                                        </div>
+
+                                        <h6 class="bill-title">{{ bill.title }}</h6>
+
+                                        <div class="bill-meta">
+                                            <span>Congress: {{ bill.congress }}</span>
+                                            <span>{{ bill.originChamberCode }}</span>
+                                            <span>{{ bill.bill_details.first.introducedDate }}</span>
+                                        </div>
+
+                                        <p class="bill-summary">
+                                            {{ bill.bill_details.first.bill_summary }}
+                                        </p>
+
+                                        <div class="bill-card-actions">
+                                            <button type="button" class="btn btn-primary btn-sm save-bill-btn">
+                                                Save Bill
+                                            </button>
+                                        </div>
+                                    </div>
                                 {% empty %}
-                                <p>No member details available</p>
+                                    <p class="text-muted mb-0">No bills found.</p>
                                 {% endfor %}
                             </div>
 
                         </div>
                     </div>
-                </div>
-                {% empty %}
-                <p>No representatives found yet.</p>
-                {% endfor %}
 
-            </div>
-
-        </div>
-
-<!-- My Bills -->
-<p>My Bills Section</p>
-
-        <!-- Search -->
-        <div class="tab-pane fade" id="mysearch">
-            <div class="row g-4 mt-2 py-4">
-                <div class="col-12">
-                    <div class="search-box">
-                        <p class="text-start fs-5 mb-3">Search Legislation</p>
-
-                        <div class="search-form">
-                            <div class="row g-3 mb-3">
-                                <div class="col-12">
-                                    <label for="id_search_query" class="form-label p-4">Search Term</label>
-                                    <input type="text"
-                                        name="q"
-                                        id="id_search_query"
-                                        class="form-control"
-                                        placeholder="Bill number, keyword, or sponsor name">
-                                </div>
-                            </div>
-
-                            <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label for="id_congress" class="form-label">Congress</label>
-                                    <select name="congress" id="id_congress" class="form-select">
-                                        <option value="">Any Congress</option>
-                                        <option value="118">118th Congress</option>
-                                        <option value="117">117th Congress</option>
-                                        <!-- and more maybe -->
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="id_bill_type" class="form-label">Bill Type</label>
-                                    <select name="bill_type" id="id_bill_type" class="form-select">
-                                        <option value="">Any type</option>
-                                        <option value="h">House</option>
-                                        <option value="s">Senate</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="search-actions">
-                                <button type="submit"
-                                        class="btn px-4 flex-shrink-0"
-                                        style="background-color: #1d1066; color: white !important; border: none;">
-                                    Search
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -252,31 +316,30 @@
                                 <div class="col-md-6">
                                     <label for="id_first_name" class="form-label">First Name</label>
                                     <input type="text" name="first_name" id="id_first_name"
-                                        class="form-control" value="{{ user.first_name }}">
+                                           class="form-control" value="{{ user.first_name }}">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="id_last_name" class="form-label">Last Name</label>
                                     <input type="text" name="last_name" id="id_last_name"
-                                        class="form-control" value="{{ user.last_name }}">
+                                           class="form-control" value="{{ user.last_name }}">
                                 </div>
 
                                 <div class="col-md-12">
                                     <label for="id_email" class="form-label">Email</label>
                                     <input type="email" name="email" id="id_email"
-                                        class="form-control" value="{{ user.email }}">
+                                           class="form-control" value="{{ user.email }}">
                                 </div>
                             </div>
 
                             <div class="settings-form-actions">
-                                <button type="submit" 
-                                    class="btn px-4 flex-shrink-0"
-                                    style="background-color: #1d1066; color: white !important; border: none;">
+                                <button type="submit"
+                                        class="btn px-4 flex-shrink-0"
+                                        style="background-color: #1d1066; color: white !important; border: none;">
                                     Save New Personal Info
                                 </button>
                             </div>
                         </form>
-
 
                         <div class="settings-divider"></div>
 
@@ -290,19 +353,19 @@
                                 <div class="col-md-12">
                                     <label for="id_address_line1" class="form-label">Address Line 1</label>
                                     <input type="text" name="address_line1" id="id_address_line1"
-                                        class="form-control" value="{{ user.profile.address_line1|default:'' }}">
+                                           class="form-control" value="{{ user.profile.address_line1|default:'' }}">
                                 </div>
 
                                 <div class="col-md-12">
                                     <label for="id_address_line2" class="form-label">Address Line 2</label>
                                     <input type="text" name="address_line2" id="id_address_line2"
-                                        class="form-control" value="{{ user.profile.address_line2|default:'' }}">
+                                           class="form-control" value="{{ user.profile.address_line2|default:'' }}">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="id_city" class="form-label">City</label>
                                     <input type="text" name="city" id="id_city"
-                                        class="form-control" value="{{ user.profile.city|default:'' }}">
+                                           class="form-control" value="{{ user.profile.city|default:'' }}">
                                 </div>
 
                                 <div class="col-md-3">
@@ -315,24 +378,22 @@
                                 <div class="col-md-3">
                                     <label for="id_zipcode" class="form-label">Zip Code</label>
                                     <input type="text" name="zipcode" id="id_zipcode"
-                                        class="form-control" value="{{ user.profile.zipcode|default:'' }}">
+                                           class="form-control" value="{{ user.profile.zipcode|default:'' }}">
                                 </div>
                             </div>
 
                             <div class="settings-form-actions">
-                                <button type="submit" 
-                                    class="btn px-4 flex-shrink-0"
-                                    style="background-color: #1d1066; color: white !important; border: none;">
+                                <button type="submit"
+                                        class="btn px-4 flex-shrink-0"
+                                        style="background-color: #1d1066; color: white !important; border: none;">
                                     Save New Address
                                 </button>
                             </div>
                         </form>
 
-
                         <div class="settings-divider"></div>
 
-
-                        <!-- Password chnage CTA -->
+                        <!-- Password change CTA -->
                         <div class="settings-section p-4">
                             <h5 class="section-title mb-2">My Password</h5>
                             <p class="text-muted mb-3">
@@ -344,9 +405,7 @@
                             </a>
                         </div>
 
-
                         <div class="settings-divider"></div>
-
 
                         <!-- Delete Profile -->
                         <div class="settings-section p-4">
@@ -364,7 +423,7 @@
                 </div>
             </div>
         </div>
-    
+
     </div>
 </div>
 {% endblock %}
