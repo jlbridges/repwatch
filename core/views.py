@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 from smartystreets_python_sdk import request
+from django.db import transaction
 
 from .forms import CustomUserRegister, EmailLoginForm
 from .services.geocodio_service import get_representatives_from_address
@@ -39,7 +40,12 @@ def dashboard(request):
 
     #Testing fixes for guarding API calls with try/except and handling None returns
 
-    if address:
+    #Changing code to only make api calls if no reps exist.
+    #This is to make sure it only does the call on login.
+
+    existing_reps = Representative.objects.filter(constituents=user)
+
+    if not existing_reps.exists() and address:
         try:
             reps_data = get_representatives_from_address(address)
         except Exception:
@@ -170,8 +176,23 @@ def login_view(request):
 
 
 # Logout
+
+# Update to clear reps on logout so a fresh call may be made on login.
+
 @require_POST
 def accountlogout(request):
+    if request.user.is_authenticated:
+        user = request.user
+
+        # Remove user from representatives (ManyToMany)
+        reps = Representative.objects.filter(constituents=user)
+
+        for rep in reps:
+            rep.constituents.remove(user)
+
+            # OPTIONAL: delete rep if no more users attached
+            if rep.constituents.count() == 0:
+                rep.delete()
+
     logout(request)
     return redirect("homepage")
-
