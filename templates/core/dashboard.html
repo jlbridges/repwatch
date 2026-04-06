@@ -228,61 +228,57 @@
                             </div>
                         </div>
 
-                    </div>
+                    <!-- Results -->
+                        <div class="col-lg-8">
+                            <div class="search-results-panel">
+
+                                <div class="results-header">
+                                    <h5 class="section-title mb-0">Bills</h5>
+                                    <span class="results-count">Results</span>
+                                </div>
+
+                                <div class="bill-list">
+                                    {% for bill in bills %}
+                                        <div class="bill-card">
+
+                                            <div class="bill-card-top">
+                                                <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
+                                                <span class="bill-status">
+                                                    {{ bill.bill_details.first.bill_status }}
+                                                </span>
+                                            </div>
+
+                                            <h6 class="bill-title">{{ bill.title }}</h6>
+
+                                            <div class="bill-meta">
+                                                <span>Congress: {{ bill.congress }}</span>
+                                                <span>{{ bill.originChamberCode }}</span>
+                                                <span>{{ bill.bill_details.first.introducedDate }}</span>
+                                            </div>
+
+                                            <p class="bill-summary">
+                                                {{ bill.bill_details.first.bill_summary }}
+                                            </p>
+
+                                            <div class="bill-card-actions">
+                                                <button type="button" class="btn btn-primary btn-sm save-bill-btn">
+                                                    Save Bill
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <p class="text-muted mb-0">No bills found.</p>
+                                    {% endfor %}
+                                </div>
+
+                            </div>    
+                        </div>
+                        
+                    </div>    
                 </div>
 
             </form>
-
-        </div>
-
-                    <!-- Results -->
-                    <div class="col-lg-8">
-                        <div class="search-results-panel">
-
-                            <div class="results-header">
-                                <h5 class="section-title mb-0">Bills</h5>
-                                <span class="results-count">Results</span>
-                            </div>
-
-                            <div class="bill-list">
-                                {% for bill in bills %}
-                                    <div class="bill-card">
-
-                                        <div class="bill-card-top">
-                                            <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
-                                            <span class="bill-status">
-                                                {{ bill.bill_details.first.bill_status }}
-                                            </span>
-                                        </div>
-
-                                        <h6 class="bill-title">{{ bill.title }}</h6>
-
-                                        <div class="bill-meta">
-                                            <span>Congress: {{ bill.congress }}</span>
-                                            <span>{{ bill.originChamberCode }}</span>
-                                            <span>{{ bill.bill_details.first.introducedDate }}</span>
-                                        </div>
-
-                                        <p class="bill-summary">
-                                            {{ bill.bill_details.first.bill_summary }}
-                                        </p>
-
-                                        <div class="bill-card-actions">
-                                            <button type="button" class="btn btn-primary btn-sm save-bill-btn">
-                                                Save Bill
-                                            </button>
-                                        </div>
-                                    </div>
-                                {% empty %}
-                                    <p class="text-muted mb-0">No bills found.</p>
-                                {% endfor %}
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+              
         </div>
 
         <!-- Settings -->
