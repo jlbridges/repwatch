@@ -289,8 +289,9 @@
                         <p class="text-start fs-5 mb-3">Account Settings</p>
 
                         <!-- Personal Info -->
-                        <form method="post" class="settings-form p-4">
+                        <form action="{% url 'dashboard' %}" method="post" class="settings-form p-4">
                             {% csrf_token %}
+                            <input type="hidden" name="hidden_id" id="hidden_id" value="{{ user.id }}">
 
                             <h5 class="section-title mb-4">My Personal Info</h5>
 
@@ -326,7 +327,7 @@
                         <div class="settings-divider"></div>
 
                         <!-- Address -->
-                        <form method="post" class="settings-form p-4">
+                        <form action="{% url 'dashboard' %}" method="post" class="settings-form p-4">
                             {% csrf_token %}
 
                             <h5 class="section-title mb-4">My Current Address</h5>
@@ -353,7 +354,7 @@
                                 <div class="col-md-3">
                                     <label for="id_state" class="form-label">State</label>
                                     <select name="state" id="id_state" class="form-select">
-                                        <option value="NC" {% if user.profile.state == "NC" %}selected{% endif %}>NC</option>
+                                        <option value="NC" {% if user.profile.state= ="NC" %}selected{% endif %}>NC</option>
                                     </select>
                                 </div>
 

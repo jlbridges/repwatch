@@ -3,8 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 from smartystreets_python_sdk import request
-from django.db import transaction
-
+from django.contrib.auth.models import User
 from .forms import CustomUserRegister, EmailLoginForm
 from .services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
@@ -28,6 +27,20 @@ def dashboard(request):
 
     try:
         profile = Profile.objects.get(user=user)
+        if(request.POST.get('hidden_id')):
+          user_id = request.POST.get('hidden_id')          
+          postedUser  = User.objects.get(pk=user_id)                   
+       
+        hasProfileChanged = check_Profile_changed(request)
+        hasAccountChanged = check_Account_changed(request)
+
+        if (hasProfileChanged):
+           updateProfileData(profile, request)
+
+        if (hasAccountChanged):
+           updateUserData(postedUser, request)    
+           return redirect('dashboard')
+
     except Profile.DoesNotExist:
         profile = None     #handling none returns in test cases where profile is not created yet
     
@@ -121,6 +134,36 @@ def dashboard(request):
         "bills": bills,
     })
 
+def updateProfileData(profile, request):    
+    if request.POST.get("address_line1"):        
+        profile.address_line1 = request.POST.get('address_line1')
+
+    if request.POST.get('address_line2'):
+        profile.address_line2 = request.POST.get('address_line2')
+
+    if request.POST.get('city'):
+        profile.city = request.POST.get('city')
+
+    if request.POST.get('state'):      
+       profile.state = 'NC'
+
+    if request.POST.get('zipcode'):       
+        profile.zipcode = request.POST.get('zipcode')
+
+    profile.save()
+
+def updateUserData (postedUser, request):
+    if request.POST.get('first_name'):        
+        postedUser.first_name = request.POST.get('first_name').strip()
+
+    if request.POST.get('last_name'):
+        postedUser.last_name =  request.POST.get('last_name').strip()  
+
+    if request.POST.get('email'):       
+        postedUser.email = request.POST.get('email').strip()
+
+    postedUser.save()  
+  
 
 # About
 def about(request):
@@ -196,3 +239,35 @@ def accountlogout(request):
 
     logout(request)
     return redirect("homepage")
+
+def check_Profile_changed(request):
+        hasValue = False       
+        if request.POST.get("address_line1"):
+            hasValue - True
+
+        if request.POST.get('address_line2'):
+            hasValue = True
+
+        if request.POST.get('city'):
+            hasValue = True
+
+        if request.POST.get('state'):
+            hasValue = True
+
+        if request.POST.get('zipecode'):
+            hasValue = True 
+
+        return hasValue
+
+def check_Account_changed(request):
+        hasChanged = False
+        if request.POST.get('first_name'):
+            hasChanged = True
+
+        if request.POST.get('last_name'):
+            hasChanged = True
+
+        if request.POST.get('email'):
+            hasChanged =  True
+            
+        return hasChanged
