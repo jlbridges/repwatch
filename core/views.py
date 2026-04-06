@@ -10,7 +10,6 @@ from core.services.bill_service import get_bill_headers
 from .models import Representative, Profile, rep_detail
 
 
-# Homepage
 def homepage(request):
     if request.user.is_authenticated:
         return redirect("dashboard")
@@ -20,40 +19,37 @@ def homepage(request):
     })
 
 
-# Dashboard
 @login_required
 def dashboard(request):
     user = request.user
 
-    # 🔥 Make sure profile exists
+    # Ensure profile exists
     profile, created = Profile.objects.get_or_create(user=user)
 
-    # 🔥 HANDLE POST (THIS WAS MISSING)
+    # Handle POST (save address)
     if request.method == "POST":
         profile.address_line1 = request.POST.get("address_line1", "")
-        profile.address_line2 = request.POST.get("address_line2", "")
         profile.city = request.POST.get("city", "")
         profile.state = request.POST.get("state", "")
         profile.zipcode = request.POST.get("zipcode", "")
         profile.save()
+        print("✅ Profile updated")
 
-        print("✅ PROFILE UPDATED")
-
-    # 🔥 Call Bill API (working already)
+    # Bill API
     try:
         get_bill_headers()
     except Exception as e:
         print("BILL API ERROR:", e)
 
-    # 🔥 Build address
+    # Build address
     address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
     print("ADDRESS:", address)
 
-    # 🔥 Call Geocodio
+    # Geocodio API
     reps_data = get_representatives_from_address(address)
     print("REPS DATA:", reps_data)
 
-    # 🔥 Save representatives
+    # Save reps
     for rep in reps_data:
 
         if not rep.get("bioguide_id"):
@@ -73,11 +69,10 @@ def dashboard(request):
             }
         )
 
-        # 🔥 Congress API
+        # Congress API
         try:
             member_details = get_member_details(rep["bioguide_id"])
-        except Exception as e:
-            print("CONGRESS API ERROR:", e)
+        except Exception:
             member_details = {}
 
         rep_detail.objects.update_or_create(
@@ -94,7 +89,6 @@ def dashboard(request):
 
         rep_obj.constituents.add(user)
 
-    # 🔥 Fetch reps for display
     reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
 
     return render(request, "core/dashboard.html", {
@@ -104,7 +98,6 @@ def dashboard(request):
     })
 
 
-# About
 def about(request):
     return render(request, "about.html", {
         "show_layout": True,
@@ -112,7 +105,6 @@ def about(request):
     })
 
 
-# Registration
 def registration(request):
     if request.method == "POST":
         form = CustomUserRegister(request.POST)
@@ -131,7 +123,6 @@ def registration(request):
     })
 
 
-# Login
 def login_view(request):
     if request.method == "POST":
         form = EmailLoginForm(request.POST)
@@ -157,7 +148,6 @@ def login_view(request):
     })
 
 
-# Logout
 @require_POST
 def accountlogout(request):
     logout(request)
