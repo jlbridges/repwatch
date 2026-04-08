@@ -7,9 +7,9 @@ BASE_URL = "https://api.geocod.io/v1.9/geocode"
 def get_representatives_from_address(address):
     api_key = os.getenv("GEOCODIO_API_KEY")
 
-    # ✅ FIX 1: MUST raise error (tests expect this)
     if not api_key:
-        raise ValueError("Missing GEOCODIO_API_KEY")
+        print("❌ Missing GEOCODIO_API_KEY")
+        return []
 
     params = {
         "q": address,
@@ -21,29 +21,25 @@ def get_representatives_from_address(address):
         response = requests.get(BASE_URL, params=params, timeout=10)
     except requests.RequestException as e:
         print("❌ Request failed:", e)
-        return None   # ✅ FIX
+        return []
 
-    # ✅ FIX 2: API failure → return None
     if response.status_code != 200:
-        print("❌ Bad response:", response.status_code)
-        return None
+        print("❌ Bad response:", response.status_code, response.text)
+        return []
 
     data = response.json()
     print("GEOCODIO RAW:", data)
 
     try:
         results = data.get("results", [])
-
-        # ✅ FIX 3: malformed response → return None
         if not results:
             print("❌ No results")
-            return None
+            return []
 
         districts = results[0].get("fields", {}).get("congressional_districts", [])
-
         if not districts:
             print("❌ No districts")
-            return None
+            return []
 
         legislators = districts[0].get("current_legislators", [])
         district_number = districts[0].get("district_number")
@@ -76,4 +72,4 @@ def get_representatives_from_address(address):
 
     except Exception as e:
         print("❌ Parsing error:", e)
-        return None   # ✅ FIX
+        return []

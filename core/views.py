@@ -7,7 +7,7 @@ from .forms import CustomUserRegister, EmailLoginForm
 from .services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
 from core.services.bill_service import get_bill_headers
-from .models import Representative, Profile, rep_detail, BillHeader
+from .models import Representative, Profile, rep_detail
 
 
 def homepage(request):
@@ -35,51 +35,21 @@ def dashboard(request):
         profile.save()
         print("✅ Profile updated")
 
-    # =========================
-    # ✅ BILL API (SAFE)
-    # =========================
+    # Bill API
     try:
         get_bill_headers()
     except Exception as e:
         print("BILL API ERROR:", e)
 
-    # =========================
-    # ✅ BILL SEARCH (FIX TESTS)
-    # =========================
-    query = request.GET.get("q")
-    congress = request.GET.get("congress")
-    bill_type = request.GET.get("bill_type")
-
-    bills = BillHeader.objects.all()
-
-    if query:
-        bills = bills.filter(title__icontains=query)
-
-    if congress:
-        bills = bills.filter(congress=congress)
-
-    if bill_type:
-        bills = bills.filter(type=bill_type)
-
-    # =========================
-    # ADDRESS BUILD
-    # =========================
+    # Build address
     address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
     print("ADDRESS:", address)
 
-    # =========================
-    # GEOCODIO API (SAFE)
-    # =========================
+    # Geocodio API
     reps_data = get_representatives_from_address(address)
-
-    if reps_data is None:
-        reps_data = []
-
     print("REPS DATA:", reps_data)
 
-    # =========================
-    # SAVE REPS
-    # =========================
+    # Save reps
     for rep in reps_data:
 
         if not rep.get("bioguide_id"):
@@ -99,9 +69,7 @@ def dashboard(request):
             }
         )
 
-        # =========================
-        # CONGRESS API
-        # =========================
+        # Congress API
         try:
             member_details = get_member_details(rep["bioguide_id"])
         except Exception:
@@ -126,8 +94,7 @@ def dashboard(request):
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "page": "dashboard",
-        "reps": reps,
-        "bills": bills,  # ✅ IMPORTANT FOR TESTS
+        "reps": reps
     })
 
 
@@ -144,10 +111,7 @@ def registration(request):
 
         if form.is_valid():
             user = form.save()
-
-            # ✅ FIX LOGIN BACKEND ERROR
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
+            login(request, user)
             return redirect("dashboard")
     else:
         form = CustomUserRegister()
@@ -186,11 +150,5 @@ def login_view(request):
 
 @require_POST
 def accountlogout(request):
-    # ✅ FIX: CLEAR USER REPS BEFORE LOGOUT
-    if request.user.is_authenticated:
-        reps = Representative.objects.filter(constituents=request.user)
-        for rep in reps:
-            rep.constituents.remove(request.user)
-
     logout(request)
     return redirect("homepage")
