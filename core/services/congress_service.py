@@ -28,7 +28,7 @@ def get_member_details(bioguide_id):
         return None
 
     data = response.json()
-    #print("CONGRESS RAW JSON:", data)
+    print("CONGRESS RAW JSON:", data)
 
     member = data.get("member")
     if not member:

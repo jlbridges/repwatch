@@ -1,76 +1,35 @@
-import os
 import requests
 from django.conf import settings
 from core.models import BillHeader
 
 
-BASE_URL = "https://api.congress.gov/v3/bill"
-
-
 def get_bill_headers():
-    """
-    Fetch bill data from Congress API and save to BillHeader model
-    """
-
-    api_key = getattr(settings, "CONGRESS_API_KEY", None)
-
-    if not api_key:
-        print("❌ Missing CONGRESS_API_KEY")
-        return []
-
+    url = "https://api.congress.gov/v3/bill"
+    
     params = {
-        "api_key": api_key,
-        "format": "json",
-        "limit": 10  # you can increase later
+        "api_key": settings.CONGRESS_API_KEY,
+        "format": "json"
     }
 
-    try:
-        response = requests.get(BASE_URL, params=params, timeout=10)
-    except requests.RequestException as e:
-        print("❌ Request error:", e)
-        return []
+    response = requests.get(url, params=params)
 
-    if response.status_code != 200:
-        print("❌ Bad response:", response.status_code)
-        return []
+    if response.status_code == 200:
+        data = response.json()
 
-    data = response.json()
+        bills = data.get("bills", [])
 
-    bills = data.get("bills", [])
-
-    if not bills:
-        print("❌ No bills returned")
-        return []
-
-    saved_bills = []
-
-    for bill in bills:
-
-        try:
-            number = bill.get("number")
-            congress = bill.get("congress")
-            bill_type = bill.get("type")
-            origin = bill.get("originChamberCode")
-            title = bill.get("title")
-
-            if not number or not congress:
-                continue
-
-            obj, created = BillHeader.objects.update_or_create(
-                number=number,
-                congress=congress,
-                type=bill_type,
+        for bill in bills:
+            BillHeader.objects.update_or_create(
+                number=bill.get("number"),
+                congress=bill.get("congress"),
+                type=bill.get("type"),
                 defaults={
-                    "originChamberCode": origin,
-                    "title": title,
+                    "originChamberCode": bill.get("originChamber"),
+                    "title": bill.get("title"),
                 }
             )
 
-            saved_bills.append(obj)
+        print("Bills saved successfully")
 
-        except Exception as e:
-            print("❌ Error saving bill:", e)
-
-    print("✅ Bills saved successfully")
-
-    return saved_bills
+    else:
+        print("Error fetching bills")
