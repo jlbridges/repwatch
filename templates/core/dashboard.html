@@ -2,54 +2,50 @@
 {% load static %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1">
-
-<style>
-.rep-card {
-    border-radius: 10px;
-    background-color: #f8f9fa;
-    transition: 0.2s;
-}
-
-.rep-card:hover {
-    cursor: pointer;
-    background-color: #e9ecef;
-}
-</style>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1">
 {% endblock %}
 
 {% block content %}
 <div class="container px-1">
 
-    <!-- HEADER -->
     <div class="section1 pb-3">
-        <h2>Your Dashboard</h2>
-        <p>Track representatives, search legislation, and stay informed</p>
+        <div class="heading">
+            <p>Your Dashboard</p>
+        </div>
+        <div class="paragraph">
+            <p>Track representatives and stay informed</p>
+        </div>
     </div>
 
-    <!-- NAV -->
-    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3">
+    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3"
+        id="dashboardTab" role="tablist">
 
         <li class="nav-item">
-            <button class="nav-link active rounded-5"
-                    data-bs-toggle="tab"
-                    data-bs-target="#overview">
+            <button class="nav-link active rounded-5" data-bs-toggle="tab" data-bs-target="#overview">
                 Overview
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5"
-                    data-bs-toggle="tab"
-                    data-bs-target="#myreps">
+            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#myreps">
                 My Reps
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5"
-                    data-bs-toggle="tab"
-                    data-bs-target="#setting">
+            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#mybills">
+                My Bills
+            </button>
+        </li>
+
+        <li class="nav-item">
+            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#mysearch">
+                My Search
+            </button>
+        </li>
+
+        <li class="nav-item">
+            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#setting">
                 Settings
             </button>
         </li>
@@ -58,154 +54,359 @@
 
     <div class="tab-content">
 
-        <!-- ================= OVERVIEW ================= -->
+        <!-- Overview -->
         <div class="tab-pane fade show active" id="overview">
-
             <div class="row g-4 mt-2 py-4">
 
                 <div class="col-md-6">
-                    <div class="overview-box p-3">
-
-                        <h5>Your Representatives</h5>
+                    <div class="overview-box">
+                        <p class="text-start fs-5">Your Representatives</p>
 
                         {% for rep in reps %}
-                        <div onclick="showMyRepsTab()"
-                             class="rep-card mb-2 p-3">
+                            <div class="rep-card mb-2 p-3">
+                                <div class="d-flex justify-content-between align-items-center">
 
-                            <div class="d-flex align-items-center gap-3">
+                                    <div class="rep-info">
+                                        <div class="rep-name">
+                                            {{ rep.first_name }} {{ rep.last_name }}
+                                        </div>
 
-                                <img src="{{ rep.photo_url|default:'/static/images/default.jpg' }}"
-                                     alt="photo"
-                                     style="width:60px; height:60px; object-fit:cover; border-radius:10px;">
+                                        <div class="rep-role text-muted">
+                                            {% if rep.type|lower == 'representative' %}
+                                                {{ rep.state }} - District {{ rep.district_number }}
+                                            {% else %}
+                                                {{ rep.state }} - U.S. Senator
+                                            {% endif %}
+                                        </div>
+                                    </div>
 
-                                <strong>{{ rep.first_name }} {{ rep.last_name }}</strong>
+                                    <div class="rep-party-container">
+                                        <span class="rep-party">{{ rep.party }}</span>
+                                    </div>
 
+                                </div>
                             </div>
-
-                        </div>
                         {% empty %}
-                        <p>No representatives found yet.</p>
+                            <p>No representatives found yet.</p>
                         {% endfor %}
 
                     </div>
                 </div>
 
-            </div>
-
-        </div>
-
-        <!-- ================= MY REPS ================= -->
-        <div class="tab-pane fade" id="myreps">
-
-            <div class="row g-4 mt-2 py-4">
-
-                {% for rep in reps %}
                 <div class="col-md-6">
+                    <div class="overview-box">
+                        <p class="text-start fs-5">Tracked Legislation</p>
 
-                    <div class="rep-card p-3">
-
-                        <div class="d-flex justify-content-between align-items-center">
-
-                            <div class="d-flex align-items-center gap-3">
-
-                                <img src="{{ rep.photo_url|default:'/static/images/default.jpg' }}"
-                                     alt="photo"
-                                     style="width:80px; height:80px; object-fit:cover; border-radius:10px;">
-
-                                <strong>{{ rep.first_name }} {{ rep.last_name }}</strong>
-
-                            </div>
-
-                            <button class="btn btn-sm btn-secondary"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#repDetails{{ rep.Bioguide_id }}">
-                                View More
-                            </button>
-
-                        </div>
-
-                        <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
-
-                            {% for detail in rep.rep_details.all %}
-                                <p><strong>Congress:</strong> {{ detail.congress }}</p>
-                                <p><strong>State:</strong> {{ rep.state }}</p>
-                                <p><strong>District:</strong> {{ rep.district_number }}</p>
-                                <p><strong>Party:</strong> {{ rep.party }}</p>
-                                <p><strong>Type:</strong> {{ rep.type }}</p>
-
-                                <p>
-                                    <strong>Sponsorships:</strong>
-                                    Sponsored {{ detail.count_sponsoredLegislation|default:"0" }},
-                                    Cosponsored {{ detail.count_cosponsoredLegislation|default:"0" }}
-                                </p>
-
-                                {% if detail.officialWebsiteUrl %}
-                                <p>
-                                    <a href="{{ detail.officialWebsiteUrl }}" target="_blank">
-                                        Official Website
-                                    </a>
-                                </p>
-                                {% endif %}
-
-                            {% empty %}
-                                <p>No details available</p>
+                        {% if bills %}
+                            {% for bill in bills %}
+                                <div class="bill-card mb-2 p-2">
+                                    <strong>{{ bill.title }}</strong>
+                                </div>
                             {% endfor %}
-
-                        </div>
+                        {% else %}
+                            <p>No bills found.</p>
+                        {% endif %}
 
                     </div>
-
                 </div>
+
+            </div>
+        </div>
+
+        <!-- My Reps -->
+        <div class="tab-pane fade" id="myreps">
+            <div class="row g-4 mt-2 py-4">
+
+                {% for rep in user.representative_set.all %}
+                    <div class="col-md-6">
+                        <div class="reps-box d-flex flex-column">
+                            <div class="rep-card mb-2 p-3">
+
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="{{ rep.photo_url }}" class="rep-photo rounded shadow">
+                                        <div class="rep-name">
+                                            {{ rep.first_name }} {{ rep.last_name }}
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-sm btn-secondary"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#repDetails{{ rep.Bioguide_id }}">
+                                        View More
+                                    </button>
+
+                                </div>
+
+                                <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
+                                    {% for detail in rep.rep_details.all %}
+                                        <p><strong>Congress:</strong> {{ detail.congress }}</p>
+                                        <p><strong>State:</strong> {{ rep.state }}</p>
+                                        <p><strong>District:</strong> {{ rep.name }}</p>
+                                        <p><strong>Party:</strong> {{ rep.party }}</p>
+                                        <p><strong>Type:</strong> {{ rep.type }}</p>
+                                        <p>
+                                            <strong>Sponsorships:</strong>
+                                            Sponsored {{ detail.count_sponsoredLegislation|default:"0" }},
+                                            Cosponsored {{ detail.count_cosponsoredLegislation|default:"0" }}
+                                        </p>
+
+                                        {% if detail.officialWebsiteUrl %}
+                                            <p>
+                                                <a href="{{ detail.officialWebsiteUrl }}" target="_blank">
+                                                    Official Website
+                                                </a>
+                                            </p>
+                                        {% endif %}
+
+                                        {% if detail.contact_form %}
+                                            <p>Contact: {{ detail.contact_form }}</p>
+                                        {% endif %}
+
+                                    {% empty %}
+                                        <p>No member details available</p>
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 {% empty %}
-                <p>No representatives found yet.</p>
+                    <p>No representatives found yet.</p>
                 {% endfor %}
 
             </div>
-
         </div>
 
-        <!-- ================= SETTINGS ================= -->
-        <div class="tab-pane fade" id="setting">
+        <!-- My Bills -->
+        <div class="tab-pane fade" id="mybills">
+            <p>My Bills Section</p>
+        </div>
 
+        <!-- Search -->
+        <div class="tab-pane fade" id="mysearch">
+
+            <form method="GET" action="{% url 'dashboard' %}">
+
+                <div class="search-box legislation-search-layout">
+                    <div class="row g-4">
+
+                        <div class="col-lg-4">
+                            <div class="search-filters-panel">
+
+                                <h5 class="section-title mb-3">Search Filters</h5>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Keyword</label>
+                                    <input type="text" name="q" class="form-control">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Congress</label>
+                                    <select name="congress" class="form-select">
+                                        <option value="">All Congress</option>
+                                        <option value="118">118</option>
+                                        <option value="119">119</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Bill Type</label>
+                                    <select name="bill_type" class="form-select">
+                                        <option value="">All Types</option>
+                                        <option value="h">House</option>
+                                        <option value="s">Senate</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 mt-2">
+                                    Search
+                                </button>
+
+                            </div>
+                        </div>
+
+                    <!-- Results -->
+                        <div class="col-lg-8">
+                            <div class="search-results-panel">
+
+                                <div class="results-header">
+                                    <h5 class="section-title mb-0">Bills</h5>
+                                    <span class="results-count">Results</span>
+                                </div>
+
+                                <div class="bill-list">
+                                    {% for bill in bills %}
+                                        <div class="bill-card">
+
+                                            <div class="bill-card-top">
+                                                <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
+                                                <span class="bill-status">
+                                                    {{ bill.bill_details.first.bill_status }}
+                                                </span>
+                                            </div>
+
+                                            <h6 class="bill-title">{{ bill.title }}</h6>
+
+                                            <div class="bill-meta">
+                                                <span>Congress: {{ bill.congress }}</span>
+                                                <span>{{ bill.originChamberCode }}</span>
+                                                <span>{{ bill.bill_details.first.introducedDate }}</span>
+                                            </div>
+
+                                            <p class="bill-summary">
+                                                {{ bill.bill_details.first.bill_summary }}
+                                            </p>
+
+                                            <div class="bill-card-actions">
+                                                <button type="button" class="btn btn-primary btn-sm save-bill-btn">
+                                                    Save Bill
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <p class="text-muted mb-0">No bills found.</p>
+                                    {% endfor %}
+                                </div>
+
+                            </div>    
+                        </div>
+                        
+                    </div>    
+                </div>
+
+            </form>
+              
+        </div>
+
+        <!-- Settings -->
+        <div class="tab-pane fade" id="setting">
             <div class="row g-4 mt-2 py-4">
                 <div class="col-12">
+                    <div class="settings-box">
+                        <p class="text-start fs-5 mb-3">Account Settings</p>
 
-                    <form method="POST">
-                        {% csrf_token %}
+                        <!-- Personal Info -->
+                        <form action="{% url 'dashboard' %}" method="post" class="settings-form p-4">
+                            {% csrf_token %}
+                            <input type="hidden" name="hidden_id" id="hidden_id" value="{{ user.id }}">
 
-                        <h5>Update Address</h5>
+                            <h5 class="section-title mb-4">My Personal Info</h5>
 
-                        <input type="text" name="address_line1" placeholder="Address" class="form-control mb-2">
-                        <input type="text" name="city" placeholder="City" class="form-control mb-2">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="id_first_name" class="form-label">First Name</label>
+                                    <input type="text" name="first_name" id="id_first_name"
+                                           class="form-control" value="{{ user.first_name }}">
+                                </div>
 
-                        <select name="state" class="form-control mb-2">
-                            <option value="NC">NC</option>
-                        </select>
+                                <div class="col-md-6">
+                                    <label for="id_last_name" class="form-label">Last Name</label>
+                                    <input type="text" name="last_name" id="id_last_name"
+                                           class="form-control" value="{{ user.last_name }}">
+                                </div>
 
-                        <input type="text" name="zipcode" placeholder="Zip Code" class="form-control mb-2">
+                                <div class="col-md-12">
+                                    <label for="id_email" class="form-label">Email</label>
+                                    <input type="email" name="email" id="id_email"
+                                           class="form-control" value="{{ user.email }}">
+                                </div>
+                            </div>
 
-                        <button type="submit" class="btn btn-primary">
-                            Save Address
-                        </button>
+                            <div class="settings-form-actions">
+                                <button type="submit"
+                                        class="btn px-4 flex-shrink-0"
+                                        style="background-color: #1d1066; color: white !important; border: none;">
+                                    Save New Personal Info
+                                </button>
+                            </div>
+                        </form>
 
-                    </form>
+                        <div class="settings-divider"></div>
 
+                        <!-- Address -->
+                        <form action="{% url 'dashboard' %}" method="post" class="settings-form p-4">
+                            {% csrf_token %}
+
+                            <h5 class="section-title mb-4">My Current Address</h5>
+
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="id_address_line1" class="form-label">Address Line 1</label>
+                                    <input type="text" name="address_line1" id="id_address_line1"
+                                           class="form-control" value="{{ user.profile.address_line1|default:'' }}">
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="id_address_line2" class="form-label">Address Line 2</label>
+                                    <input type="text" name="address_line2" id="id_address_line2"
+                                           class="form-control" value="{{ user.profile.address_line2|default:'' }}">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="id_city" class="form-label">City</label>
+                                    <input type="text" name="city" id="id_city"
+                                           class="form-control" value="{{ user.profile.city|default:'' }}">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="id_state" class="form-label">State</label>
+                                    <select name="state" id="id_state" class="form-select">
+                                        <option value="NC" {% if user.profile.state == "NC" %}selected{% endif %}>NC</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="id_zipcode" class="form-label">Zip Code</label>
+                                    <input type="text" name="zipcode" id="id_zipcode"
+                                           class="form-control" value="{{ user.profile.zipcode|default:'' }}">
+                                </div>
+                            </div>
+
+                            <div class="settings-form-actions">
+                                <button type="submit"
+                                        class="btn px-4 flex-shrink-0"
+                                        style="background-color: #1d1066; color: white !important; border: none;">
+                                    Save New Address
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="settings-divider"></div>
+
+                        <!-- Password change CTA -->
+                        <div class="settings-section p-4">
+                            <h5 class="section-title mb-2">My Password</h5>
+                            <p class="text-muted mb-3">
+                                Would you like to change your password?
+                            </p>
+
+                            <a href="{% url 'passwordChange' %}" class="btn btn-secondary">
+                                Change My Password
+                            </a>
+                        </div>
+
+                        <div class="settings-divider"></div>
+
+                        <!-- Delete Profile -->
+                        <div class="settings-section p-4">
+                            <h5 class="section-title text-danger mb-2">Delete My Profile</h5>
+                            <p class="text-muted mb-3">
+                                This action will permanently delete your profile and cannot be undone.
+                            </p>
+
+                            <button type="button" class="btn btn-outline-danger">
+                                Delete My Profile
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-
         </div>
 
     </div>
 </div>
-
-<!-- 🔥 TAB SWITCH FIX -->
-<script>
-function showMyRepsTab() {
-    var trigger = document.querySelector('[data-bs-target="#myreps"]');
-    var tab = new bootstrap.Tab(trigger);
-    tab.show();
-}
-</script>
-
 {% endblock %}
