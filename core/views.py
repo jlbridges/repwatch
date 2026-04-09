@@ -3,11 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
-from .forms import CustomUserRegister, EmailLoginForm
+from .forms import CustomUserRegister, EmailLoginForm, User
 from .services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
 from core.services.bill_service import get_bill_headers
-from .models import Representative, Profile, rep_detail
+from .models import Representative, Profile, rep_detail, BillHeader
 
 
 # Homepage
@@ -24,26 +24,62 @@ def homepage(request):
 @login_required
 def dashboard(request):
     user = request.user
+    profile = Profile.objects.get(user=user)
 
-    # 🔥 Make sure profile exists
-    profile, created = Profile.objects.get_or_create(user=user)
 
-    # 🔥 HANDLE POST (THIS WAS MISSING)
-    if request.method == "POST":
-        profile.address_line1 = request.POST.get("address_line1", "")
-        profile.address_line2 = request.POST.get("address_line2", "")
-        profile.city = request.POST.get("city", "")
-        profile.state = request.POST.get("state", "")
-        profile.zipcode = request.POST.get("zipcode", "")
-        profile.save()
+    try:
+        profile = Profile.objects.get(user=user)
+        if(request.POST.get('hidden_id')):
+          user_id = request.POST.get('hidden_id')          
+          postedUser  = User.objects.get(pk=user_id)                   
+       
+        hasProfileChanged = check_Profile_changed(request)
+        hasAccountChanged = check_Account_changed(request)
 
-        print("✅ PROFILE UPDATED")
+        if (hasProfileChanged):
+           updateProfileData(profile, request)
+           clear_user_reps(user)
+
+        if (hasAccountChanged):
+           updateUserData(postedUser, request)
+           clear_user_reps(user)
+
+           return redirect('dashboard')
+
+    except Profile.DoesNotExist:
+        profile = None     #handling none returns in test cases where profile is not created yet
+
+
+
+
 
     # 🔥 Call Bill API (working already)
     try:
         get_bill_headers()
     except Exception as e:
         print("BILL API ERROR:", e)
+
+    # =========================
+    # ✅ BILL SEARCH (FIX TESTS)
+    # =========================
+    query = request.GET.get("q")
+    congress = request.GET.get("congress")
+    bill_type = request.GET.get("bill_type")
+
+    bills = BillHeader.objects.all()
+
+    if query:
+        bills = bills.filter(title__icontains=query)
+
+    if congress:
+        bills = bills.filter(congress=congress)
+
+    if bill_type:
+        bills = bills.filter(type=bill_type)
+
+    
+
+    
 
     # 🔥 Build address
     address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
@@ -54,28 +90,27 @@ def dashboard(request):
     print("REPS DATA:", reps_data)
 
     # 🔥 Save representatives
-    for rep in reps_data:
+    if not reps_data:
+        reps_data = []
 
-        if not rep.get("bioguide_id"):
-            continue
-
+    for reps in reps_data:
         rep_obj, _ = Representative.objects.update_or_create(
-            Bioguide_id=rep["bioguide_id"],
+            Bioguide_id=reps["bioguide_id"],
             defaults={
-                "name": rep.get("name"),
-                "district_number": rep.get("district_number"),
-                "first_name": rep.get("first_name"),
-                "last_name": rep.get("last_name"),
+                "name": reps.get("name"),
+                "district_number": reps.get("district_number"),
+                "first_name": reps.get("first_name"),
+                "last_name": reps.get("last_name"),
                 "state": profile.state,
-                "party": rep.get("party"),
-                "type": rep.get("type"),
-                "photo_url": rep.get("photo_url"),
+                "party": reps.get("party"),
+                "type": reps.get("type"),
+                "photo_url": reps.get("photo_url"),
             }
         )
 
         # 🔥 Congress API
         try:
-            member_details = get_member_details(rep["bioguide_id"])
+            member_details = get_member_details(reps["bioguide_id"])
         except Exception as e:
             print("CONGRESS API ERROR:", e)
             member_details = {}
@@ -88,7 +123,6 @@ def dashboard(request):
                 "count_sponsoredLegislation": member_details.get("sponsored_legislation") or 0,
                 "count_cosponsoredLegislation": member_details.get("cosponsored_legislation") or 0,
                 "officialWebsiteUrl": member_details.get("official_website"),
-                "contact_form": member_details.get("contact_form"),
             }
         )
 
@@ -100,8 +134,11 @@ def dashboard(request):
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "page": "dashboard",
-        "reps": reps
+        "reps": reps,
+        "bills": bills,
     })
+
+# add in code to pass  
 
 
 # About
@@ -119,7 +156,8 @@ def registration(request):
 
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+
             return redirect("dashboard")
     else:
         form = CustomUserRegister()
@@ -130,6 +168,16 @@ def registration(request):
         "page": "signup",
     })
 
+
+def clear_user_reps(user):
+    reps = Representative.objects.filter(constituents=user)
+
+    for rep in reps:
+        rep.constituents.remove(user)
+
+        # delete rep if no users remain
+        if rep.constituents.count() == 0:
+            rep.delete()
 
 # Login
 def login_view(request):
@@ -143,7 +191,9 @@ def login_view(request):
             user = authenticate(request, username=email, password=password)
 
             if user:
-                login(request, user)
+                clear_user_reps(user)
+
+                login(request, user, backend="django.contrib.auth.backends.ModelBackend")
                 return redirect("dashboard")
             else:
                 form.add_error(None, "Invalid email or password")
@@ -157,8 +207,95 @@ def login_view(request):
     })
 
 
+# Richard Functions for changing user settings
+def updateProfileData(profile, request):    
+    if request.POST.get("address_line1"):        
+        profile.address_line1 = request.POST.get('address_line1')
+
+    if request.POST.get('address_line2'):
+        profile.address_line2 = request.POST.get('address_line2')
+
+    if request.POST.get('city'):
+        profile.city = request.POST.get('city')
+
+    if request.POST.get('state'):      
+       profile.state = 'NC'
+
+    if request.POST.get('zipcode'):       
+        profile.zipcode = request.POST.get('zipcode')
+
+    profile.save()
+
+def updateUserData (postedUser, request):
+    if request.POST.get('first_name'):        
+        postedUser.first_name = request.POST.get('first_name').strip()
+
+    if request.POST.get('last_name'):
+        postedUser.last_name =  request.POST.get('last_name').strip()  
+
+    if request.POST.get('email'):       
+        postedUser.email = request.POST.get('email').strip()
+
+    postedUser.save()  
+  
+
+
 # Logout
+
+# Update to clear reps on logout so a fresh call may be made on login.
+
 @require_POST
 def accountlogout(request):
     logout(request)
+    
+    if request.user.is_authenticated:
+        user = request.user
+
+        # Remove user from representatives (ManyToMany)
+        reps = Representative.objects.filter(constituents=user)
+
+        for rep in reps:
+            rep.constituents.remove(user)
+
+            # OPTIONAL: delete rep if no more users attached
+            if rep.constituents.count() == 0:
+                rep.delete()
+
+    logout(request)
     return redirect("homepage")
+
+
+# Richard functions for checking if user has made changes to profile or account settings. 
+# This is used to determine whether to update the database or not, 
+# and to prevent unnecessary database writes when no changes have been made.
+def check_Profile_changed(request):
+        hasValue = False       
+        if request.POST.get("address_line1"):
+            hasValue - True
+
+        if request.POST.get('address_line2'):
+            hasValue = True
+
+        if request.POST.get('city'):
+            hasValue = True
+
+        if request.POST.get('state'):
+            hasValue = True
+
+        if request.POST.get('zipecode'):
+            hasValue = True 
+
+        return hasValue
+
+def check_Account_changed(request):
+        hasChanged = False
+        if request.POST.get('first_name'):
+            hasChanged = True
+
+        if request.POST.get('last_name'):
+            hasChanged = True
+
+        if request.POST.get('email'):
+            hasChanged =  True
+            
+        return hasChanged
