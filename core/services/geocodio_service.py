@@ -27,7 +27,7 @@ def get_representatives_from_address(address):
         return None
 
     data = response.json()
-    print("GEOCODIO RAW:", data)
+    #print("GEOCODIO RAW:", data)
 
     try:
         results = data.get("results", [])
@@ -66,7 +66,7 @@ def get_representatives_from_address(address):
 
             reps.append(rep_data)
 
-        print("✅ PARSED REPS:", reps)
+        #print("✅ PARSED REPS:", reps)
         return reps
 
     except Exception as e:

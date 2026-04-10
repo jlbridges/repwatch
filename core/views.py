@@ -55,7 +55,7 @@ def dashboard(request):
 
     # 🔥 Call Bill API (working already)
     try:
-        get_bill_headers()
+     bills = get_bill_headers()
     except Exception as e:
         print("BILL API ERROR:", e)
 
@@ -66,7 +66,7 @@ def dashboard(request):
     congress = request.GET.get("congress")
     bill_type = request.GET.get("bill_type")
 
-    bills = BillHeader.objects.all()
+    #bills = BillHeader.objects.all()
 
     if query:
         bills = bills.filter(title__icontains=query)
@@ -76,18 +76,18 @@ def dashboard(request):
 
     if bill_type:
         bills = bills.filter(type=bill_type)
-
+    print(bills)
     
 
     
 
     # 🔥 Build address
     address = f"{profile.address_line1}, {profile.city}, {profile.state} {profile.zipcode}"
-    print("ADDRESS:", address)
+   #print("ADDRESS:", address)
 
     # 🔥 Call Geocodio
     reps_data = get_representatives_from_address(address)
-    print("REPS DATA:", reps_data)
+    #print("REPS DATA:", reps_data)
 
     # 🔥 Save representatives
     if not reps_data:
@@ -299,3 +299,4 @@ def check_Account_changed(request):
             hasChanged =  True
             
         return hasChanged
+
