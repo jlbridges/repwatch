@@ -1,5 +1,19 @@
 @import url('theme.css');
 
+/* Sticky footer layout */
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
 /* Universal smooth transitions - applies to all elements */
 * {
     transition: background-color 0.25s ease-out, color 0.25s ease-out, border-color 0.25s ease-out, border 0.25s ease-out;

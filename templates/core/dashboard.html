@@ -8,7 +8,7 @@
 {% block content %}
 <div class="container px-1">
 
-    <div class="section1 pb-3">
+    <div class="section1 pb-2">
         <div class="heading">
             <p>Your Dashboard</p>
         </div>
@@ -56,7 +56,7 @@
 
         <!-- Overview -->
         <div class="tab-pane fade show active" id="overview">
-            <div class="row g-4 mt-2 py-4">
+            <div class="row g-4 mt-1 py-1">
 
                 <div class="col-md-6">
                     <div class="overview-box">
@@ -115,7 +115,7 @@
 
         <!-- My Reps -->
         <div class="tab-pane fade" id="myreps">
-            <div class="row g-4 mt-2 py-4">
+            <div class="row g-4 mt-1 py-1">
 
                 {% for rep in user.representative_set.all %}
                     <div class="col-md-6">
@@ -182,108 +182,161 @@
 
         <!-- My Bills -->
         <div class="tab-pane fade" id="mybills">
-            <p>My Bills Section</p>
+            <div class="row g-4 mt-1 py-1">
+                {% for bill in user.bill_set.all %}
+                    <div class="col-md-6">
+                        <div class="my-bills-box">
+                            <div class="bill-card-top">
+                                <div>
+                                    <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
+                                    <span class="bill-status">
+                                        {{ bill.bill_details.first.bill_status }}
+                                    </span>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger">Remove</button>
+                            </div>
+
+                            <h6 class="bill-title">{{ bill.title }}</h6>
+
+                            <div class="bill-meta">
+                                <span>Congress: {{ bill.congress }}</span>
+                                <span>{{ bill.originChamberCode }}</span>
+                            </div>
+
+                            {% if bill.sponsor %}
+                                <p class="bill-sponsor">
+                                    <strong>Sponsor:</strong> {{ bill.sponsor }}
+                                </p>
+                            {% endif %}
+
+                            {% if bill.bill_details.first.introducedDate %}
+                                <p class="bill-introduced">
+                                    <strong>Introduced:</strong> {{ bill.bill_details.first.introducedDate }}
+                                </p>
+                            {% endif %}
+
+                            <p class="bill-summary">
+                                <strong>Summary:</strong> {{ bill.bill_details.first.bill_summary }}
+                            </p>
+
+                            {% if bill.bill_details.first.latest_action %}
+                                <p class="bill-latest-action">
+                                    <strong>Latest Action:</strong> {{ bill.bill_details.first.latest_action }}
+                                </p>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <p class="text-muted mb-0">No saved bills yet.</p>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
 
         <!-- Search -->
         <div class="tab-pane fade" id="mysearch">
+            <div class="row g-4 mt-1 py-1">
 
-            <form method="GET" action="{% url 'dashboard' %}">
+                <form method="GET" action="{% url 'dashboard' %}">
 
-                <div class="search-box legislation-search-layout">
-                    <div class="row g-4">
+                    <div class="search-box legislation-search-layout">
+                        <div class="row g-4">
 
-                        <div class="col-lg-4">
-                            <div class="search-filters-panel">
+                            <div class="col-lg-4">
+                                <div class="search-filters-panel">
 
-                                <h5 class="section-title mb-3">Search Filters</h5>
+                                    <h5 class="section-title mb-3">Search Filters</h5>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Keyword</label>
-                                    <input type="text" name="q" class="form-control">
+                                    <div class="mb-3">
+                                        <label class="form-label">Keyword</label>
+                                        <input type="text" name="q" class="form-control">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Congress</label>
+                                        <select name="congress" class="form-select">
+                                            <option value="">All Congress</option>
+                                            <option value="118">118</option>
+                                            <option value="119">119</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Bill Type</label>
+                                        <select name="bill_type" class="form-select">
+                                            <option value="">All Types</option>
+                                            <option value="h">House</option>
+                                            <option value="s">Senate</option>
+                                        </select>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary w-100 mt-2 search-btn">
+                                        Search
+                                    </button>
+
                                 </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Congress</label>
-                                    <select name="congress" class="form-select">
-                                        <option value="">All Congress</option>
-                                        <option value="118">118</option>
-                                        <option value="119">119</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Bill Type</label>
-                                    <select name="bill_type" class="form-select">
-                                        <option value="">All Types</option>
-                                        <option value="h">House</option>
-                                        <option value="s">Senate</option>
-                                    </select>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary w-100 mt-2">
-                                    Search
-                                </button>
-
                             </div>
+
+                        <!-- Results -->
+                            <div class="col-lg-8">
+                                <div class="search-results-panel">
+
+                                    <div class="results-header">
+                                        <h5 class="section-title mb-0">Bills</h5>
+                                        <span class="results-count">Results</span>
+                                    </div>
+
+                                    <div class="bill-list">
+                                        {% for bill in bills %}
+                                            <div class="bill-card">
+
+                                                <div class="bill-card-top">
+                                                    <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
+                                                    <span class="bill-status">
+                                                        {{ bill.bill_details.first.bill_status }}
+                                                    </span>
+                                                </div>
+
+                                                <h6 class="bill-title">{{ bill.title }}</h6>
+
+                                                <div class="bill-meta">
+                                                    <span>Congress: {{ bill.congress }}</span>
+                                                    <span>{{ bill.originChamberCode }}</span>
+                                                    <span>{{ bill.bill_details.first.introducedDate }}</span>
+                                                </div>
+
+                                                <p class="bill-summary">
+                                                    {{ bill.bill_details.first.bill_summary }}
+                                                </p>
+
+                                                <div class="bill-card-actions">
+                                                    <button type="button" class="btn btn-primary btn-sm save-bill-btn">
+                                                        Save Bill
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        {% empty %}
+                                            <p class="text-muted mb-0">No bills found.</p>
+                                        {% endfor %}
+                                    </div>
+
+                                </div>    
+                            </div>
+
                         </div>
+                    </div>
 
-                    <!-- Results -->
-                        <div class="col-lg-8">
-                            <div class="search-results-panel">
+                </form>
 
-                                <div class="results-header">
-                                    <h5 class="section-title mb-0">Bills</h5>
-                                    <span class="results-count">Results</span>
-                                </div>
+            </div>
 
-                                <div class="bill-list">
-                                    {% for bill in bills %}
-                                        <div class="bill-card">
-
-                                            <div class="bill-card-top">
-                                                <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
-                                                <span class="bill-status">
-                                                    {{ bill.bill_details.first.bill_status }}
-                                                </span>
-                                            </div>
-
-                                            <h6 class="bill-title">{{ bill.title }}</h6>
-
-                                            <div class="bill-meta">
-                                                <span>Congress: {{ bill.congress }}</span>
-                                                <span>{{ bill.originChamberCode }}</span>
-                                                <span>{{ bill.bill_details.first.introducedDate }}</span>
-                                            </div>
-
-                                            <p class="bill-summary">
-                                                {{ bill.bill_details.first.bill_summary }}
-                                            </p>
-
-                                            <div class="bill-card-actions">
-                                                <button type="button" class="btn btn-primary btn-sm save-bill-btn">
-                                                    Save Bill
-                                                </button>
-                                            </div>
-                                        </div>
-                                    {% empty %}
-                                        <p class="text-muted mb-0">No bills found.</p>
-                                    {% endfor %}
-                                </div>
-
-                            </div>    
-                        </div>
-                        
-                    </div>    
-                </div>
-
-            </form>
-              
         </div>
 
         <!-- Settings -->
         <div class="tab-pane fade" id="setting">
-            <div class="row g-4 mt-2 py-4">
+            <div class="row g-4 mt-1 py-1">
                 <div class="col-12">
                     <div class="settings-box">
                         <p class="text-start fs-5 mb-3">Account Settings</p>
