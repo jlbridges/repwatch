@@ -28,7 +28,7 @@ def get_member_details(bioguide_id):
         return None
 
     data = response.json()
-    print("CONGRESS RAW JSON:", data)
+    #print("CONGRESS RAW JSON:", data)
 
     member = data.get("member")
     if not member:
@@ -41,14 +41,14 @@ def get_member_details(bioguide_id):
         "state": member.get("state"),
         "official_website": member.get("officialWebsiteUrl"),
         "sponsored_legislation": (
-            member.get("sponsoredLegislation", {}).get("count")
+            member.get("sponsoredLegislation", {}).get("count",0)
             if isinstance(member.get("sponsoredLegislation"), dict)
-            else None
+            else 0
         ),
         "cosponsored_legislation": (
-            member.get("cosponsoredLegislation", {}).get("count")
+            member.get("cosponsoredLegislation", {}).get("count", 0)
             if isinstance(member.get("cosponsoredLegislation"), dict)
-            else None
+            else 0
         ),
         "party": (
             member.get("partyHistory", [{}])[0].get("partyName")
@@ -61,7 +61,7 @@ def get_member_details(bioguide_id):
             else None
         ),
         "congress": (
-            member.get("terms", [{}])[0].get("congress")
+            member.get("terms", [{}])[-1].get("congress")
             if member.get("terms")
             else None
         ),

@@ -5,15 +5,10 @@ BASE_URL = "https://api.geocod.io/v1.9/geocode"
 
 
 def get_representatives_from_address(address):
-    """
-    Calls the Geocodio API and returns structured representative data
-    matching the Representative model.
-    """
-
     api_key = os.getenv("GEOCODIO_API_KEY")
 
     if not api_key:
-        raise ValueError("GEOCODIO_API_KEY environment variable not set.")
+        raise ValueError("Missing GEOCODIO_API_KEY")
 
     params = {
         "q": address,
@@ -23,66 +18,57 @@ def get_representatives_from_address(address):
 
     try:
         response = requests.get(BASE_URL, params=params, timeout=10)
-    except requests.RequestException:
+    except requests.RequestException as e:
+        print("❌ Request failed:", e)
         return None
 
     if response.status_code != 200:
+        print("❌ Bad response:", response.status_code, response.text)
         return None
 
     data = response.json()
+    #print("GEOCODIO RAW:", data)
 
     try:
-        result = data["results"][0]
+        results = data.get("results", [])
+        if not results:
+            print("❌ No results")
+            return None
 
-        district_info = result["fields"]["congressional_districts"][0]
+        districts = results[0].get("fields", {}).get("congressional_districts", [])
+        if not districts:
+            print("❌ No districts")
+            return None
 
-        district_number = district_info["district_number"]
-        district_name = district_info.get("name")
-        congress_number = district_info.get("congress_number")
-
-        legislators = district_info["current_legislators"]
+        legislators = districts[0].get("current_legislators", [])
+        district_number = districts[0].get("district_number")
 
         reps = []
 
         for person in legislators:
+            bio = person.get("bio", {})
+            references = person.get("references", {})
 
-            if person.get("type") in ["representative", "senator"]:
+            bioguide_id = references.get("bioguide_id")
+            if not bioguide_id:
+                continue
 
-                bio = person.get("bio", {})
-                references = person.get("references", {})
+            rep_data = {
+                "bioguide_id": bioguide_id,
+                "district_number": district_number,
+                "first_name": bio.get("first_name"),
+                "last_name": bio.get("last_name"),
+                "name": f"{bio.get('first_name')} {bio.get('last_name')}",
+                "party": bio.get("party"),
+                "type": person.get("type"),
+                "photo_url": bio.get("photo_url"),
+            }
 
-                rep_data = {
+            reps.append(rep_data)
 
-                    # IDs
-                    "bioguide_id": references.get("bioguide_id"),
-                    "thomas_id": references.get("thomas_id"),
-
-                    # district info
-                    "district_number": district_number,
-                    "congress_number": congress_number,
-
-                    # names
-                    "first_name": bio.get("first_name"),
-                    "last_name": bio.get("last_name"),
-
-                    # district label
-                    "name": district_name,
-
-                    # political info
-                    "party": bio.get("party"),
-                    "type": person.get("type"),
-
-                    # image
-                    "photo_url": bio.get("photo_url"),
-
-                    # contact form (from Geocodio)
-                    "contact_form": person.get("contact_form")
-                }
-
-                reps.append(rep_data)
-
+        #print("✅ PARSED REPS:", reps)
         return reps
 
-    except (KeyError, IndexError):
+    except Exception as e:
+        print("❌ Parsing error:", e)
         return None
-    
