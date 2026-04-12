@@ -55,7 +55,7 @@
     <div class="tab-content">
 
         <!-- Overview -->
-        <div class="tab-pane fade show active" id="overview">
+        <div class="tab-pane fade {% if not request.GET.q and not request.GET.congress and not request.GET.bill_type %}show active{% endif %}" id="overview">
             <div class="row g-4 mt-1 py-1">
 
                 <div class="col-md-6">
@@ -97,14 +97,14 @@
                     <div class="overview-box">
                         <p class="text-start fs-5">Tracked Legislation</p>
 
-                        {% if bills %}
-                            {% for bill in billsDb %}
+                        {% if tracked_bills %}
+                            {% for bill in tracked_bills %}
                                 <div class="bill-card mb-2 p-2">
                                     <strong>{{ bill.title }}</strong>
                                 </div>
                             {% endfor %}
                         {% else %}
-                            <p>No bills found.</p>
+                            <p>No bills tracked yet.</p>
                         {% endif %}
 
                     </div>
@@ -183,7 +183,7 @@
         <!-- My Bills -->
         <div class="tab-pane fade" id="mybills">
             <div class="row g-4 mt-1 py-1">
-                {% for bill in user.bill_set.all %}
+                {% for bill in tracked_bills %}
                     <div class="col-md-6">
                         <div class="my-bills-box">
                             <div class="bill-card-top">
@@ -193,7 +193,12 @@
                                         {{ bill.bill_details.first.bill_status }}
                                     </span>
                                 </div>
-                                <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                <form method="POST" action="{% url 'remove_bill' bill.id %}">
+                                    {% csrf_token %}    
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Remove
+                                </button>
+                                </form>
                             </div>
 
                             <h6 class="bill-title">{{ bill.title }}</h6>
@@ -236,7 +241,7 @@
         </div>
 
         <!-- Search -->
-        <div class="tab-pane fade" id="mysearch">
+        <div class="tab-pane fade {% if request.GET.q or request.GET.congress or request.GET.bill_type %}show active{% endif %}" id="mysearch">
             <div class="row g-4 mt-1 py-1">
 
                 <form method="GET" action="{% url 'dashboard' %}">
@@ -272,12 +277,13 @@
                                         </select>
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary w-100 mt-2 search-btn">
+                                    <button type="submit" class="btn btn-primary w-100 mt-2">
                                         Search
                                     </button>
 
                                 </div>
                             </div>
+                            </form>
 
                         <!-- Results -->
                             <div class="col-lg-8">
@@ -289,7 +295,7 @@
                                     </div>
 
                                     <div class="bill-list">
-                                        {% for bill in bills %}
+                                        {% for bill in search_results %}
                                             <div class="bill-card">
 
                                                 <div class="bill-card-top">
@@ -312,9 +318,17 @@
                                                 </p>
 
                                                 <div class="bill-card-actions">
-                                                    <button type="button" class="btn btn-primary btn-sm save-bill-btn">
+                                                    <form method="POST" action="{% url 'save_bill' bill.number %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="title" value="{{ bill.title }}">
+                                                        <input type="hidden" name="congress" value="{{ bill.congress }}">
+                                                        <input type="hidden" name="type" value="{{ bill.type }}">
+                                                    
+
+                                                    <button type="submit" class="btn btn-primary btn-sm">
                                                         Save Bill
                                                     </button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         {% empty %}

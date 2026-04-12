@@ -20,6 +20,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from core import views as core_views
+from core.views.dashboard import save_bill
+from core.views.dashboard import remove_bill
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,7 +29,9 @@ urlpatterns = [
     # Your overrides FIRST
     path("accounts/signup/", core_views.registration, name="registration"),
     path("accounts/login/", core_views.login_view, name="login"),
-     path("accounts/logout/", core_views.accountlogout, name="accountlogout"),
+    path("accounts/logout/", core_views.accountlogout, name="accountlogout"),
+    path("save-bill/<str:bill_number>/", save_bill, name="save_bill"),
+    path("remove-bill/<int:bill_id>/", remove_bill, name="remove_bill"),
 
     # Allauth routes
     path("accounts/", include("allauth.urls")),

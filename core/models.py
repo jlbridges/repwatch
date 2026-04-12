@@ -77,6 +77,8 @@ class BillHeader(models.Model):
     originChamberCode = models.CharField(max_length=15, null=False, blank=True)
     type = models.CharField(max_length=10, null=False, blank=True)
     title = models.CharField(max_length=200, null=False, blank=True)
+    saved_by = models.ManyToManyField(User, blank=True)
+    
 
     def __str__(self):
         return f"{self.title}"

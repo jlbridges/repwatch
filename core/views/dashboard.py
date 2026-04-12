@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
+
 
 from core.forms import User
 from core.services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
 from core.services.bill_service import get_bill_headers
 from core.models import Representative, Profile, rep_detail
+from core.models import BillHeader
 
 from .reps_helper import clear_user_reps
 from .settings_helper import (
@@ -16,15 +18,18 @@ from .settings_helper import (
 )
 
 
+
 # Dashboard
 @login_required
 def dashboard(request):
     user = request.user
-    profile = Profile.objects.get(user=user)
+    profile, _ = Profile.objects.get_or_create(user=user)
+
+    tracked_bills = BillHeader.objects.filter(saved_by=user)
 
 
     try:
-        profile = Profile.objects.get(user=user)
+        profile, _ = Profile.objects.get_or_create(user=user)
         if(request.POST.get('hidden_id')):
           user_id = request.POST.get('hidden_id')
           postedUser  = User.objects.get(pk=user_id)
@@ -50,9 +55,10 @@ def dashboard(request):
 
     # 🔥 Call Bill API (working already)
     try:
-     bills = get_bill_headers()
+     search_results = get_bill_headers()
     except Exception as e:
         print("BILL API ERROR:", e)
+        search_results = []
 
     # =========================
     # ✅ BILL SEARCH (FIX TESTS)
@@ -64,14 +70,22 @@ def dashboard(request):
     #bills = BillHeader.objects.all()
 
     if query:
-        bills = bills.filter(title__icontains=query)
+        search_results = [
+            b for b in search_results
+            if query.lower() in (b.get("title") or "").lower()
+        ]
 
     if congress:
-        bills = bills.filter(congress=congress)
+        search_results = [
+            b for b in search_results
+            if str(b.get("congress")) == str(congress)
+        ]
 
     if bill_type:
-        bills = bills.filter(type=bill_type)
-    print(bills)
+        search_results = [
+            b for b in search_results
+            if b.get("type") == bill_type
+        ]
 
 
 
@@ -130,5 +144,41 @@ def dashboard(request):
         "show_layout": True,
         "page": "dashboard",
         "reps": reps,
-        "bills": bills,
+        "search_results": search_results,
+        "tracked_bills" : tracked_bills,
     })
+
+
+from django.views.decorators.http import require_POST
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from core.models import BillHeader
+
+
+@require_POST
+@login_required
+def save_bill(request, bill_number):
+    #Try to get bill from DB
+    bill = BillHeader.objects.filter(number=bill_number).first()
+
+    #If not found → create it
+    if not bill:
+        bill = BillHeader.objects.create(
+            number=bill_number,
+            title=request.POST.get("title", "No Title"),
+            congress=request.POST.get("congress", 0),
+            type=request.POST.get("type", ""),
+        )
+
+    # Add user
+    bill.saved_by.add(request.user)
+
+    return redirect("dashboard")
+
+
+@require_POST
+@login_required
+def remove_bill(request, bill_id):
+    bill = get_object_or_404(BillHeader, id=bill_id)
+    bill.saved_by.remove(request.user)
+    return redirect("dashboard")
