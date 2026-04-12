@@ -55,7 +55,7 @@
     <div class="tab-content">
 
         <!-- Overview -->
-        <div class="tab-pane fade {% if not request.GET.q and not request.GET.congress and not request.GET.bill_type %}show active{% endif %}" id="overview">
+        <div class="tab-pane fade {% if not request.GET.tab or request.GET.tab == 'overview' %}show active{% endif %}" id="overview">
             <div class="row g-4 mt-1 py-1">
 
                 <div class="col-md-6">
@@ -98,18 +98,40 @@
                         <p class="text-start fs-5">Tracked Legislation</p>
 
                         {% if tracked_bills %}
-                            {% for bill in tracked_bills %}
-                                <div class="bill-card mb-2 p-2">
-                                    <strong>{{ bill.title }}</strong>
-                                </div>
-                            {% endfor %}
+                            <div class="bill-list">
+
+                                {% for bill in tracked_bills %}
+                                    {% with detail=bill.bill_details.first %}
+                                    <div class="bill-card">
+
+                                        <!-- LEFT SIDE -->
+                                        <div class="bill-info">
+                                            <div class="bill-code">
+                                                {{ bill.type }}. {{ bill.number }}
+                                            </div>
+
+                                            <div class="bill-subtitle">
+                                                {{ bill.title|truncatechars:80 }}
+                                            </div>
+                                        </div>
+
+                                        <!-- RIGHT SIDE -->
+                                        <div class="bill-status-container">
+                                            <span class="bill-status">
+                                                {{ detail.bill_status|default:"Status Unknown" }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {% endwith %}
+                                {% endfor %}
+
+                            </div>
                         {% else %}
-                            <p>No bills tracked yet.</p>
+                            <p class="text-muted mb-0">No bills tracked yet.</p>
                         {% endif %}
 
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -195,9 +217,9 @@
                                 </div>
                                 <form method="POST" action="{% url 'remove_bill' bill.id %}">
                                     {% csrf_token %}    
-                                <button class="btn btn-sm btn-outline-danger">
-                                    Remove
-                                </button>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        Remove
+                                    </button>
                                 </form>
                             </div>
 
@@ -241,14 +263,16 @@
         </div>
 
         <!-- Search -->
-        <div class="tab-pane fade {% if request.GET.q or request.GET.congress or request.GET.bill_type %}show active{% endif %}" id="mysearch">
+        <div class="tab-pane fade {% if request.GET.tab == 'mysearch' %}show active{% endif %}" id="mysearch">
             <div class="row g-4 mt-1 py-1">
 
                 <form method="GET" action="{% url 'dashboard' %}">
+                    <input type="hidden" name="tab" value="mysearch">
 
                     <div class="search-box legislation-search-layout">
                         <div class="row g-4">
 
+                            <!-- Left: search filters -->
                             <div class="col-lg-4">
                                 <div class="search-filters-panel">
 
@@ -283,58 +307,88 @@
 
                                 </div>
                             </div>
-                            </form>
 
-                        <!-- Results -->
+                            <!-- Right: results -->
                             <div class="col-lg-8">
                                 <div class="search-results-panel">
 
                                     <div class="results-header">
                                         <h5 class="section-title mb-0">Bills</h5>
-                                        <span class="results-count">Results</span>
+                                        <span class="results-count">{{ search_results_count }} results</span>
                                     </div>
 
                                     <div class="bill-list">
-                                        {% for bill in search_results %}
-                                            <div class="bill-card">
+                                    {% for bill in search_results %}
+                                        {% with detail=bill.bill_details.first %}
+                                        <div class="bill-card search-bill-card">
 
-                                                <div class="bill-card-top">
-                                                    <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
-                                                    <span class="bill-status">
-                                                        {{ bill.bill_details.first.bill_status }}
-                                                    </span>
+                                            <div class="search-bill-main">
+                                                <div class="bill-info">
+                                                    <div class="bill-topline">
+                                                        <span class="bill-code">
+                                                            {{ bill.type }} {{ bill.number }}
+                                                        </span>
+
+                                                        <span class="bill-status">
+                                                            {{ detail.bill_status|default:"Status Unknown" }}
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="bill-subtitle">
+                                                        {{ bill.title }}
+                                                    </div>
+
+                                                    <div class="search-bill-meta">
+                                                        <span>Congress: {{ bill.congress }}</span>
+                                                    </div>
                                                 </div>
 
-                                                <h6 class="bill-title">{{ bill.title }}</h6>
-
-                                                <div class="bill-meta">
-                                                    <span>Congress: {{ bill.congress }}</span>
-                                                    <span>{{ bill.originChamberCode }}</span>
-                                                    <span>{{ bill.bill_details.first.introducedDate }}</span>
-                                                </div>
-
-                                                <p class="bill-summary">
-                                                    {{ bill.bill_details.first.bill_summary }}
-                                                </p>
-
-                                                <div class="bill-card-actions">
+                                                <div class="bill-card-actions ms-auto left-gap-2">
                                                     <form method="POST" action="{% url 'save_bill' bill.number %}">
                                                         {% csrf_token %}
                                                         <input type="hidden" name="title" value="{{ bill.title }}">
                                                         <input type="hidden" name="congress" value="{{ bill.congress }}">
                                                         <input type="hidden" name="type" value="{{ bill.type }}">
-                                                    
 
-                                                    <button type="submit" class="btn btn-primary btn-sm">
-                                                        Save Bill
-                                                    </button>
+                                                        <button type="submit" class="btn btn-primary btn-sm save-bill-btn">
+                                                            Save Bill
+                                                        </button>
                                                     </form>
                                                 </div>
                                             </div>
-                                        {% empty %}
-                                            <p class="text-muted mb-0">No bills found.</p>
-                                        {% endfor %}
+
+                                        </div>
+                                        {% endwith %}
+                                    {% empty %}
+                                        <p class="text-muted mb-0">No bills found.</p>
+                                    {% endfor %}
                                     </div>
+
+                                    {% if search_results.paginator.num_pages > 1 %}
+                                        <div class="search-pagination mt-3 d-flex justify-content-between align-items-center">
+                                            <div class="text-muted small">
+                                                Page {{ search_results.number }} of {{ search_results.paginator.num_pages }}
+                                            </div>
+
+                                            <div class="d-flex gap-2">
+                                                {% if search_results.has_previous %}
+                                                    <a 
+                                                        class="btn btn-outline-secondary btn-sm"
+                                                        href="?tab=mysearch&q={{ request.GET.q|default:'' }}&congress={{ request.GET.congress|default:'' }}&bill_type={{ request.GET.bill_type|default:'' }}&page={{ search_results.previous_page_number }}">
+                                                        Previous
+                                                    </a>
+                                                {% endif %}
+
+                                                {% if search_results.has_next %}
+                                                    <a 
+                                                        class="btn btn-outline-secondary btn-sm"
+                                                        href="?tab=mysearch&q={{ request.GET.q|default:'' }}&congress={{ request.GET.congress|default:'' }}&bill_type={{ request.GET.bill_type|default:'' }}&page={{ search_results.next_page_number }}">
+                                                        Next
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
 
                                 </div>    
                             </div>

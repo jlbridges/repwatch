@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core import paginator
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 
@@ -6,6 +7,7 @@ from core.models import Representative, Profile, BillHeader
 from core.services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
 from core.services.bill_service import get_bill_headers
+from django.core.paginator import Paginator
 
 
 @login_required
@@ -34,8 +36,9 @@ def dashboard(request):
     query = request.GET.get("q")
     congress = request.GET.get("congress")
     bill_type = request.GET.get("bill_type")
+    page_number = request.GET.get("page", 1)
 
-    search_results = BillHeader.objects.all()
+    search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
 
     if query:
         search_results = search_results.filter(title__icontains=query)
@@ -45,6 +48,11 @@ def dashboard(request):
 
     if bill_type:
         search_results = search_results.filter(type=bill_type)
+    
+    search_results_count = search_results.count()
+
+    paginator = Paginator(search_results, 10)
+    search_results_page = paginator.get_page(page_number)
 
     # =========================
     # REPRESENTATIVES
@@ -91,7 +99,8 @@ def dashboard(request):
         "show_layout": True,
         "reps": reps,
         "tracked_bills": tracked_bills,
-        "search_results": search_results,
+        "search_results": search_results_page,
+        "search_results_count": search_results_count,
     })
 
 
