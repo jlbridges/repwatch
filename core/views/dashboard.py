@@ -88,6 +88,7 @@ def dashboard(request):
     tracked_bills = BillHeader.objects.filter(saved_by=user)
 
     return render(request, "core/dashboard.html", {
+        "show_layout": True,
         "reps": reps,
         "tracked_bills": tracked_bills,
         "search_results": search_results,
