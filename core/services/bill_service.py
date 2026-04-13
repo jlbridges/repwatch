@@ -36,21 +36,7 @@ def get_bill_headers(congress):
 
             billList.append(leg_data)
 
-            # ✅ Save to DB (safe, won't break anything)
-            try:
-                BillHeader.objects.update_or_create(
-                    number=number,
-                    congress=congress,
-                    type=bill_type,
-                    defaults={
-                        "title": title
-                    }
-                )
-            except Exception as e:
-                print("Error saving bill:", e)
-
-            # ✅ NEW: get bill details
-            get_bill_details(congress, bill_type, number)
+           
 
     else:
         print("Error fetching bills:", response.status_code)
@@ -72,8 +58,10 @@ def get_bill_details(congress, bill_type, bill_number):
         return None
 
     data = response.json()
-
-    # For now just print (can save later if needed)
-    print(f"DETAILS for {bill_type}{bill_number}:", data)
+    #print(data)
 
     return data
+#implement bill details structure - list item added to a new function save_bill_detail
+def save_bill_detail(data):
+    # saves bill details to database
+    pass

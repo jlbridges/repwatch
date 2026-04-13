@@ -1,34 +1,49 @@
 from django.contrib.auth.decorators import login_required
-from django.core import paginator
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
-
-from core.models import Representative, Profile, BillHeader
+from core.models import Representative, BillHeader, Profile
 from core.services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
-from core.services.bill_service import get_bill_headers
+from core.services.bill_service import get_bill_headers, get_bill_details
 from django.core.paginator import Paginator
+from core.views import settings_helper as settings
+from core.views import reps_helper
+from core.forms import User
 
 
 @login_required
 def dashboard(request):
     user = request.user
+    profile = Profile.objects.get(user=user)
 
-    profile, created = Profile.objects.get_or_create(user=user)
 
-    if request.method == "POST":
-        profile.address_line1 = request.POST.get("address_line1", "")
-        profile.address_line2 = request.POST.get("address_line2", "")
-        profile.city = request.POST.get("city", "")
-        profile.state = request.POST.get("state", "")
-        profile.zipcode = request.POST.get("zipcode", "")
-        profile.save()
+    try:
+        profile = Profile.objects.get(user=user)
+        if(request.POST.get('hidden_id')):
+          user_id = request.POST.get('hidden_id')          
+          postedUser  = User.objects.get(pk=user_id)                   
+       
+        hasProfileChanged = settings.check_Profile_changed(request)
+        hasAccountChanged = settings.check_Account_changed(request)
+
+        if (hasProfileChanged):
+           settings.updateProfileData(profile, request)
+           reps_helper.clear_user_reps(user)
+
+        if (hasAccountChanged):
+           settings.updateUserData(postedUser, request)
+           reps_helper.clear_user_reps(user)
+
+           return redirect('dashboard')
+
+    except Profile.DoesNotExist:
+        profile = None     #handling none returns in test cases where profile is not created yet
 
     # =========================
     # BILL API
     # =========================
-    current_congress = 118
-    get_bill_headers(current_congress)
+    current_congress = 119
+    search_results = get_bill_headers(current_congress)
 
     # =========================
     # SEARCH
@@ -38,18 +53,18 @@ def dashboard(request):
     bill_type = request.GET.get("bill_type")
     page_number = request.GET.get("page", 1)
 
-    search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
+    #search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
 
-    if query:
-        search_results = search_results.filter(title__icontains=query)
+    # if query:
+    #     bills = bills.filter(title__icontains=query)
 
-    if congress:
-        search_results = search_results.filter(congress=congress)
+    # if congress:
+    #     bills = bills.filter(congress=congress)
 
-    if bill_type:
-        search_results = search_results.filter(type=bill_type)
+    # if bill_type:
+    #     search_results = search_results.filter(type=bill_type)
     
-    search_results_count = search_results.count()
+    search_results_count = len(search_results)
 
     paginator = Paginator(search_results, 10)
     search_results_page = paginator.get_page(page_number)
@@ -62,28 +77,29 @@ def dashboard(request):
     reps_data = get_representatives_from_address(address)
 
     if reps_data:
-        for rep in reps_data:
+        for reps in reps_data:
 
-            if not rep.get("bioguide_id"):
+            if not reps.get("bioguide_id"):
                 continue
 
             rep_obj, _ = Representative.objects.update_or_create(
-                Bioguide_id=rep["bioguide_id"],
+                Bioguide_id=reps["bioguide_id"],
                 defaults={
-                    "name": rep.get("name"),
-                    "district_number": rep.get("district_number"),
-                    "first_name": rep.get("first_name"),
-                    "last_name": rep.get("last_name"),
+                    "name": reps.get("name"),
+                    "district_number": reps.get("district_number"),
+                    "first_name": reps.get("first_name"),
+                    "last_name": reps.get("last_name"),
                     "state": profile.state,
-                    "party": rep.get("party"),
-                    "type": rep.get("type"),
-                    "photo_url": rep.get("photo_url"),
+                    "party": reps.get("party"),
+                    "type": reps.get("type"),
+                    "photo_url": reps.get("photo_url"),
                 }
             )
 
             try:
-                member_details = get_member_details(rep["bioguide_id"])
-            except Exception:
+                member_details = get_member_details(reps["bioguide_id"])
+            except Exception as e:
+                print("CONGRESS API ERROR:", e)
                 member_details = {}
 
             rep_obj.constituents.add(user)
@@ -113,7 +129,7 @@ def save_bill(request, bill_number):
     title = request.POST.get("title")
     congress = request.POST.get("congress")
     bill_type = request.POST.get("type")
-
+    print('saved_bill called!')
     try:
         bill, created = BillHeader.objects.get_or_create(
             number=bill_number,
@@ -121,9 +137,14 @@ def save_bill(request, bill_number):
             type=bill_type,
             defaults={"title": title}
         )
-
+        
         bill.saved_by.add(request.user)
-
+        #Return a json object
+        print('bill detials called')
+        current_details = get_bill_details(congress, bill_type, bill_number)
+        print('bill detials returned')
+        #saves object to database
+        save_bill(current_details)
     except Exception as e:
         print("Error saving bill:", e)
 

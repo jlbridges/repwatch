@@ -1,7 +1,7 @@
 import os
 import requests
 
-BASE_URL = "https://api.geocod.io/v1.9/geocode"
+BASE_URL = "https://api.geocod.io/v1.12/geocode"
 
 
 def get_representatives_from_address(address):
