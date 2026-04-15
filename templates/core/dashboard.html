@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1">
 {% endblock %}
 
 {% block content %}
@@ -17,8 +17,8 @@
         </div>
     </div>
 
-    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3"
-        id="dashboardTab" role="tablist">
+    <ul class="nav nav-pills nav-fill gap-2 p-1 small custom-nav rounded-5 shadow-sm mb-3" id="dashboardTab"
+        role="tablist">
 
         <li class="nav-item">
             <button class="nav-link active rounded-5" data-bs-toggle="tab" data-bs-target="#overview">
@@ -55,7 +55,8 @@
     <div class="tab-content">
 
         <!-- Overview -->
-        <div class="tab-pane fade {% if not request.GET.tab or request.GET.tab == 'overview' %}show active{% endif %}" id="overview">
+        <div class="tab-pane fade {% if not request.GET.tab or request.GET.tab == 'overview' %}show active{% endif %}"
+            id="overview">
             <div class="row g-4 mt-1 py-1">
 
                 <div class="col-md-6">
@@ -63,31 +64,31 @@
                         <p class="text-start fs-5">Your Representatives</p>
 
                         {% for rep in reps %}
-                            <div class="rep-card mb-2 p-3">
-                                <div class="d-flex justify-content-between align-items-center">
+                        <div class="rep-card mb-2 p-3">
+                            <div class="d-flex justify-content-between align-items-center">
 
-                                    <div class="rep-info">
-                                        <div class="rep-name">
-                                            {{ rep.first_name }} {{ rep.last_name }}
-                                        </div>
-
-                                        <div class="rep-role text-muted">
-                                            {% if rep.type|lower == 'representative' %}
-                                                {{ rep.state }} - District {{ rep.district_number }}
-                                            {% else %}
-                                                {{ rep.state }} - U.S. Senator
-                                            {% endif %}
-                                        </div>
+                                <div class="rep-info">
+                                    <div class="rep-name">
+                                        {{ rep.first_name }} {{ rep.last_name }}
                                     </div>
 
-                                    <div class="rep-party-container">
-                                        <span class="rep-party">{{ rep.party }}</span>
+                                    <div class="rep-role text-muted">
+                                        {% if rep.type|lower == 'representative' %}
+                                        {{ rep.state }} - District {{ rep.district_number }}
+                                        {% else %}
+                                        {{ rep.state }} - U.S. Senator
+                                        {% endif %}
                                     </div>
-
                                 </div>
+
+                                <div class="rep-party-container">
+                                    <span class="rep-party">{{ rep.party }}</span>
+                                </div>
+
                             </div>
+                        </div>
                         {% empty %}
-                            <p>No representatives found yet.</p>
+                        <p>No representatives found yet.</p>
                         {% endfor %}
 
                     </div>
@@ -98,36 +99,36 @@
                         <p class="text-start fs-5">Tracked Legislation</p>
 
                         {% if tracked_bills %}
-                            <div class="bill-list">
+                        <div class="bill-list">
 
-                                {% for bill in tracked_bills %}
-                                    {% with detail=bill.bill_details.first %}
-                                    <div class="bill-card">
+                            {% for bill in tracked_bills %}
+                            {% with detail=bill.bill_details.first %}
+                            <div class="bill-card">
 
-                                        <!-- LEFT SIDE -->
-                                        <div class="bill-info">
-                                            <div class="bill-code">
-                                                {{ bill.type }}. {{ bill.number }}
-                                            </div>
-
-                                            <div class="bill-subtitle">
-                                                {{ bill.title|truncatechars:80 }}
-                                            </div>
-                                        </div>
-
-                                        <!-- RIGHT SIDE -->
-                                        <div class="bill-status-container">
-                                            <span class="bill-status">
-                                                {{ detail.bill_status|default:"Status Unknown" }}
-                                            </span>
-                                        </div>
+                                <!-- LEFT SIDE -->
+                                <div class="bill-info">
+                                    <div class="bill-code">
+                                        {{ bill.type }}. {{ bill.number }}
                                     </div>
-                                    {% endwith %}
-                                {% endfor %}
 
+                                    <div class="bill-subtitle">
+                                        {{ bill.title|truncatechars:80 }}
+                                    </div>
+                                </div>
+
+                                <!-- RIGHT SIDE -->
+                                <div class="bill-status-container">
+                                    <span class="bill-status">
+                                        {{ detail.bill_status|default:"Status Unknown" }}
+                                    </span>
+                                </div>
                             </div>
+                            {% endwith %}
+                            {% endfor %}
+
+                        </div>
                         {% else %}
-                            <p class="text-muted mb-0">No bills tracked yet.</p>
+                        <p class="text-muted mb-0">No bills tracked yet.</p>
                         {% endif %}
 
                     </div>
@@ -140,63 +141,65 @@
             <div class="row g-4 mt-1 py-1">
 
                 {% for rep in user.representative_set.all %}
-                    <div class="col-md-6">
-                        <div class="reps-box d-flex flex-column">
-                            <div class="rep-card mb-2 p-3">
+                <div class="col-md-6">
+                    <div class="reps-box d-flex flex-column">
+                        <div class="rep-card mb-2 p-3">
 
-                                <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center">
 
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="{{ rep.photo_url }}" class="rep-photo rounded shadow">
-                                        <div class="rep-name">
-                                            {{ rep.first_name }} {{ rep.last_name }}
-                                        </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="{{ rep.photo_url }}" class="rep-photo rounded shadow">
+                                    <div class="rep-name">
+                                        {{ rep.first_name }} {{ rep.last_name }}
                                     </div>
-
-                                    <button class="btn btn-sm btn-secondary"
-                                            type="button"
-                                            data-bs-toggle="collapse"
-                                            data-bs-target="#repDetails{{ rep.Bioguide_id }}">
-                                        View More
-                                    </button>
-
                                 </div>
 
-                                <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
-                                    {% for detail in rep.rep_details.all %}
-                                        <p><strong>Congress:</strong> {{ detail.congress }}</p>
-                                        <p><strong>State:</strong> {{ rep.state }}</p>
-                                        <p><strong>District:</strong> {{ rep.name }}</p>
-                                        <p><strong>Party:</strong> {{ rep.party }}</p>
-                                        <p><strong>Type:</strong> {{ rep.type }}</p>
-                                        <p>
-                                            <strong>Sponsorships:</strong>
-                                            Sponsored {{ detail.count_sponsoredLegislation|default:"0" }},
-                                            Cosponsored {{ detail.count_cosponsoredLegislation|default:"0" }}
-                                        </p>
-
-                                        {% if detail.officialWebsiteUrl %}
-                                            <p>
-                                                <a href="{{ detail.officialWebsiteUrl }}" target="_blank">
-                                                    Official Website
-                                                </a>
-                                            </p>
-                                        {% endif %}
-
-                                        {% if detail.contact_form %}
-                                            <p>Contact: {{ detail.contact_form }}</p>
-                                        {% endif %}
-
-                                    {% empty %}
-                                        <p>No member details available</p>
-                                    {% endfor %}
-                                </div>
+                                <button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#repDetails{{ rep.Bioguide_id }}">
+                                    View More
+                                </button>
 
                             </div>
+
+                            <div class="collapse mt-2" id="repDetails{{ rep.Bioguide_id }}">
+                                {% for detail in rep.rep_details.all %}
+                                <p><strong>Congress:</strong> {{ detail.congress }}</p>
+                                <p><strong>State:</strong> {{ rep.state }}</p>
+                                {% if rep.type|lower == "representative" %}
+                                    <p><strong>Constituency: </strong>NC Congressional District {{ rep.district_number }}</p>
+                                {% else %}
+                                    <p><strong>Constituency: </strong>US Senator</p>
+                                {% endif %}
+                                <p><strong>Party:</strong> {{ rep.party }}</p>
+                                <p><strong>Type:</strong> {{ rep.type }}</p>
+                                <p>
+                                    <strong>Sponsorships:</strong>
+                                    Sponsored {{ detail.count_sponsoredLegislation|default:"0" }},
+                                    Cosponsored {{ detail.count_cosponsoredLegislation|default:"0" }}
+                                </p>
+
+                                {% if detail.officialWebsiteUrl %}
+                                <p>
+                                    <a href="{{ detail.officialWebsiteUrl }}" target="_blank">
+                                        Official Website
+                                    </a>
+                                </p>
+                                {% endif %}
+
+                                {% if detail.contact_form %}
+                                <p>Contact: {{ detail.contact_form }}</p>
+                                {% endif %}
+
+                                {% empty %}
+                                <p>No member details available</p>
+                                {% endfor %}
+                            </div>
+
                         </div>
                     </div>
+                </div>
                 {% empty %}
-                    <p>No representatives found yet.</p>
+                <p>No representatives found yet.</p>
                 {% endfor %}
 
             </div>
@@ -206,58 +209,58 @@
         <div class="tab-pane fade" id="mybills">
             <div class="row g-4 mt-1 py-1">
                 {% for bill in tracked_bills %}
-                    <div class="col-md-6">
-                        <div class="my-bills-box">
-                            <div class="bill-card-top">
-                                <div>
-                                    <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
-                                    <span class="bill-status">
-                                        {{ bill.bill_details.first.bill_status }}
-                                    </span>
-                                </div>
-                                <form method="POST" action="{% url 'remove_bill' bill.id %}">
-                                    {% csrf_token %}    
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        Remove
-                                    </button>
-                                </form>
+                <div class="col-md-6">
+                    <div class="my-bills-box">
+                        <div class="bill-card-top">
+                            <div>
+                                <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
+                                <span class="bill-status">
+                                    {{ bill.bill_details.first.bill_status }}
+                                </span>
                             </div>
-
-                            <h6 class="bill-title">{{ bill.title }}</h6>
-
-                            <div class="bill-meta">
-                                <span>Congress: {{ bill.congress }}</span>
-                                <span>{{ bill.originChamberCode }}</span>
-                            </div>
-
-                            {% if bill.sponsor %}
-                                <p class="bill-sponsor">
-                                    <strong>Sponsor:</strong> {{ bill.sponsor }}
-                                </p>
-                            {% endif %}
-
-                            {% if bill.bill_details.first.introducedDate %}
-                                <p class="bill-introduced">
-                                    <strong>Introduced:</strong> {{ bill.bill_details.first.introducedDate }}
-                                </p>
-                            {% endif %}
-
-                            <p class="bill-summary">
-                                <strong>Summary:</strong> {{ bill.bill_details.first.bill_summary }}
-                            </p>
-
-                            {% if bill.bill_details.first.latest_action %}
-                                <p class="bill-latest-action">
-                                    <strong>Latest Action:</strong> {{ bill.bill_details.first.latest_action }}
-                                </p>
-                            {% endif %}
-
+                            <form method="POST" action="{% url 'remove_bill' bill.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Remove
+                                </button>
+                            </form>
                         </div>
+
+                        <h6 class="bill-title">{{ bill.title }}</h6>
+
+                        <div class="bill-meta">
+                            <span>Congress: {{ bill.congress }}</span>
+                            <span>{{ bill.originChamberCode }}</span>
+                        </div>
+
+                        {% if bill.sponsor %}
+                        <p class="bill-sponsor">
+                            <strong>Sponsor:</strong> {{ bill.sponsor }}
+                        </p>
+                        {% endif %}
+
+                        {% if bill.bill_details.first.introducedDate %}
+                        <p class="bill-introduced">
+                            <strong>Introduced:</strong> {{ bill.bill_details.first.introducedDate }}
+                        </p>
+                        {% endif %}
+
+                        <p class="bill-summary">
+                            <strong>Summary:</strong> {{ bill.bill_details.first.bill_summary }}
+                        </p>
+
+                        {% if bill.bill_details.first.latest_action %}
+                        <p class="bill-latest-action">
+                            <strong>Latest Action:</strong> {{ bill.bill_details.first.latest_action }}
+                        </p>
+                        {% endif %}
+
                     </div>
+                </div>
                 {% empty %}
-                    <div class="col-12">
-                        <p class="text-muted mb-0">No saved bills yet.</p>
-                    </div>
+                <div class="col-12">
+                    <p class="text-muted mb-0">No saved bills yet.</p>
+                </div>
                 {% endfor %}
             </div>
         </div>
@@ -318,7 +321,7 @@
                                     </div>
 
                                     <div class="bill-list">
-                                    {% for bill in search_results %}
+                                        {% for bill in search_results %}
                                         {% with detail=bill.bill_details.first %}
                                         <div class="bill-card search-bill-card">
 
@@ -347,10 +350,12 @@
                                                     <form method="POST" action="{% url 'save_bill' bill.number %}">
                                                         {% csrf_token %}
                                                         <input type="hidden" name="title" value="{{ bill.title }}">
-                                                        <input type="hidden" name="congress" value="{{ bill.congress }}">
+                                                        <input type="hidden" name="congress"
+                                                            value="{{ bill.congress }}">
                                                         <input type="hidden" name="type" value="{{ bill.type }}">
 
-                                                        <button type="submit" class="btn btn-primary btn-sm save-bill-btn">
+                                                        <button type="submit"
+                                                            class="btn btn-primary btn-sm save-bill-btn">
                                                             Save Bill
                                                         </button>
                                                     </form>
@@ -359,38 +364,37 @@
 
                                         </div>
                                         {% endwith %}
-                                    {% empty %}
+                                        {% empty %}
                                         <p class="text-muted mb-0">No bills found.</p>
-                                    {% endfor %}
+                                        {% endfor %}
                                     </div>
 
                                     {% if search_results.paginator.num_pages > 1 %}
-                                        <div class="search-pagination mt-3 d-flex justify-content-between align-items-center">
-                                            <div class="text-muted small">
-                                                Page {{ search_results.number }} of {{ search_results.paginator.num_pages }}
-                                            </div>
-
-                                            <div class="d-flex gap-2">
-                                                {% if search_results.has_previous %}
-                                                    <a 
-                                                        class="btn btn-outline-secondary btn-sm"
-                                                        href="?tab=mysearch&q={{ request.GET.q|default:'' }}&congress={{ request.GET.congress|default:'' }}&bill_type={{ request.GET.bill_type|default:'' }}&page={{ search_results.previous_page_number }}">
-                                                        Previous
-                                                    </a>
-                                                {% endif %}
-
-                                                {% if search_results.has_next %}
-                                                    <a 
-                                                        class="btn btn-outline-secondary btn-sm"
-                                                        href="?tab=mysearch&q={{ request.GET.q|default:'' }}&congress={{ request.GET.congress|default:'' }}&bill_type={{ request.GET.bill_type|default:'' }}&page={{ search_results.next_page_number }}">
-                                                        Next
-                                                    </a>
-                                                {% endif %}
-                                            </div>
+                                    <div
+                                        class="search-pagination mt-3 d-flex justify-content-between align-items-center">
+                                        <div class="text-muted small">
+                                            Page {{ search_results.number }} of {{ search_results.paginator.num_pages }}
                                         </div>
+
+                                        <div class="d-flex gap-2">
+                                            {% if search_results.has_previous %}
+                                            <a class="btn btn-outline-secondary btn-sm"
+                                                href="?tab=mysearch&q={{ request.GET.q|default:'' }}&congress={{ request.GET.congress|default:'' }}&bill_type={{ request.GET.bill_type|default:'' }}&page={{ search_results.previous_page_number }}">
+                                                Previous
+                                            </a>
+                                            {% endif %}
+
+                                            {% if search_results.has_next %}
+                                            <a class="btn btn-outline-secondary btn-sm"
+                                                href="?tab=mysearch&q={{ request.GET.q|default:'' }}&congress={{ request.GET.congress|default:'' }}&bill_type={{ request.GET.bill_type|default:'' }}&page={{ search_results.next_page_number }}">
+                                                Next
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                     {% endif %}
 
-                                </div>    
+                                </div>
                             </div>
 
                         </div>
@@ -419,27 +423,26 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="id_first_name" class="form-label">First Name</label>
-                                    <input type="text" name="first_name" id="id_first_name"
-                                           class="form-control" value="{{ user.first_name }}">
+                                    <input type="text" name="first_name" id="id_first_name" class="form-control"
+                                        value="{{ user.first_name }}">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="id_last_name" class="form-label">Last Name</label>
-                                    <input type="text" name="last_name" id="id_last_name"
-                                           class="form-control" value="{{ user.last_name }}">
+                                    <input type="text" name="last_name" id="id_last_name" class="form-control"
+                                        value="{{ user.last_name }}">
                                 </div>
 
                                 <div class="col-md-12">
                                     <label for="id_email" class="form-label">Email</label>
-                                    <input type="email" name="email" id="id_email"
-                                           class="form-control" value="{{ user.email }}">
+                                    <input type="email" name="email" id="id_email" class="form-control"
+                                        value="{{ user.email }}">
                                 </div>
                             </div>
 
                             <div class="settings-form-actions">
-                                <button type="submit"
-                                        class="btn px-4 flex-shrink-0"
-                                        style="background-color: #1d1066; color: white !important; border: none;">
+                                <button type="submit" class="btn px-4 flex-shrink-0"
+                                    style="background-color: #1d1066; color: white !important; border: none;">
                                     Save New Personal Info
                                 </button>
                             </div>
@@ -456,40 +459,41 @@
                             <div class="row g-3">
                                 <div class="col-md-12">
                                     <label for="id_address_line1" class="form-label">Address Line 1</label>
-                                    <input type="text" name="address_line1" id="id_address_line1"
-                                           class="form-control" value="{{ user.profile.address_line1|default:'' }}">
+                                    <input type="text" name="address_line1" id="id_address_line1" class="form-control"
+                                        value="{{ user.profile.address_line1|default:'' }}">
                                 </div>
 
                                 <div class="col-md-12">
                                     <label for="id_address_line2" class="form-label">Address Line 2</label>
-                                    <input type="text" name="address_line2" id="id_address_line2"
-                                           class="form-control" value="{{ user.profile.address_line2|default:'' }}">
+                                    <input type="text" name="address_line2" id="id_address_line2" class="form-control"
+                                        value="{{ user.profile.address_line2|default:'' }}">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="id_city" class="form-label">City</label>
-                                    <input type="text" name="city" id="id_city"
-                                           class="form-control" value="{{ user.profile.city|default:'' }}">
+                                    <input type="text" name="city" id="id_city" class="form-control"
+                                        value="{{ user.profile.city|default:'' }}">
                                 </div>
 
                                 <div class="col-md-3">
                                     <label for="id_state" class="form-label">State</label>
                                     <select name="state" id="id_state" class="form-select">
-                                        <option value="NC" {% if user.profile.state == "NC" %}selected{% endif %}>NC</option>
+                                        
+                                        <option value="NC" {% if user.profile.state == "NC" %}selected{% endif %}>NC
+                                        </option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-3">
                                     <label for="id_zipcode" class="form-label">Zip Code</label>
-                                    <input type="text" name="zipcode" id="id_zipcode"
-                                           class="form-control" value="{{ user.profile.zipcode|default:'' }}">
+                                    <input type="text" name="zipcode" id="id_zipcode" class="form-control"
+                                        value="{{ user.profile.zipcode|default:'' }}">
                                 </div>
                             </div>
 
                             <div class="settings-form-actions">
-                                <button type="submit"
-                                        class="btn px-4 flex-shrink-0"
-                                        style="background-color: #1d1066; color: white !important; border: none;">
+                                <button type="submit" class="btn px-4 flex-shrink-0"
+                                    style="background-color: #1d1066; color: white !important; border: none;">
                                     Save New Address
                                 </button>
                             </div>

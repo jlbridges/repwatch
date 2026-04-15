@@ -52,13 +52,13 @@ def get_representatives_from_address(address):
             bioguide_id = references.get("bioguide_id")
             if not bioguide_id:
                 continue
-
+            person_type = person.get("type")
             rep_data = {
                 "bioguide_id": bioguide_id,
-                "district_number": district_number,
+                "district_number": district_number if person_type == "representative" else 0,
                 "first_name": bio.get("first_name"),
                 "last_name": bio.get("last_name"),
-                "name": f"{bio.get('first_name')} {bio.get('last_name')}",
+                #"name": bio.get("name"),
                 "party": bio.get("party"),
                 "type": person.get("type"),
                 "photo_url": bio.get("photo_url"),

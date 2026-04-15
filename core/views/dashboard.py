@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
-from core.models import Representative, BillHeader, Profile
+from core.models import Representative, BillHeader, Profile, rep_detail
 from core.services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
 from core.services.bill_service import get_bill_headers, get_bill_details
@@ -39,35 +39,7 @@ def dashboard(request):
     except Profile.DoesNotExist:
         profile = None     #handling none returns in test cases where profile is not created yet
 
-    # =========================
-    # BILL API
-    # =========================
-    current_congress = 119
-    search_results = get_bill_headers(current_congress)
 
-    # =========================
-    # SEARCH
-    # =========================
-    query = request.GET.get("q")
-    congress = request.GET.get("congress")
-    bill_type = request.GET.get("bill_type")
-    page_number = request.GET.get("page", 1)
-
-    #search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
-
-    # if query:
-    #     bills = bills.filter(title__icontains=query)
-
-    # if congress:
-    #     bills = bills.filter(congress=congress)
-
-    # if bill_type:
-    #     search_results = search_results.filter(type=bill_type)
-    
-    search_results_count = len(search_results)
-
-    paginator = Paginator(search_results, 10)
-    search_results_page = paginator.get_page(page_number)
 
     # =========================
     # REPRESENTATIVES
@@ -98,14 +70,62 @@ def dashboard(request):
 
             try:
                 member_details = get_member_details(reps["bioguide_id"])
+                
             except Exception as e:
                 print("CONGRESS API ERROR:", e)
                 member_details = {}
-
+            rep_detail.objects.update_or_create(
+                    Bioguide_id=rep_obj,
+                defaults={
+                "currentMember": member_details.get("current_member") or False,
+                "congress": member_details.get("congress"),
+                "count_sponsoredLegislation": member_details.get("sponsored_legislation") or 0,
+                "count_cosponsoredLegislation": member_details.get("cosponsored_legislation") or 0,
+                "officialWebsiteUrl": member_details.get("official_website"),
+            }
+        )
             rep_obj.constituents.add(user)
 
     reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
 
+       # =========================
+    # BILL API
+    # =========================
+
+    rep_details = rep_detail.objects.filter(
+        Bioguide_id__constituents=user).exclude(congress__isnull=True).first()
+
+    current_congress = rep_details.congress if rep_details else None
+    
+    search_results = get_bill_headers(current_congress)
+
+    # =========================
+    # SEARCH
+    # =========================
+    query = request.GET.get("q")
+    congress = request.GET.get("congress")
+    bill_type = request.GET.get("bill_type")
+    page_number = request.GET.get("page", 1)
+
+    #search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
+
+    # if query:
+    #     bills = bills.filter(title__icontains=query)
+
+    # if congress:
+    #     bills = bills.filter(congress=congress)
+
+    # if bill_type:
+    #     search_results = search_results.filter(type=bill_type)
+    
+    search_results_count = len(search_results)
+
+    paginator = Paginator(search_results, 10)
+    search_results_page = paginator.get_page(page_number)
+   
+   
+   
+   
     # =========================
     # TRACKED BILLS
     # =========================
