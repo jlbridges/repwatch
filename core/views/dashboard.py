@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 from core.models import Representative, BillHeader, Profile, rep_detail
 from core.services.geocodio_service import get_representatives_from_address
@@ -34,7 +35,7 @@ def dashboard(request):
            settings.updateUserData(postedUser, request)
            reps_helper.clear_user_reps(user)
 
-           return redirect('dashboard')
+           return redirect(f"{reverse('dashboard')}?tab=setting") #redirect to dashboard with settings tab active
 
     except Profile.DoesNotExist:
         profile = None     #handling none returns in test cases where profile is not created yet
@@ -179,7 +180,7 @@ def save_bill(request, bill_number):
     except Exception as e:
         print("Error saving bill:", e)
 
-    return redirect("dashboard")
+    return redirect(f"{reverse('dashboard')}?tab=overview") #redirect to dashboard with overview tab active
 
 
 # =========================
@@ -194,4 +195,4 @@ def remove_bill(request, bill_id):
     except Exception as e:
         print("Error removing bill:", e)
 
-    return redirect("dashboard")
+    return redirect(f"{reverse('dashboard')}?tab=mybills") # redirect to dashboard with mybills tab active 

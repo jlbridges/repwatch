@@ -21,31 +21,31 @@
         role="tablist">
 
         <li class="nav-item">
-            <button class="nav-link active rounded-5" data-bs-toggle="tab" data-bs-target="#overview">
+            <button class="nav-link rounded-5 {% if not request.GET.tab or request.GET.tab == 'overview' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#overview">
                 Overview
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#myreps">
+            <button class="nav-link rounded-5 {% if request.GET.tab == 'myreps' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#myreps">
                 My Reps
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#mybills">
+            <button class="nav-link rounded-5 {% if request.GET.tab == 'mybills' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#mybills">
                 My Bills
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#mysearch">
+            <button class="nav-link rounded-5 {% if request.GET.tab == 'mysearch' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#mysearch">
                 My Search
             </button>
         </li>
 
         <li class="nav-item">
-            <button class="nav-link rounded-5" data-bs-toggle="tab" data-bs-target="#setting">
+            <button class="nav-link rounded-5 {% if request.GET.tab == 'setting' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#setting">
                 Settings
             </button>
         </li>
@@ -137,7 +137,7 @@
         </div>
 
         <!-- My Reps -->
-        <div class="tab-pane fade" id="myreps">
+        <div class="tab-pane fade {% if request.GET.tab == 'myreps' %}show active{% endif %}" id="myreps">
             <div class="row g-4 mt-1 py-1">
 
                 {% for rep in user.representative_set.all %}
@@ -206,7 +206,7 @@
         </div>
 
         <!-- My Bills -->
-        <div class="tab-pane fade" id="mybills">
+        <div class="tab-pane fade {% if request.GET.tab == 'mybills' %}show active{% endif %}" id="mybills">
             <div class="row g-4 mt-1 py-1">
                 {% for bill in tracked_bills %}
                 <div class="col-md-6">
@@ -384,7 +384,7 @@
         </div>
 
         <!-- Settings -->
-        <div class="tab-pane fade" id="setting">
+        <div class="tab-pane fade {% if request.GET.tab == 'setting' %}show active{% endif %}" id="setting">
             <div class="row g-4 mt-1 py-1">
                 <div class="col-12">
                     <div class="settings-box">
