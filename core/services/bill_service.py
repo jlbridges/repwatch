@@ -1,6 +1,6 @@
 import requests
 from django.conf import settings
-from core.models import BillHeader
+from core.models import BillHeader, BillDetail
 
 
 def get_bill_headers(congress):
@@ -58,10 +58,18 @@ def get_bill_details(congress, bill_type, bill_number):
         return None
 
     data = response.json()
-    #print(data)
-
+    
+    
     return data
 #implement bill details structure - list item added to a new function save_bill_detail
-def save_bill_detail(data):
+def save_bill_detail(data, bill):
+    print('data from save bill')
+    print(data)
     # saves bill details to database
-    pass
+    bbd = BillDetail.objects.create(
+        bill_header = bill,
+        number=data['bill']['number'],
+        congress=data['bill']['congress'],
+        type=data['bill']['type'],
+    )
+    bbd.save()

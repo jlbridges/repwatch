@@ -4,7 +4,7 @@ from django.views.decorators.http import require_POST
 from core.models import Representative, BillHeader, Profile, rep_detail
 from core.services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
-from core.services.bill_service import get_bill_headers, get_bill_details
+from core.services.bill_service import get_bill_headers, get_bill_details, save_bill_detail
 from django.core.paginator import Paginator
 from core.views import settings_helper as settings
 from core.views import reps_helper
@@ -14,7 +14,7 @@ from core.forms import User
 @login_required
 def dashboard(request):
     user = request.user
-    profile = Profile.objects.get(user=user)
+    #profile = Profile.objects.get(user=user)
 
 
     try:
@@ -118,10 +118,10 @@ def dashboard(request):
     # if bill_type:
     #     search_results = search_results.filter(type=bill_type)
     
-    search_results_count = len(search_results)
+    #search_results_count = len(search_results)
 
-    paginator = Paginator(search_results, 10)
-    search_results_page = paginator.get_page(page_number)
+    #paginator = Paginator(search_results, 10)
+    # search_results_page = paginator.get_page(page_number)
    
    
    
@@ -130,13 +130,15 @@ def dashboard(request):
     # TRACKED BILLS
     # =========================
     tracked_bills = BillHeader.objects.filter(saved_by=user)
-
+    print(tracked_bills)
+    #tracked_bills = BillHeader.objects.filter(saved_by=user).prefetch_related("bill_details").order_by("-congress", "type", "number")
+    #join tracked bills with bill detail so it renders both results in dashboard
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "reps": reps,
         "tracked_bills": tracked_bills,
-        "search_results": search_results_page,
-        "search_results_count": search_results_count,
+        "search_results": search_results,
+        
     })
 
 
@@ -149,22 +151,31 @@ def save_bill(request, bill_number):
     title = request.POST.get("title")
     congress = request.POST.get("congress")
     bill_type = request.POST.get("type")
+    user_id = request.POST.get("userid")
     print('saved_bill called!')
     try:
-        bill, created = BillHeader.objects.get_or_create(
+        bill = BillHeader.objects.create(
+            
             number=bill_number,
             congress=congress,
             type=bill_type,
-            defaults={"title": title}
+            title = title,
+            # defaults={"title": title}
+            
         )
+        bill.save()
         
         bill.saved_by.add(request.user)
         #Return a json object
         print('bill detials called')
+        print(congress)
+        print(bill_type)
+        print(bill_number)
         current_details = get_bill_details(congress, bill_type, bill_number)
         print('bill detials returned')
-        #saves object to database
-        save_bill(current_details)
+        #saves object to databasebill.saved_by.add(request.user)
+        print(current_details)
+        save_bill_detail(current_details, bill)
     except Exception as e:
         print("Error saving bill:", e)
 

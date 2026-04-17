@@ -48,7 +48,7 @@ def check_Profile_changed(request):
         if request.POST.get('state'):
             hasValue = True
 
-        if request.POST.get('zipecode'):
+        if request.POST.get('zipcode'):
             hasValue = True
 
         return hasValue

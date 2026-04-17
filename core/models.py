@@ -72,6 +72,7 @@ class committees(models.Model):
 
 
 class BillHeader(models.Model):
+    
     number = models.IntegerField(null=False, blank=True)
     congress = models.IntegerField(null=False, blank=True)
     originChamberCode = models.CharField(max_length=15, null=False, blank=True)
