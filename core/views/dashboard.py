@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -179,6 +180,8 @@ def save_bill(request, bill_number):
         save_bill_detail(current_details, bill)
     except Exception as e:
         print("Error saving bill:", e)
+
+    messages.success(request, f"Bill {bill.type}. {bill.number} successfully saved to your dashboard!")
 
     return redirect(f"{reverse('dashboard')}?tab=overview") #redirect to dashboard with overview tab active
 
