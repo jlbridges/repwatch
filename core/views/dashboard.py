@@ -20,68 +20,10 @@ from core.forms import User
 @login_required
 def dashboard(request):
     user = request.user
-    profile, _ = Profile.objects.get_or_create(user=user)
-
-    error_message = None
-
-    if request.method == "POST":
-
-        address_line1 = request.POST.get("address_line1")
-        city = request.POST.get("city")
-        state = request.POST.get("state")
-        zipcode = request.POST.get("zipcode")
-
-        is_valid = (
-            all([address_line1, city, state, zipcode]) and
-            any(char.isdigit() for char in address_line1)
-        )
-
-        # INVALID
-        if not is_valid:
-            error_message = "Enter a valid address"
-
-        # VALID
-        else:
-            settings.updateProfileData(profile, request)
-            reps_helper.clear_user_reps(user)
-            return redirect("dashboard")
-        
-    # Handle personal info update
-    if request.POST.get("first_name") or request.POST.get("email"):
-        settings.updateUserData(user, request)
-        return redirect("dashboard")
-
-
-    # =========================
-    # BILL API
-    # =========================
-    current_congress = 119
-    search_results = get_bill_headers(current_congress)
-
-    # =========================
-    # SEARCH
-    # =========================
-    query = request.GET.get("q")
-    congress = request.GET.get("congress")
-    bill_type = request.GET.get("bill_type")
-    page_number = request.GET.get("page", 1)
-
-    #search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
-
-    # if query:
-    #     bills = bills.filter(title__icontains=query)
-
-    # if congress:
-    #     bills = bills.filter(congress=congress)
-
-    # if bill_type:
-    #     search_results = search_results.filter(type=bill_type)
-    
-    search_results_count = len(search_results)
-
-    paginator = Paginator(search_results, 10)
-    search_results_page = paginator.get_page(page_number)
-
+    try:
+        profile = Profile.objects.get(user=user)     
+    except Profile.DoesNotExist:
+        profile = None     #handling none returns in test cases where profile is not created yet
     # =========================
     # REPRESENTATIVES
     # =========================
@@ -128,10 +70,9 @@ def dashboard(request):
 
     reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
 
-       # =========================
+    # =========================
     # BILL API
     # =========================
-
     rep_details = rep_detail.objects.filter(
         Bioguide_id__constituents=user).exclude(congress__isnull=True).first()
 
@@ -145,41 +86,20 @@ def dashboard(request):
     query = request.GET.get("q")
     congress = request.GET.get("congress")
     bill_type = request.GET.get("bill_type")
-    page_number = request.GET.get("page", 1)
-
-    #search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
-
-    # if query:
-    #     bills = bills.filter(title__icontains=query)
-
-    # if congress:
-    #     bills = bills.filter(congress=congress)
-
-    # if bill_type:
-    #     search_results = search_results.filter(type=bill_type)
-    
-    #search_results_count = len(search_results)
-
-    #paginator = Paginator(search_results, 10)
-    # search_results_page = paginator.get_page(page_number)
-   
-   
-   
+    page_number = request.GET.get("page", 1)   
    
     # =========================
     # TRACKED BILLS
     # =========================
-    tracked_bills = BillHeader.objects.filter(saved_by=user)
-    print(tracked_bills)
-    #tracked_bills = BillHeader.objects.filter(saved_by=user).prefetch_related("bill_details").order_by("-congress", "type", "number")
-    #join tracked bills with bill detail so it renders both results in dashboard
+    #tracked_bills = BillHeader.objects.filter(saved_by=user)
+    #print(tracked_bills)
+    tracked_bills = BillHeader.objects.filter(saved_by=user).prefetch_related("bill_details").order_by("-congress", "type", "number")
+   
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "reps": reps,
         "tracked_bills": tracked_bills,
-        "search_results": search_results_page,
-        "search_results_count": search_results_count,
-        "error_message": error_message,
+        "search_results": search_results,        
     })
 
 
