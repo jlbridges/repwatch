@@ -16,33 +16,10 @@ from core.forms import User
 @login_required
 def dashboard(request):
     user = request.user
-    #profile = Profile.objects.get(user=user)
-
-
     try:
-        profile = Profile.objects.get(user=user)
-        if(request.POST.get('hidden_id')):
-          user_id = request.POST.get('hidden_id')          
-          postedUser  = User.objects.get(pk=user_id)                   
-       
-        hasProfileChanged = settings.check_Profile_changed(request)
-        hasAccountChanged = settings.check_Account_changed(request)
-
-        if (hasProfileChanged):
-           settings.updateProfileData(profile, request)
-           reps_helper.clear_user_reps(user)
-
-        if (hasAccountChanged):
-           settings.updateUserData(postedUser, request)
-           reps_helper.clear_user_reps(user)
-
-           return redirect(f"{reverse('dashboard')}?tab=setting") #redirect to dashboard with settings tab active
-
+        profile = Profile.objects.get(user=user)     
     except Profile.DoesNotExist:
         profile = None     #handling none returns in test cases where profile is not created yet
-
-
-
     # =========================
     # REPRESENTATIVES
     # =========================
@@ -90,10 +67,9 @@ def dashboard(request):
 
     reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
 
-       # =========================
+    # =========================
     # BILL API
     # =========================
-
     rep_details = rep_detail.objects.filter(
         Bioguide_id__constituents=user).exclude(congress__isnull=True).first()
 
@@ -107,40 +83,20 @@ def dashboard(request):
     query = request.GET.get("q")
     congress = request.GET.get("congress")
     bill_type = request.GET.get("bill_type")
-    page_number = request.GET.get("page", 1)
-
-    #search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
-
-    # if query:
-    #     bills = bills.filter(title__icontains=query)
-
-    # if congress:
-    #     bills = bills.filter(congress=congress)
-
-    # if bill_type:
-    #     search_results = search_results.filter(type=bill_type)
-    
-    #search_results_count = len(search_results)
-
-    #paginator = Paginator(search_results, 10)
-    # search_results_page = paginator.get_page(page_number)
-   
-   
-   
+    page_number = request.GET.get("page", 1)   
    
     # =========================
     # TRACKED BILLS
     # =========================
-    tracked_bills = BillHeader.objects.filter(saved_by=user)
-    print(tracked_bills)
-    #tracked_bills = BillHeader.objects.filter(saved_by=user).prefetch_related("bill_details").order_by("-congress", "type", "number")
-    #join tracked bills with bill detail so it renders both results in dashboard
+    #tracked_bills = BillHeader.objects.filter(saved_by=user)
+    #print(tracked_bills)
+    tracked_bills = BillHeader.objects.filter(saved_by=user).prefetch_related("bill_details").order_by("-congress", "type", "number")
+   
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "reps": reps,
         "tracked_bills": tracked_bills,
-        "search_results": search_results,
-        
+        "search_results": search_results,        
     })
 
 

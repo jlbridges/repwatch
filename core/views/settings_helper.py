@@ -1,4 +1,32 @@
-# Richard Functions for changing user settings
+from django.views.decorators.http import require_POST
+from django.shortcuts import redirect
+from django.urls import reverse
+from core.models import Profile
+from core.forms import User
+from core.views import reps_helper
+
+@require_POST
+def updateSettings(request):
+        user = request.user
+        profile = Profile.objects.get(user=user)
+        if(request.POST.get('hidden_id')):
+            user_id = request.POST.get('hidden_id')          
+            postedUser  = User.objects.get(pk=user_id)                   
+       
+        hasProfileChanged =  check_Profile_changed(request)
+        hasAccountChanged = check_Account_changed(request)
+
+        if (hasProfileChanged):
+           updateProfileData(profile, request)
+           reps_helper.clear_user_reps(user)
+
+        if (hasAccountChanged):
+           updateUserData(postedUser, request)
+           reps_helper.clear_user_reps(user)  
+
+        #
+        return redirect(f"{reverse('dashboard')}?tab=setting") #redirect to dashboard with settings tab active
+
 def updateProfileData(profile, request):
     if request.POST.get("address_line1"):
         profile.address_line1 = request.POST.get('address_line1')
