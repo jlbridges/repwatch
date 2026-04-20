@@ -72,3 +72,36 @@ def get_representatives_from_address(address):
     except Exception as e:
         print("❌ Parsing error:", e)
         return None
+    
+
+def validate_address(address):
+    import os
+    import requests
+
+    api_key = os.getenv("GEOCODIO_API_KEY")
+
+    if not api_key:
+        return False, "Missing API key"
+
+    url = "https://api.geocod.io/v1.12/geocode"
+
+    params = {
+        "q": address,
+        "api_key": api_key
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=10)
+    except requests.RequestException:
+        return False, "Address validation failed"
+
+    if response.status_code != 200:
+        return False, "Invalid address"
+
+    data = response.json()
+
+    results = data.get("results", [])
+    if not results:
+        return False, "Address not found"
+
+    return True, None

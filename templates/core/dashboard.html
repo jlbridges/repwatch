@@ -393,7 +393,12 @@
         </div>
 
         <!-- Settings -->
-        <div class="tab-pane fade {% if request.GET.tab == 'setting' %}show active{% endif %}" id="setting">
+        {% if error_message %}
+            <div class="alert alert-danger">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <div class="tab-pane fade" id="setting">
             <div class="row g-4 mt-1 py-1">
                 <div class="col-12">
                     <div class="settings-box">
@@ -402,6 +407,7 @@
                         <!-- Personal Info -->
                         <form action="{% url 'dashboard' %}" method="post" class="settings-form p-4">
                             {% csrf_token %}
+                            <input type="hidden" name="form_type" value="account">
                             <input type="hidden" name="hidden_id" id="hidden_id" value="{{ user.id }}">
 
                             <h5 class="section-title mb-4">My Personal Info</h5>
@@ -439,7 +445,8 @@
                         <!-- Address -->
                         <form action="{% url 'dashboard' %}" method="post" class="settings-form p-4">
                             {% csrf_token %}
-
+                            <input type="hidden" name="form_type" value="address">
+                            <input type="hidden" name="hidden_id" value="{{ user.id }}">
                             <h5 class="section-title mb-4">My Current Address</h5>
 
                             <div class="row g-3">

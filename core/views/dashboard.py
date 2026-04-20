@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from core.models import Representative, BillHeader, Profile, rep_detail
-from core.services.geocodio_service import get_representatives_from_address
+from core.services.geocodio_service import get_representatives_from_address, validate_address
 from core.services.congress_service import get_member_details
 from core.services.bill_service import get_bill_headers, get_bill_details, save_bill_detail
 from django.core.paginator import Paginator
@@ -13,35 +13,74 @@ from core.views import reps_helper
 from core.forms import User
 
 
+
+
+
+@login_required
 @login_required
 def dashboard(request):
     user = request.user
-    #profile = Profile.objects.get(user=user)
+    profile, _ = Profile.objects.get_or_create(user=user)
+
+    error_message = None
+
+    if request.method == "POST":
+
+        address_line1 = request.POST.get("address_line1")
+        city = request.POST.get("city")
+        state = request.POST.get("state")
+        zipcode = request.POST.get("zipcode")
+
+        is_valid = (
+            all([address_line1, city, state, zipcode]) and
+            any(char.isdigit() for char in address_line1)
+        )
+
+        # INVALID
+        if not is_valid:
+            error_message = "Enter a valid address"
+
+        # VALID
+        else:
+            settings.updateProfileData(profile, request)
+            reps_helper.clear_user_reps(user)
+            return redirect("dashboard")
+        
+    # Handle personal info update
+    if request.POST.get("first_name") or request.POST.get("email"):
+        settings.updateUserData(user, request)
+        return redirect("dashboard")
 
 
-    try:
-        profile = Profile.objects.get(user=user)
-        if(request.POST.get('hidden_id')):
-          user_id = request.POST.get('hidden_id')          
-          postedUser  = User.objects.get(pk=user_id)                   
-       
-        hasProfileChanged = settings.check_Profile_changed(request)
-        hasAccountChanged = settings.check_Account_changed(request)
+    # =========================
+    # BILL API
+    # =========================
+    current_congress = 119
+    search_results = get_bill_headers(current_congress)
 
-        if (hasProfileChanged):
-           settings.updateProfileData(profile, request)
-           reps_helper.clear_user_reps(user)
+    # =========================
+    # SEARCH
+    # =========================
+    query = request.GET.get("q")
+    congress = request.GET.get("congress")
+    bill_type = request.GET.get("bill_type")
+    page_number = request.GET.get("page", 1)
 
-        if (hasAccountChanged):
-           settings.updateUserData(postedUser, request)
-           reps_helper.clear_user_reps(user)
+    #search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
 
-           return redirect(f"{reverse('dashboard')}?tab=setting") #redirect to dashboard with settings tab active
+    # if query:
+    #     bills = bills.filter(title__icontains=query)
 
-    except Profile.DoesNotExist:
-        profile = None     #handling none returns in test cases where profile is not created yet
+    # if congress:
+    #     bills = bills.filter(congress=congress)
 
+    # if bill_type:
+    #     search_results = search_results.filter(type=bill_type)
+    
+    search_results_count = len(search_results)
 
+    paginator = Paginator(search_results, 10)
+    search_results_page = paginator.get_page(page_number)
 
     # =========================
     # REPRESENTATIVES
@@ -59,7 +98,6 @@ def dashboard(request):
             rep_obj, _ = Representative.objects.update_or_create(
                 Bioguide_id=reps["bioguide_id"],
                 defaults={
-                    "name": reps.get("name"),
                     "district_number": reps.get("district_number"),
                     "first_name": reps.get("first_name"),
                     "last_name": reps.get("last_name"),
@@ -139,8 +177,9 @@ def dashboard(request):
         "show_layout": True,
         "reps": reps,
         "tracked_bills": tracked_bills,
-        "search_results": search_results,
-        
+        "search_results": search_results_page,
+        "search_results_count": search_results_count,
+        "error_message": error_message,
     })
 
 
@@ -175,9 +214,8 @@ def save_bill(request, bill_number):
         print(bill_number)
         current_details = get_bill_details(congress, bill_type, bill_number)
         print('bill detials returned')
-        #saves object to databasebill.saved_by.add(request.user)
-        print(current_details)
-        save_bill_detail(current_details, bill)
+        #saves object to database
+          #could be crashing everything
     except Exception as e:
         print("Error saving bill:", e)
 

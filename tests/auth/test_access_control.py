@@ -2,6 +2,7 @@
 # test_access_control.py
 
 import pytest
+from core.models import Profile
 pytestmark = pytest.mark.django_db  # utilizing the provided django DB
 
 

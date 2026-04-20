@@ -1,5 +1,6 @@
 # Richard Functions for changing user settings
 def updateProfileData(profile, request):
+    print("function called")
     if request.POST.get("address_line1"):
         profile.address_line1 = request.POST.get('address_line1')
 
@@ -16,6 +17,8 @@ def updateProfileData(profile, request):
         profile.zipcode = request.POST.get('zipcode')
 
     profile.save()
+
+    print("Saved", profile.address_line1)
 
 def updateUserData (postedUser, request):
     if request.POST.get('first_name'):
@@ -37,7 +40,7 @@ def updateUserData (postedUser, request):
 def check_Profile_changed(request):
         hasValue = False
         if request.POST.get("address_line1"):
-            hasValue - True
+            hasValue = True 
 
         if request.POST.get('address_line2'):
             hasValue = True
@@ -48,7 +51,7 @@ def check_Profile_changed(request):
         if request.POST.get('state'):
             hasValue = True
 
-        if request.POST.get('zipcode'):
+        if request.POST.get('zipcode'):  
             hasValue = True
 
         return hasValue
