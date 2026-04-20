@@ -403,7 +403,7 @@
                         <p class="text-start fs-5 mb-3">Account Settings</p>
 
                         <!-- Personal Info -->
-                        <form action="{% url 'dashboard' %}" method="post" class="settings-form p-4">
+                        <form action="{% url 'updateSettings' %}" method="post" class="settings-form p-4">
                             {% csrf_token %}
                             <input type="hidden" name="form_type" value="account">
                             <input type="hidden" name="hidden_id" id="hidden_id" value="{{ user.id }}">
@@ -441,7 +441,7 @@
                         <div class="settings-divider"></div>
 
                         <!-- Address -->
-                        <form action="{% url 'dashboard' %}" method="post" class="settings-form p-4">
+                        <form action="{% url 'updateSettings' %}" method="post" class="settings-form p-4">
                             {% csrf_token %}
                             <input type="hidden" name="form_type" value="address">
                             <input type="hidden" name="hidden_id" value="{{ user.id }}">
