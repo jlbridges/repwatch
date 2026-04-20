@@ -36,7 +36,6 @@ def dashboard(request):
             rep_obj, _ = Representative.objects.update_or_create(
                 Bioguide_id=reps["bioguide_id"],
                 defaults={
-                    "name": reps.get("name"),
                     "district_number": reps.get("district_number"),
                     "first_name": reps.get("first_name"),
                     "last_name": reps.get("last_name"),

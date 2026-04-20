@@ -71,5 +71,13 @@ def save_bill_detail(data, bill):
         number=data['bill']['number'],
         congress=data['bill']['congress'],
         type=data['bill']['type'],
+        bill_subject = data['bill']['policyArea']['name'],
+        originChamber = data['bill']['originChamber'],
+        sponsor_bioguideId = data['bill']['sponsors'][0]['bioguideId'],
+        firstName = data['bill']['sponsors'][0]['firstName'],
+        lastName = data['bill']['sponsors'][0]['lastName'],
+        party = data['bill']['sponsors'][0]['party'],
+        introducedDate = data['bill']['introducedDate'],
+        actionDesc = data['bill']['latestAction']['text']
     )
     bbd.save()
