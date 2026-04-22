@@ -1,4 +1,5 @@
 from django.views.decorators.http import require_POST
+from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from core.models import Profile
@@ -24,7 +25,7 @@ def updateSettings(request):
            updateUserData(postedUser, request)
            reps_helper.clear_user_reps(user)  
 
-        #
+        messages.success(request, f"Your setting have been successfully updated!")
         return redirect(f"{reverse('dashboard')}?tab=setting") #redirect to dashboard with settings tab active
 
 def updateProfileData(profile, request):

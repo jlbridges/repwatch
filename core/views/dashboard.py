@@ -74,8 +74,7 @@ def dashboard(request):
 
     current_congress = rep_details.congress if rep_details else None
     
-    search_results = get_bill_headers(current_congress)
-
+    search_results = get_bill_headers(current_congress)   
     # =========================
     # SEARCH
     # =========================
@@ -87,10 +86,9 @@ def dashboard(request):
     # =========================
     # TRACKED BILLS
     # =========================
-    #tracked_bills = BillHeader.objects.filter(saved_by=user)
-    #print(tracked_bills)
     tracked_bills = BillHeader.objects.filter(saved_by=user).prefetch_related("bill_details").order_by("-congress", "type", "number")
-   
+    print(tracked_bills)
+
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "reps": reps,
@@ -111,32 +109,27 @@ def save_bill(request, bill_number):
     user_id = request.POST.get("userid")
     print('saved_bill called!')
     try:
-        bill = BillHeader.objects.create(
-            
+        current_bill = BillHeader.objects.get(number=bill_number,congress=congress,type=bill_type)       
+        current_bill.saved_by.add(request.user)    
+        save_bill_detail(current_bill)
+        messages.success(request, f"Bill {current_bill.type}-{current_bill.number} successfully saved to your dashboard!")
+    except BillHeader.DoesNotExist:
+        print('Bill Not Found')
+        bill = BillHeader.objects.create(            
             number=bill_number,
             congress=congress,
             type=bill_type,
-            title = title,
-            # defaults={"title": title}
-            
-        )
-        bill.save()
-        
+            title = title,                      
+        )              
         bill.saved_by.add(request.user)
-        #Return a json object
-        print('bill detials called')
-        print(congress)
-        print(bill_type)
-        print(bill_number)
-        current_details = get_bill_details(congress, bill_type, bill_number)
-        print('bill detials returned')
-        #saves object to databasebill.saved_by.add(request.user)
-        print(current_details)
-        save_bill_detail(current_details, bill)
+        save_bill_detail(bill)
+        messages.success(request, f"Bill {bill.type}-{bill.number} successfully saved to your dashboard!")
+    except BillHeader.MultipleObjectsReturned:
+        print("You have to many")
     except Exception as e:
         print("Error saving bill:", e)
 
-    messages.success(request, f"Bill {bill.type}. {bill.number} successfully saved to your dashboard!")
+    #messages.success(request, f"Bill {bill.type}-{bill.number} successfully saved to your dashboard!")
 
     return redirect(f"{reverse('dashboard')}?tab=overview") #redirect to dashboard with overview tab active
 
