@@ -124,20 +124,21 @@ def dashboard(request):
     # Search Section
     #===============
     
-    search_results = BillHeader.objects.all().prefetch_related("bill_details").order_by("-congress", "type", "number")
+    search_results = get_bill_headers(current_congress) 
 
     query = request.GET.get("q")
     congress = request.GET.get("congress")
     bill_type = request.GET.get("bill_type")
+    page_number = request.GET.get("page", 1)  
 
-    if query:
-        search_results = search_results.filter(title__icontains=query)
+    # if query:
+    #     search_results = search_results.filter(title__icontains=query)
 
-    if congress:
-        search_results = search_results.filter(congress=congress)
+    # if congress:
+    #     search_results = search_results.filter(congress=congress)
 
-    if bill_type:
-        search_results = search_results.filter(type=bill_type)
+    # if bill_type:
+    #     search_results = search_results.filter(type=bill_type)
    
     # =========================
     # TRACKED BILLS
@@ -181,7 +182,7 @@ def save_bill(request, bill_number):
             type=bill_type or "",
             title=title or "",                      
         )
-        
+        bill.tracked_by.add(request.user)
         save_bill_detail(bill)
         messages.success(request, f"Bill {bill.type}-{bill.number} successfully saved to your dashboard!")
     except BillHeader.MultipleObjectsReturned:

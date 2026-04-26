@@ -382,14 +382,10 @@
         </div>
 
         <!-- Settings -->
-        {% if error_message %}
-            <div class="alert alert-danger">
-                {{ error_message }}
-            </div>
-        {% endif %}
-        <div class="tab-pane fade" id="setting">
-            <div class="row g-4 mt-1 py-1">
-                <div class="col-12">
+
+        <div class="tab-pane fade {% if request.GET.tab == 'setting' %}show active{% endif %}" id="setting">
+    <div class="row g-4 mt-1 py-1">
+        <div class="col-12">
                     <div class="settings-box">
                         <p class="text-start fs-5 mb-3">Account Settings</p>
 
