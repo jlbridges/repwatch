@@ -1,17 +1,32 @@
 import os
+import sys
+import re
 from smartystreets_python_sdk import StaticCredentials, ClientBuilder
 from smartystreets_python_sdk.us_street import Lookup
 
 
-
-
 def validate_address(address1, city, state, zipcode):
+
+    # HANDLE EMPTY INPUT FIRST
+    if not address1 or not city or not state or not zipcode:
+        return None
+
+    import re
+
+    if not re.match(r"^\d+\s+.+", address1):
+        return None
+
+    if not re.match(r"^\d{5}$", zipcode):
+        return None
+
+    if not re.match(r"^[A-Z]{2}$", state):
+        return None
 
     auth_id = os.getenv("SMARTY_AUTH_ID")
     auth_token = os.getenv("SMARTY_AUTH_TOKEN")
 
     if not auth_id or not auth_token:
-        raise ValueError("Smarty credentials not set")
+        return None   # ❗ do NOT raise
 
     credentials = StaticCredentials(auth_id, auth_token)
     client = ClientBuilder(credentials).build_us_street_api_client()
@@ -22,17 +37,17 @@ def validate_address(address1, city, state, zipcode):
     lookup.state = state
     lookup.zipcode = zipcode
 
-    client.send_lookup(lookup)
+    try:
+        client.send_lookup(lookup)
+    except Exception:
+        return None
 
-    print("SMARTY LOOKUP RESULT:", lookup.result)
-
-    # 🚨 If Smarty finds no results → address is fake
     if len(lookup.result) == 0:
         return None
 
     result = lookup.result[0]
 
-    if result.analysis.dpv_match_code != "Y":
+    if result.analysis.dpv_match_code not in ["Y", "S", "D"]:
         return None
 
     return {

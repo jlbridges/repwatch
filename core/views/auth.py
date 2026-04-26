@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
-
+from core.services.smarty_service import validate_address
 from core.forms import CustomUserRegister, EmailLoginForm
 from core.models import Representative
 
@@ -13,11 +13,28 @@ def registration(request):
     if request.method == "POST":
         form = CustomUserRegister(request.POST)
 
+        address_line1 = request.POST.get("address_line1")
+        city = request.POST.get("city")
+        state = request.POST.get("state")
+        zipcode = request.POST.get("zipcode")
+
+        validated = validate_address(address_line1, city, state, zipcode)
+
+        # ALWAYS HANDLE INVALID ADDRESS FIRST
+        if not validated:
+            return render(request, "signup.html", {
+                "form": form,
+                "error_message": "Enter a valid address",
+                "show_layout": True,
+                "page": "signup",
+            })
+
+        # THEN run form validation
         if form.is_valid():
             user = form.save()
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-
             return redirect("dashboard")
+
     else:
         form = CustomUserRegister()
 
@@ -62,20 +79,16 @@ def login_view(request):
 
 @require_POST
 def accountlogout(request):
-    logout(request)
+    user = request.user   # capture BEFORE logout to fix for testing
 
-    if request.user.is_authenticated:
-        user = request.user
-
-        # Remove user from representatives (ManyToMany)
+    if user.is_authenticated:
         reps = Representative.objects.filter(constituents=user)
 
         for rep in reps:
             rep.constituents.remove(user)
 
-            # OPTIONAL: delete rep if no more users attached
-            if rep.constituents.count() == 0:
-                rep.delete()
+            
 
-    logout(request)
+    logout(request)   #logout AFTER cleanup
+
     return redirect("homepage")

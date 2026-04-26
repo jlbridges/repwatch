@@ -5,45 +5,52 @@ from django.urls import reverse
 from core.models import Profile
 from core.forms import User
 from core.views import reps_helper
+from core.services.smarty_service import validate_address
 
 @require_POST
 def updateSettings(request):
-        user = request.user
-        profile = Profile.objects.get(user=user)
-        if(request.POST.get('hidden_id')):
-            user_id = request.POST.get('hidden_id')          
-            postedUser  = User.objects.get(pk=user_id)                   
-       
-        hasProfileChanged =  check_Profile_changed(request)
-        hasAccountChanged = check_Account_changed(request)
+    user = request.user
+    profile, _ = Profile.objects.get_or_create(user=user)
 
-        if (hasProfileChanged):
-           updateProfileData(profile, request)
-           reps_helper.clear_user_reps(user)
+    if request.POST.get('hidden_id'):
+        user_id = request.POST.get('hidden_id')
+        postedUser = User.objects.get(pk=user_id)
 
-        if (hasAccountChanged):
-           updateUserData(postedUser, request)
-           reps_helper.clear_user_reps(user)  
+    hasProfileChanged = check_Profile_changed(request)
+    hasAccountChanged = check_Account_changed(request)
 
-        messages.success(request, f"Your setting have been successfully updated!")
-        return redirect(f"{reverse('dashboard')}?tab=setting") #redirect to dashboard with settings tab active
+    if hasProfileChanged:
 
-def updateProfileData(profile, request):
+        address_line1 = request.POST.get("address_line1")
+        city = request.POST.get("city")
+        state = request.POST.get("state")
+        zipcode = request.POST.get("zipcode")
+
+        validated = validate_address(address_line1, city, state, zipcode)
+
+        # ❌ INVALID → do NOT save
+        if not validated:
+            messages.error(request, "Enter a valid address")
+            return redirect(f"{reverse('dashboard')}?tab=setting")
+
+        # ✅ VALID → save CLEAN data
+        updateProfileData(profile, validated)
+        reps_helper.clear_user_reps(user)
+
+    if hasAccountChanged:
+        updateUserData(postedUser, request)
+        reps_helper.clear_user_reps(user)
+
+    messages.success(request, "Your settings have been successfully updated!")
+    return redirect(f"{reverse('dashboard')}?tab=setting")
+
+def updateProfileData(profile, validated_data):
     print("function called")
-    if request.POST.get("address_line1"):
-        profile.address_line1 = request.POST.get('address_line1')
-
-    if request.POST.get('address_line2'):
-        profile.address_line2 = request.POST.get('address_line2')
-
-    if request.POST.get('city'):
-        profile.city = request.POST.get('city')
-
-    if request.POST.get('state'):
-       profile.state = 'NC'
-
-    if request.POST.get('zipcode'):
-        profile.zipcode = request.POST.get('zipcode')
+    #getting validated data to save the address so fakes are not allowed
+    profile.address_line1 = validated_data.get("address_line1")
+    profile.city = validated_data.get("city")
+    profile.state = validated_data.get("state")
+    profile.zipcode = validated_data.get("zipcode")
 
     profile.save()
 

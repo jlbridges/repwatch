@@ -99,7 +99,7 @@ class CustomUserRegister(UserCreationForm):
                 zipcode
             )
 
-            # 🚨 Reject fake addresses
+            # Reject fake addresses
             if not validated:
                 raise forms.ValidationError(
                     "Address could not be validated. Please enter a real address."
