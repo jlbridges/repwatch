@@ -237,33 +237,24 @@
 
                         <h6 class="bill-title">{{ bill.title }}</h6>
 
-                        <div class="bill-meta">
+                       <div class="bill-meta">
                             <span>Congress: {{ bill.congress }}</span>
                             <span>{{ bill.originChamberCode }}</span>
                         </div>
 
-                        {% if bill.sponsor %}
+                        
                         <p class="bill-sponsor">
-                            <strong>Sponsor:</strong> {{ bill.sponsor }}
-                        </p>
-                        {% endif %}
-
-                        {% if bill.bill_details.first.introducedDate %}
+                            <strong>Sponsor:</strong> {{ bill.bill_details.first.firstName }} {{ bill.bill_details.first.lastName }}
+                        </p>                        
                         <p class="bill-introduced">
                             <strong>Introduced:</strong> {{ bill.bill_details.first.introducedDate }}
-                        </p>
-                        {% endif %}
-
-                        <p class="bill-summary">
-                            <strong>Summary:</strong> {{ bill.bill_details.first.bill_summary }}
-                        </p>
-
-                        {% if bill.bill_details.first.latest_action %}
+                        </p>                        
                         <p class="bill-latest-action">
-                            <strong>Latest Action:</strong> {{ bill.bill_details.first.latest_action }}
+                            <strong>Latest Action:</strong> {{ bill.bill_details.first.actionDesc }}
+                        </p>                        
+                        <p class="bill-summary">
+                            <strong>Summary:</strong> {{ bill.bill_details.first.bill_summary|safe }}
                         </p>
-                        {% endif %}
-
                     </div>
                 </div>
                 {% empty %}

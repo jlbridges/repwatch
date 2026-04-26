@@ -106,7 +106,7 @@ class BillDetail(models.Model):
     lastName = models.CharField(max_length=35, blank=True)
     party = models.CharField(max_length=20, blank=True)
 
-    bill_summary = models.CharField(max_length=200, blank=True)
+    bill_summary = models.TextField(blank=True)
 
     originChamber = models.CharField(max_length=15, blank=True)
     currentChamber = models.CharField(max_length=15, blank=True)

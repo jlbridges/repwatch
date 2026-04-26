@@ -17,9 +17,7 @@ def get_bill_headers(congress):
     if response.status_code == 200:
         data = response.json()
         bills = data.get("bills", [])
-
         for bill in bills:
-
             number = bill.get("number")
             bill_type = bill.get("type")
             title = bill.get("title")
@@ -33,11 +31,7 @@ def get_bill_headers(congress):
                 "type": bill_type,
                 "title": title,
             }
-
             billList.append(leg_data)
-
-           
-
     else:
         print("Error fetching bills:", response.status_code)
 
@@ -51,25 +45,54 @@ def get_bill_details(congress, bill_type, bill_number):
         "api_key": settings.CONGRESS_API_KEY,
         "format": "json"
     }
-
     response = requests.get(url, params=params)
-
     if response.status_code != 200:
         return None
 
-    data = response.json()
-    
-    
+    data = response.json()     
     return data
+
+def get_bill_details_summary_API_call(summary_url):
+    url = summary_url
+
+    params = {
+        "api_key": settings.CONGRESS_API_KEY,
+        #"format": "json"
+    }
+    response = requests.get(url, params=params)
+    if response.status_code != 200:
+        return None
+
+    data = response.json()     
+    return data
+
 #implement bill details structure - list item added to a new function save_bill_detail
-def save_bill_detail(data, bill):
+def save_bill_detail(bill):
     print('data from save bill')
-    print(data)
+    print('bill detials called from Try')
+    data = get_bill_details(bill.congress, bill.type, bill.number)
+    print('bill detials returned from Try')
+    #print(data)
+    summary_url = data['bill']['summaries']['url']
+    #print(summary_url)
+    summary_result=get_bill_details_summary_API_call(summary_url)
+    #print(summary_result)
+    summary=summary_result['summaries'][0]['text']
+    #print(summary)
     # saves bill details to database
-    bbd = BillDetail.objects.create(
+    bbd = BillDetail.objects.update_or_create(
         bill_header = bill,
         number=data['bill']['number'],
         congress=data['bill']['congress'],
         type=data['bill']['type'],
+        bill_subject = data['bill']['policyArea']['name'],
+        originChamber = data['bill']['originChamber'],
+        sponsor_bioguideId = data['bill']['sponsors'][0]['bioguideId'],
+        firstName = data['bill']['sponsors'][0]['firstName'],
+        lastName = data['bill']['sponsors'][0]['lastName'],
+        party = data['bill']['sponsors'][0]['party'],
+        introducedDate = data['bill']['introducedDate'],
+        actionDesc = data['bill']['latestAction']['text'],
+        bill_summary=summary,
     )
-    bbd.save()
+    #bbd.save()
