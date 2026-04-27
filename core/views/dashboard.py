@@ -1,13 +1,19 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from core.models import Representative, BillHeader, Profile, rep_detail
 from core.services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
-from core.services.bill_service import get_bill_headers, get_bill_details, save_bill_detail
-from django.core.paginator import Paginator
+from core.services.bill_service import (
+    get_bill_headers,
+    get_bill_header_data,
+    save_bill_for_user,
+    remove_bill_for_user,
+    DuplicateBillError,
+)
 from core.views import settings_helper as settings
 from core.views import reps_helper
 from core.forms import User
@@ -67,33 +73,14 @@ def dashboard(request):
     reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
 
     # =========================
-    # BILL API
-    # =========================
-    rep_details = rep_detail.objects.filter(
-        Bioguide_id__constituents=user).exclude(congress__isnull=True).first()
-
-    current_congress = rep_details.congress if rep_details else None
-    
-    search_results = get_bill_headers(current_congress)   
-    # =========================
     # SEARCH
     # =========================
-    query = request.GET.get("q")
-    congress = request.GET.get("congress")
-    bill_type = request.GET.get("bill_type")
-    page_number = request.GET.get("page", 1)   
+    search_results = get_bill_header_data(user)
    
-    # =========================
-    # TRACKED BILLS
-    # =========================
-    tracked_bills = BillHeader.objects.filter(saved_by=user).prefetch_related("bill_details").order_by("-congress", "type", "number")
-    print(tracked_bills)
-
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "reps": reps,
-        "tracked_bills": tracked_bills,
-        "search_results": search_results,        
+        "search_results": search_results,
     })
 
 
@@ -103,35 +90,37 @@ def dashboard(request):
 @require_POST
 @login_required
 def save_bill(request, bill_number):
-    title = request.POST.get("title")
-    congress = request.POST.get("congress")
-    bill_type = request.POST.get("type")
-    user_id = request.POST.get("userid")
-    print('saved_bill called!')
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
-        current_bill = BillHeader.objects.get(number=bill_number,congress=congress,type=bill_type)       
-        current_bill.saved_by.add(request.user)    
-        save_bill_detail(current_bill)
-        messages.success(request, f"Bill {current_bill.type}-{current_bill.number} successfully saved to your dashboard!")
-    except BillHeader.DoesNotExist:
-        print('Bill Not Found')
-        bill = BillHeader.objects.create(            
+        bill, _ = save_bill_for_user(
+            request.user,
             number=bill_number,
-            congress=congress,
-            type=bill_type,
-            title = title,                      
-        )              
-        bill.saved_by.add(request.user)
-        save_bill_detail(bill)
-        messages.success(request, f"Bill {bill.type}-{bill.number} successfully saved to your dashboard!")
-    except BillHeader.MultipleObjectsReturned:
-        print("You have to many")
+            congress=request.POST.get("congress"),
+            bill_type=request.POST.get("type"),
+            title=request.POST.get("title"),
+        )
+    except DuplicateBillError as e:
+        print(e)
+        if is_ajax:
+            return JsonResponse(
+                {"ok": False, "error": "Duplicate bill records exist. Please contact support."},
+                status=500,
+            )
+        return redirect(f"{reverse('dashboard')}?tab=overview")
     except Exception as e:
         print("Error saving bill:", e)
+        if is_ajax:
+            return JsonResponse({"ok": False, "error": "Failed to save bill."}, status=500)
+        return redirect(f"{reverse('dashboard')}?tab=overview")
 
-    #messages.success(request, f"Bill {bill.type}-{bill.number} successfully saved to your dashboard!")
-
-    return redirect(f"{reverse('dashboard')}?tab=overview") #redirect to dashboard with overview tab active
+    if is_ajax:
+        return JsonResponse({
+            "ok": True,
+            "id": bill.id,
+            "message": f"Bill {bill.type}. {bill.number} saved to your dashboard!",
+        })
+    messages.success(request, f"Bill {bill.type}-{bill.number} successfully saved to your dashboard!")
+    return redirect(f"{reverse('dashboard')}?tab=overview")
 
 
 # =========================
@@ -140,10 +129,17 @@ def save_bill(request, bill_number):
 @require_POST
 @login_required
 def remove_bill(request, bill_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
-        bill = BillHeader.objects.get(id=bill_id)
-        bill.saved_by.remove(request.user)
+        bill = remove_bill_for_user(request.user, bill_id)
+        if is_ajax:
+            return JsonResponse({
+                "ok": True,
+                "message": f"Bill {bill.type}. {bill.number} removed from your dashboard.",
+            })
     except Exception as e:
         print("Error removing bill:", e)
+        if is_ajax:
+            return JsonResponse({"ok": False, "error": "Failed to remove bill."}, status=500)
 
-    return redirect(f"{reverse('dashboard')}?tab=mybills") # redirect to dashboard with mybills tab active 
+    return redirect(f"{reverse('dashboard')}?tab=mybills") # redirect to dashboard with mybills tab active

@@ -79,7 +79,9 @@ class BillHeader(models.Model):
     type = models.CharField(max_length=10, null=False, blank=True)
     title = models.CharField(max_length=200, null=False, blank=True)
     saved_by = models.ManyToManyField(User, blank=True)
-    
+
+    class Meta:
+        unique_together = ("number", "congress", "type")
 
     def __str__(self):
         return f"{self.title}"
