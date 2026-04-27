@@ -38,6 +38,12 @@
               <div class="error">{{ form.non_field_errors }}</div>
             {% endif %}
 
+            {% if error_message %}
+            <div class="text-danger small">
+              {{ error_message }}
+            </div>
+            {% endif %}
+
             <div class="form-group">
               {{ form.first_name.label_tag }}
               {{ form.first_name }}

@@ -1,0 +1,14 @@
+{
+    "python.analysis.extraPaths": [
+        "./core"
+    ],
+    "[html]": {
+        "editor.formatOnSave": false
+    },
+    "files.associations": {
+        "*.html": "django-html"
+    },
+    "[django-html]": {
+        "editor.formatOnSave": false
+    }
+}

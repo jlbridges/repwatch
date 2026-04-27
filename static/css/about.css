@@ -25,16 +25,16 @@
 
 .numbers-grid { display: flex; gap: 1rem; justify-content: center; align-items: stretch; }
 .number-card { background: transparent; border-radius: 6px; flex: 1 1 0; min-width: 160px; }
-.number-value { font-size: 2.25rem; font-weight: 800; color: #07203a; }
+.number-value { font-size: 2.25rem; font-weight: 780; color: var(--text-color); }
 
 [data-bs-theme="dark"] .number-value {
-  color: #ffffff;
+  color: var(--text-color);
 }
 
-.number-label { font-size: 1rem; color: #313f49; margin-top: 0.5rem; }
+.number-label { font-size: 1.1rem; color: var(--text-color); margin-top: 0.5rem; }
 
 [data-bs-theme="dark"] .number-label {
-  color: #b0b0b0;
+  color: var(--text-color);
 }
 
 /* CTA section */

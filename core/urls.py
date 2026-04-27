@@ -2,7 +2,11 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.urls import path, reverse_lazy
 
-from .views import homepage, dashboard, about, login_view#, representative_detail
+from core.views.auth import registration
+
+from core.views.dashboard import dashboard
+from core.views.auth import login_view, registration
+from core.views import homepage, about  
 
 urlpatterns = [
     path("", homepage, name="homepage"),
@@ -12,6 +16,10 @@ urlpatterns = [
     path("about/", about, name="about"),
 
     path("login/", login_view, name="login"),
+
+    path("register/", registration, name="register"),
+
+    
 
     # path(
     #     "representatives/<str:bioguide_id>/",
@@ -39,4 +47,4 @@ urlpatterns = [
         ),
         name="passwordChangeDone",
     ),
-]
+        ]

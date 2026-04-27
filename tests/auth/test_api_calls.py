@@ -4,7 +4,7 @@ import responses
 
 from core.services.geocodio_service import get_representatives_from_address
 
-GEOCODIO_URL = "https://api.geocod.io/v1.9/geocode"
+GEOCODIO_URL = "https://api.geocod.io/v1.12/geocode"
 
 
 @pytest.mark.django_db

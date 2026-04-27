@@ -1,7 +1,7 @@
 import os
 import requests
 
-BASE_URL = "https://api.geocod.io/v1.9/geocode"
+BASE_URL = "https://api.geocod.io/v1.12/geocode"
 
 
 def get_representatives_from_address(address):
@@ -19,11 +19,11 @@ def get_representatives_from_address(address):
     try:
         response = requests.get(BASE_URL, params=params, timeout=10)
     except requests.RequestException as e:
-        print("❌ Request failed:", e)
+        print(" Request failed:", e)
         return None
 
     if response.status_code != 200:
-        print("❌ Bad response:", response.status_code, response.text)
+        print("Bad response:", response.status_code, response.text)
         return None
 
     data = response.json()
@@ -32,12 +32,12 @@ def get_representatives_from_address(address):
     try:
         results = data.get("results", [])
         if not results:
-            print("❌ No results")
+            print("No results")
             return None
 
         districts = results[0].get("fields", {}).get("congressional_districts", [])
         if not districts:
-            print("❌ No districts")
+            print(" No districts")
             return None
 
         legislators = districts[0].get("current_legislators", [])
@@ -52,13 +52,13 @@ def get_representatives_from_address(address):
             bioguide_id = references.get("bioguide_id")
             if not bioguide_id:
                 continue
-
+            person_type = person.get("type")
             rep_data = {
                 "bioguide_id": bioguide_id,
-                "district_number": district_number,
+                "district_number": district_number if person_type == "representative" else 0,
                 "first_name": bio.get("first_name"),
                 "last_name": bio.get("last_name"),
-                "name": f"{bio.get('first_name')} {bio.get('last_name')}",
+                #"name": bio.get("name"),
                 "party": bio.get("party"),
                 "type": person.get("type"),
                 "photo_url": bio.get("photo_url"),
@@ -72,3 +72,36 @@ def get_representatives_from_address(address):
     except Exception as e:
         print("❌ Parsing error:", e)
         return None
+    
+
+def validate_address(address):
+    import os
+    import requests
+
+    api_key = os.getenv("GEOCODIO_API_KEY")
+
+    if not api_key:
+        return False, "Missing API key"
+
+    url = "https://api.geocod.io/v1.12/geocode"
+
+    params = {
+        "q": address,
+        "api_key": api_key
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=10)
+    except requests.RequestException:
+        return False, "Address validation failed"
+
+    if response.status_code != 200:
+        return False, "Invalid address"
+
+    data = response.json()
+
+    results = data.get("results", [])
+    if not results:
+        return False, "Address not found"
+
+    return True, None

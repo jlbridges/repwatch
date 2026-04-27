@@ -8,11 +8,11 @@ class Profile(models.Model):
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    address_line1 = models.CharField(max_length=35)
-    address_line2 = models.CharField(max_length=35, blank=True)
-    city = models.CharField(max_length=50)
-    state = models.CharField(max_length=2, choices=STATE_LIST)
-    zipcode = models.CharField(max_length=10)
+    address_line1 = models.CharField(max_length=35, blank=True, default="")
+    address_line2 = models.CharField(max_length=35, blank=True, default="")
+    city = models.CharField(max_length=50, blank=True, default="")
+    state = models.CharField(max_length=2, choices=STATE_LIST, blank=True, default="NC")
+    zipcode = models.CharField(max_length=10, blank=True, default="")
 
     class Meta:
         db_table = "repwatch_profile"
@@ -24,7 +24,6 @@ class Profile(models.Model):
 class Representative(models.Model):
     Bioguide_id = models.CharField(max_length=10, primary_key=True)
     constituents = models.ManyToManyField(User)
-    name = models.CharField(max_length=70, blank=False)
     district_number = models.IntegerField(null=False, default=0)
     first_name = models.CharField(max_length=35, blank=False, null=False)
     last_name = models.CharField(max_length=35, blank=False, null=False)
@@ -72,11 +71,14 @@ class committees(models.Model):
 
 
 class BillHeader(models.Model):
-    number = models.IntegerField(null=False, blank=True)
-    congress = models.IntegerField(null=False, blank=True)
-    originChamberCode = models.CharField(max_length=15, null=False, blank=True)
-    type = models.CharField(max_length=10, null=False, blank=True)
-    title = models.CharField(max_length=200, null=False, blank=True)
+    
+    number = models.IntegerField(null=True, blank=True)
+    congress = models.IntegerField(null=True, blank=True)
+    originChamberCode = models.CharField(max_length=15, null=True, blank=True)
+    type = models.CharField(max_length=10, null=True, blank=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
+    tracked_by = models.ManyToManyField(User, blank=True)
+    
 
     def __str__(self):
         return f"{self.title}"
@@ -103,7 +105,7 @@ class BillDetail(models.Model):
     lastName = models.CharField(max_length=35, blank=True)
     party = models.CharField(max_length=20, blank=True)
 
-    bill_summary = models.CharField(max_length=200, blank=True)
+    bill_summary = models.TextField(blank=True)
 
     originChamber = models.CharField(max_length=15, blank=True)
     currentChamber = models.CharField(max_length=15, blank=True)
