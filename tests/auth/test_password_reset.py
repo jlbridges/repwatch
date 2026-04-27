@@ -14,10 +14,14 @@ def test_password_reset_sends_email(client, test_user, password_reset_url):
     assert test_user.email.lower() in [e.lower() for e in mail.outbox[0].to]
 
 
+
 @pytest.mark.django_db
 def test_password_reset_for_unknown_email_is_silent(client, password_reset_url):
-    response = client.post(password_reset_url, {"email": "unknown@example.com"})
+    response = client.post(password_reset_url, {
+        "email": "unknown@example.com"
+    })
 
     assert response.status_code == 302
-    # allauth does NOT reveal whether the email exists
-    assert len(mail.outbox) == 0
+
+    # allauth always sends a generic email to prevent account enumeration
+    assert len(mail.outbox) == 1

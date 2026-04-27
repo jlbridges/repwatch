@@ -1,5 +1,6 @@
-.venv/
 __pycache__/
-*.py[cod]
-*$py.class
-db.sqlite3
+*.pyc
+*.pyo
+*.sqlite3
+.venv/
+.buttonbar.json

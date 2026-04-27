@@ -1,0 +1,9 @@
+/* Signup page styles - reuse login card styles with small tweaks */
+@import url('login.css');
+
+.auth-card.signup { padding-bottom: 1.5rem; }
+
+/* Slight adjustment for longer forms */
+.auth-card.signup input { padding: 0.65rem 0.65rem; }
+
+@media (max-width: 480px) { .auth-card.signup { padding: 1rem; } }

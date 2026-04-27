@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Password Updated{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/passwordChanges.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="login-section auth-page">
+    <div class="auth-wrap">
+        <div class="auth-columns d-flex w-100">
+
+            <div class="auth-left">
+                <a class="auth-logo" href="{% url 'homepage' %}">
+                    <img src="{% static 'images/logo_repwatch.png' %}" alt="RepWatch">
+                </a>
+                <h2 class="auth-heading">All set</h2>
+                <p class="auth-subhead">Your password has been changed.</p>
+            </div>
+
+            <div class="auth-right">
+                <div class="auth-card">
+                    <div class="auth-actions">
+                        <a class="btn-primary" href="{% url 'dashboard' %}" style="text-align:center; display:block;">
+                            Go back to your dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

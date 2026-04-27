@@ -8,7 +8,7 @@ pytestmark = pytest.mark.django_db # utilizing the provided django DB
 @pytest.mark.django_db  # checks agaisnt the provided login, and dashboard html provided
 def test_user_can_login(client, test_user, test_password, login_url):
     response = client.post(login_url, {
-        "login": test_user.username,   # allauth default
+        "email": test_user.email,   # allauth default
         "password": test_password,
     })
 
@@ -18,7 +18,7 @@ def test_user_can_login(client, test_user, test_password, login_url):
 
 def test_login_fails_with_wrong_password(client, test_user, login_url):
     response = client.post(login_url, {
-        "login": test_user.username,
+        "email": test_user.email,
         "password": "WrongPassword123",
     })
 

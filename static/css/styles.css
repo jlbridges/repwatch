@@ -1,0 +1,73 @@
+@import url('theme.css');
+
+/* Sticky footer layout */
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Universal smooth transitions - applies to all elements */
+* {
+    transition: background-color 0.25s ease-out, color 0.25s ease-out, border-color 0.25s ease-out, border 0.25s ease-out;
+}
+
+/* Disable transition on html temporarily if set to 'none' */
+html {
+    transition: background-color 0.25s ease-out, color 0.25s ease-out, border-color 0.25s ease-out;
+}
+
+/* Optional: If your navbar is dark by default, ensure the icons are visible */
+[data-bs-theme="dark"] .nav-link {
+    color: #fff;
+}
+
+/* Consistent text color in dark mode */
+[data-bs-theme="dark"] {
+    color: #ffffff;
+}
+
+[data-bs-theme="dark"] .text-dark,
+[data-bs-theme="dark"] .text-primary-emphasis {
+    color: #ffffff !important;
+}
+
+/* Ensure background classes respond to theme */
+[data-bs-theme="dark"] .bg-light {
+    background-color: #1a1a1a !important;
+}
+
+[data-bs-theme="dark"] .bg-white {
+    background-color: #252525 !important;
+}
+
+/* Error messages and form feedback styling */
+.error {
+    color: #d32f2f;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+[data-bs-theme="dark"] .error {
+    color: #ff6b6b;
+}
+
+/* Form labels styling */
+label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    transition: color 0.2s ease;
+}
+
+[data-bs-theme="dark"] label {
+    color: #ffffff;
+}

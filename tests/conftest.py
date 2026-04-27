@@ -1,6 +1,7 @@
-import pytest
+
 from django.contrib.auth.models import User
 from django.urls import reverse
+import pytest
 
 @pytest.fixture
 def test_password():
@@ -9,14 +10,14 @@ def test_password():
 @pytest.fixture
 def test_user(db, test_password):
     return User.objects.create_user(
-        username="John",
-        email="John@example.com",
+        username="john@example.com",
+        email="john@example.com",
         password=test_password,
     )
 
 @pytest.fixture
 def login_url():
-    return reverse("account_login")
+    return reverse("login")
 
 @pytest.fixture
 def logout_url():
@@ -29,3 +30,7 @@ def signup_url():
 @pytest.fixture
 def dashboard_url():
     return reverse("dashboard")
+
+@pytest.fixture
+def password_reset_url():
+    return reverse("account_reset_password")
