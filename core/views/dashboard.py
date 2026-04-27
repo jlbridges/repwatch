@@ -85,8 +85,8 @@ def dashboard(request):
 
             validated = validate_address(address_line1, city, state, zipcode)
 
-            # INVALID → show error
-            validated = validate_address(address_line1, city, state, zipcode)
+            # # INVALID → show error
+            # validated = validate_address(address_line1, city, state, zipcode)
 
         # Adding fallback for testing
         if not validated:
@@ -131,14 +131,14 @@ def dashboard(request):
     bill_type = request.GET.get("bill_type")
     page_number = request.GET.get("page", 1)  
 
-    # if query:
-    #     search_results = search_results.filter(title__icontains=query)
+    if query:
+        search_results = search_results.filter(title__icontains=query)
 
-    # if congress:
-    #     search_results = search_results.filter(congress=congress)
+    if congress:
+        search_results = search_results.filter(congress=congress)
 
-    # if bill_type:
-    #     search_results = search_results.filter(type=bill_type)
+    if bill_type:
+        search_results = search_results.filter(type=bill_type)
    
     # =========================
     # TRACKED BILLS
