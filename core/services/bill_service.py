@@ -52,14 +52,14 @@ def get_bill_details(congress, bill_type, bill_number):
     data = response.json()     
     return data
 
-def get_bill_details_summary_API_call(summary_url):
-    url = summary_url
-
+def get_bill_details_summary_API_call(congress, bill_type, bill_number):   
+    url = f"https://api.congress.gov/v3/bill/{congress}/{bill_type.lower()}/{bill_number}/summaries"     
     params = {
         "api_key": settings.CONGRESS_API_KEY,
-        #"format": "json"
+        "format": "json"
     }
     response = requests.get(url, params=params)
+  
     if response.status_code != 200:
         return None
 
@@ -67,18 +67,15 @@ def get_bill_details_summary_API_call(summary_url):
     return data
 
 #implement bill details structure - list item added to a new function save_bill_detail
-def save_bill_detail(bill):
-    print('data from save bill')
-    print('bill detials called from Try')
+def save_bill_detail(bill):    
     data = get_bill_details(bill.congress, bill.type, bill.number)
-    print('bill detials returned from Try')
-    #print(data)
-    summary_url = data['bill']['summaries']['url']
-    #print(summary_url)
-    summary_result=get_bill_details_summary_API_call(summary_url)
-    #print(summary_result)
-    summary=summary_result['summaries'][0]['text']
-    #print(summary)
+    try:         
+        summary_result=get_bill_details_summary_API_call(bill.congress, bill.type, bill.number)       
+        summary=summary_result['summaries'][0]['text']
+    except Exception as e:
+        print('error geting data from summary')
+        summary = 'not reproted'       
+    
     # saves bill details to database
     bbd = BillDetail.objects.update_or_create(
         bill_header = bill,
