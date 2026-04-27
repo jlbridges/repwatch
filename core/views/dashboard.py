@@ -166,9 +166,14 @@ def save_bill(request, bill_number):
     user_id = request.POST.get("userid")
     print('saved_bill called!')
     try:
-        current_bill = BillHeader.objects.get(id=bill_number)       
+        current_bill, created = BillHeader.objects.get_or_create(
+        number=bill_number,
+        congress=congress,
+        type=bill_type,
+        defaults={"title": title or ""}
+        )
+          
         current_bill.tracked_by.add(request.user)
-        #wrapping in try block for testing
         try:    
             save_bill_detail(current_bill)
         except Exception:
@@ -203,7 +208,7 @@ def save_bill(request, bill_number):
 def remove_bill(request, bill_id):
     try:
         bill = BillHeader.objects.get(id=bill_id)
-        bill.tracked_by.remove(request.user) # updated
+        bill.tracked_by.remove(request.user)
     except Exception as e:
         print("Error removing bill:", e)
 

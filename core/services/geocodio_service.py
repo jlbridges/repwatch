@@ -19,11 +19,11 @@ def get_representatives_from_address(address):
     try:
         response = requests.get(BASE_URL, params=params, timeout=10)
     except requests.RequestException as e:
-        print("❌ Request failed:", e)
+        print(" Request failed:", e)
         return None
 
     if response.status_code != 200:
-        print("❌ Bad response:", response.status_code, response.text)
+        print("Bad response:", response.status_code, response.text)
         return None
 
     data = response.json()
@@ -32,12 +32,12 @@ def get_representatives_from_address(address):
     try:
         results = data.get("results", [])
         if not results:
-            print("❌ No results")
+            print("No results")
             return None
 
         districts = results[0].get("fields", {}).get("congressional_districts", [])
         if not districts:
-            print("❌ No districts")
+            print(" No districts")
             return None
 
         legislators = districts[0].get("current_legislators", [])

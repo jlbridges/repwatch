@@ -24,7 +24,6 @@ class Profile(models.Model):
 class Representative(models.Model):
     Bioguide_id = models.CharField(max_length=10, primary_key=True)
     constituents = models.ManyToManyField(User)
-    #name = models.CharField(max_length=255, null=True, blank=True)
     district_number = models.IntegerField(null=False, default=0)
     first_name = models.CharField(max_length=35, blank=False, null=False)
     last_name = models.CharField(max_length=35, blank=False, null=False)

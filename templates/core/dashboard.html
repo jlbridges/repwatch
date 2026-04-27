@@ -128,7 +128,7 @@
                                 <!-- RIGHT SIDE -->
                                 <div class="bill-status-container">
                                     <span class="bill-status">
-                                        {{ detail.bill_status|default:"Status Unknown" }}
+                                        {{ bill.originChamber|default:"Status Unknown" }}
                                     </span>
                                 </div>
                             </div>
@@ -224,7 +224,7 @@
                             <div>
                                 <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
                                 <span class="bill-status">
-                                    {{ bill.bill_details.first.bill_status }}
+                                    {{ bill.bill_details.first.bill_subject }}
                                 </span>
                             </div>
                             <form method="POST" action="{% url 'remove_bill' bill.id %}">
@@ -239,7 +239,7 @@
 
                        <div class="bill-meta">
                             <span>Congress: {{ bill.congress }}</span>
-                            <span>{{ bill.originChamberCode }}</span>
+                            <span>{{ bill.bill_details.first.originChamber }}</span>
                         </div>
 
                         
@@ -334,7 +334,7 @@
                                                         </span>
 
                                                         <span class="bill-status">
-                                                            {{ detail.bill_status|default:"Status Unknown" }}
+                                                            {{ bill.originChamber|default:"Status Unknown" }}
                                                         </span>
                                                     </div>
 
