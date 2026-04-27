@@ -20,9 +20,9 @@ from core.services.smarty_service import validate_address
 def dashboard(request):
     user = request.user
     try:
-        profile, _ = Profile.objects.get_or_create(user=user)   #need this line for testing - and to kill the tuple
+        profile, _ = Profile.objects.get_or_create(user=user)   
     except Profile.DoesNotExist:
-        profile = None     #handling none returns in test cases where profile is not created yet
+        profile = None     
     # =========================
     # REPRESENTATIVES
     # =========================
@@ -72,7 +72,7 @@ def dashboard(request):
     reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
 
     # =========================
-    # HANDLE ADDRESS UPDATE (Needed For Testing)
+    # HANDLE ADDRESS UPDATE 
     # =========================
     if request.method == "POST":
 
