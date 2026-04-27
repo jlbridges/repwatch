@@ -72,13 +72,15 @@ class committees(models.Model):
 
 class BillHeader(models.Model):
     
-    number = models.IntegerField(null=True, blank=True)
-    congress = models.IntegerField(null=True, blank=True)
-    originChamberCode = models.CharField(max_length=15, null=True, blank=True)
-    type = models.CharField(max_length=10, null=True, blank=True)
-    title = models.CharField(max_length=200, null=True, blank=True)
-    tracked_by = models.ManyToManyField(User, blank=True)
-    
+    number = models.IntegerField(null=False, blank=True)
+    congress = models.IntegerField(null=False, blank=True)
+    originChamberCode = models.CharField(max_length=15, null=False, blank=True)
+    type = models.CharField(max_length=10, null=False, blank=True)
+    title = models.CharField(max_length=200, null=False, blank=True)
+    saved_by = models.ManyToManyField(User, blank=True)
+
+    class Meta:
+        unique_together = ("number", "congress", "type")
 
     def __str__(self):
         return f"{self.title}"
