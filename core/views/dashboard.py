@@ -132,13 +132,11 @@ def dashboard(request):
     page_number = request.GET.get("page", 1)  
 
     if query:
-        search_results = search_results.filter(title__icontains=query)
-
+        search_results = [b for b in search_results if query.lower() in b.get("title", "").lower()]
     if congress:
-        search_results = search_results.filter(congress=congress)
-
+        search_results = [b for b in search_results if str(b.get("congress")) == congress]
     if bill_type:
-        search_results = search_results.filter(type=bill_type)
+        search_results = [b for b in search_results if b.get("type") == bill_type]
    
     # =========================
     # TRACKED BILLS

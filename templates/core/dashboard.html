@@ -17,6 +17,13 @@
         {% endfor %}
     {% endif %}
 
+    {% if error_message %}
+        <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+            {{ error_message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endif %}
+
     <div class="section1 pb-2">
         <div class="heading">
             <p>Your Dashboard</p>
