@@ -114,9 +114,11 @@ async function onOverviewTabActivated() {
     if (!container) return;
     try {
         const res = await fetch('/tracked-bills/', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        populateOverviewBillsList(data.bills ?? []);
+        populateOverviewBillsList(data?.bills ?? []);
     } catch (err) {
+        console.error('tracked-bills fetch failed:', err);
         container.innerHTML = '';
         const p = document.createElement('p');
         p.className = 'text-muted mb-0';
@@ -163,12 +165,14 @@ async function onMyBillsTabActivated() {
     // !!! this attempts to refresh bills from server without re-rendering entire view
     try {
         const res = await fetch('/tracked-bills/', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        const bills = data.bills ?? [];
+        const bills = data?.bills ?? [];
         savedBillsIndex.clear();
         bills.forEach(b => savedBillsIndex.set(billKey(b), b.id));
         populateMyBillsList(bills);
     } catch (err) {
+        console.error('tracked-bills fetch failed:', err);
         container.innerHTML = '';
         const col = document.createElement('div');
         col.className = 'col-12';
