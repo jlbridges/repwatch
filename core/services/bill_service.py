@@ -76,17 +76,20 @@ def get_bill_headers(congress):
         bills = data.get("bills", [])
         for bill in bills:
             number = bill.get("number")
+            originChamber = bill.get("originChamber")
             bill_type = bill.get("type")
             title = bill.get("title")
+            
 
             if not number or not bill_type:
                 continue
 
             leg_data = {
                 "number": number,
-                "congress": congress,   # ✅ use passed value
+                "congress": congress, 
                 "type": bill_type,
                 "title": title,
+                "originChamber":originChamber
             }
             billList.append(leg_data)
 
