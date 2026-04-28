@@ -1,13 +1,19 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from core.models import Representative, BillHeader, Profile, rep_detail
 from core.services.geocodio_service import get_representatives_from_address
 from core.services.congress_service import get_member_details
-from core.services.bill_service import get_bill_headers, get_bill_details, save_bill_detail
-from django.core.paginator import Paginator
+from core.services.bill_service import (
+    get_bill_headers,
+    get_bill_header_data,
+    save_bill_for_user,
+    remove_bill_for_user,
+    DuplicateBillError,
+)
 from core.views import settings_helper as settings
 from core.views import reps_helper
 from core.forms import User
@@ -72,83 +78,14 @@ def dashboard(request):
     reps = Representative.objects.filter(constituents=user).prefetch_related("rep_details")
 
     # =========================
-    # HANDLE ADDRESS UPDATE 
+    # SEARCH
     # =========================
-    if request.method == "POST":
-
-        address_line1 = request.POST.get("address_line1")
-        city = request.POST.get("city")
-        state = request.POST.get("state")
-        zipcode = request.POST.get("zipcode")
-
-        if address_line1 and city and state and zipcode:
-
-            validated = validate_address(address_line1, city, state, zipcode)
-
-            # # INVALID → show error
-            # validated = validate_address(address_line1, city, state, zipcode)
-
-        # Adding fallback for testing
-        if not validated:
-            # allow valid test addresses (like "123 Main St")
-            if address_line1[0].isdigit():
-                validated = {
-                    "address_line1": address_line1,
-                    "city": city,
-                    "state": state,
-                    "zipcode": zipcode
-                }
-            else:
-                return render(request, "core/dashboard.html", {
-                    "error_message": "Enter a valid address"
-                })
-
-            #VALID → SAVE
-            profile.address_line1 = validated.get("address_line1", "")
-            profile.city = validated.get("city", "")
-            profile.state = validated.get("state", "")
-            profile.zipcode = validated.get("zipcode", "")
-            profile.save()
-
-            return redirect("dashboard")
-
-    # =========================
-    # BILL API
-    # =========================
-    rep_details = rep_detail.objects.filter(
-        Bioguide_id__constituents=user).exclude(congress__isnull=True).first()
-
-    current_congress = rep_details.congress if rep_details else None
-
-    #===============
-    # Search Section
-    #===============
-    
-    search_results = get_bill_headers(current_congress) 
-
-    query = request.GET.get("q")
-    congress = request.GET.get("congress")
-    bill_type = request.GET.get("bill_type")
-    page_number = request.GET.get("page", 1)  
-
-    if query:
-        search_results = [b for b in search_results if query.lower() in b.get("title", "").lower()]
-    if congress:
-        search_results = [b for b in search_results if str(b.get("congress")) == congress]
-    if bill_type:
-        search_results = [b for b in search_results if b.get("type") == bill_type]
+    search_results = get_bill_header_data(user)
    
-    # =========================
-    # TRACKED BILLS
-    # =========================
-    tracked_bills = BillHeader.objects.filter(tracked_by=user).prefetch_related("bill_details").order_by("-congress", "type", "number")
-    print(tracked_bills)
-
     return render(request, "core/dashboard.html", {
         "show_layout": True,
         "reps": reps,
-        "tracked_bills": tracked_bills,
-        "search_results": search_results,        
+        "search_results": search_results,
     })
 
 
@@ -158,44 +95,37 @@ def dashboard(request):
 @require_POST
 @login_required
 def save_bill(request, bill_number):
-    title = request.POST.get("title")
-    congress = request.POST.get("congress")
-    bill_type = request.POST.get("type")
-    user_id = request.POST.get("userid")
-    print('saved_bill called!')
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
-        current_bill, created = BillHeader.objects.get_or_create(
-        number=bill_number,
-        congress=congress,
-        type=bill_type,
-        defaults={"title": title or ""}
-        )
-          
-        current_bill.tracked_by.add(request.user)
-        try:    
-            save_bill_detail(current_bill)
-        except Exception:
-            pass
-        messages.success(request, f"Bill {current_bill.type}-{current_bill.number} successfully saved to your dashboard!")
-    except BillHeader.DoesNotExist:
-        print('Bill Not Found')
-        bill = BillHeader.objects.create(            
+        bill, _ = save_bill_for_user(
+            request.user,
             number=bill_number,
-            congress=congress or 0,
-            type=bill_type or "",
-            title=title or "",                      
+            congress=request.POST.get("congress"),
+            bill_type=request.POST.get("type"),
+            title=request.POST.get("title"),
         )
-        bill.tracked_by.add(request.user)
-        save_bill_detail(bill)
-        messages.success(request, f"Bill {bill.type}-{bill.number} successfully saved to your dashboard!")
-    except BillHeader.MultipleObjectsReturned:
-        print("You have to many")
+    except DuplicateBillError as e:
+        print(e)
+        if is_ajax:
+            return JsonResponse(
+                {"ok": False, "error": "Duplicate bill records exist. Please contact support."},
+                status=500,
+            )
+        return redirect(f"{reverse('dashboard')}?tab=overview")
     except Exception as e:
         print("Error saving bill:", e)
+        if is_ajax:
+            return JsonResponse({"ok": False, "error": "Failed to save bill."}, status=500)
+        return redirect(f"{reverse('dashboard')}?tab=overview")
 
-    #messages.success(request, f"Bill {bill.type}-{bill.number} successfully saved to your dashboard!")
-
-    return redirect(f"{reverse('dashboard')}?tab=overview") #redirect to dashboard with overview tab active
+    if is_ajax:
+        return JsonResponse({
+            "ok": True,
+            "id": bill.id,
+            "message": f"Bill {bill.type}. {bill.number} saved to your dashboard!",
+        })
+    messages.success(request, f"Bill {bill.type}-{bill.number} successfully saved to your dashboard!")
+    return redirect(f"{reverse('dashboard')}?tab=overview")
 
 
 # =========================
@@ -204,10 +134,17 @@ def save_bill(request, bill_number):
 @require_POST
 @login_required
 def remove_bill(request, bill_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
-        bill = BillHeader.objects.get(id=bill_id)
-        bill.tracked_by.remove(request.user)
+        bill = remove_bill_for_user(request.user, bill_id)
+        if is_ajax:
+            return JsonResponse({
+                "ok": True,
+                "message": f"Bill {bill.type}. {bill.number} removed from your dashboard.",
+            })
     except Exception as e:
         print("Error removing bill:", e)
+        if is_ajax:
+            return JsonResponse({"ok": False, "error": "Failed to remove bill."}, status=500)
 
-    return redirect(f"{reverse('dashboard')}?tab=mybills") # redirect to dashboard with mybills tab active 
+    return redirect(f"{reverse('dashboard')}?tab=mybills") # redirect to dashboard with mybills tab active

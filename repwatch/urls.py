@@ -22,6 +22,7 @@ from django.urls import path, include
 from core import views as core_views
 from core.views.dashboard import save_bill
 from core.views.dashboard import remove_bill
+from core.views.bills_helper import tracked_bills_json
 from core.views.settings_helper import updateSettings
 
 urlpatterns = [
@@ -33,6 +34,7 @@ urlpatterns = [
     path("accounts/logout/", core_views.accountlogout, name="accountlogout"),
     path("save-bill/<str:bill_number>/", save_bill, name="save_bill"),
     path("remove-bill/<int:bill_id>/", remove_bill, name="remove_bill"),
+    path("tracked-bills/", tracked_bills_json, name="tracked_bills_json"),
     path("settings/", updateSettings, name="updateSettings"),
 
     # Allauth routes
