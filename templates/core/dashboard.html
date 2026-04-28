@@ -5,6 +5,77 @@
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1">
 {% endblock %}
 
+{% block extra_scripts %}
+{{ search_results|json_script:"search-results-data" }}
+<script src="{% static 'js/bills.js' %}"></script>
+
+<template id="overview-bill-card-template">
+    <div class="bill-card">
+        <div class="bill-info">
+            <div class="bill-code" data-field="code"></div>
+            <div class="bill-subtitle" data-field="title"></div>
+        </div>
+    </div>
+</template>
+
+<template id="my-bill-card-template">
+    <div class="col-md-6">
+        <div class="my-bills-box">
+            <div class="bill-card-top">
+                <div>
+                    <span class="bill-number" data-field="code"></span>
+                    <span class="bill-status" data-field="status"></span>
+                </div>
+                <form method="POST" data-field="form">
+                    <input type="hidden" name="csrfmiddlewaretoken" data-field="csrf">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                </form>
+            </div>
+            <h6 class="bill-title" data-field="title"></h6>
+            <div class="bill-meta">
+                <span data-field="congress"></span>
+                <span data-field="chamber"></span>
+            </div>
+            <p class="bill-introduced" data-field="introduced-row" hidden>
+                <strong>Introduced:</strong> <span data-field="introduced"></span>
+            </p>
+            <p class="bill-summary" data-field="summary-row" hidden>
+                <strong>Summary:</strong> <span data-field="summary"></span>
+            </p>
+            <p class="bill-latest-action" data-field="action-row" hidden>
+                <strong>Latest Action:</strong> <span data-field="action"></span>
+            </p>
+        </div>
+    </div>
+</template>
+
+<template id="search-bill-card-template">
+    <div class="bill-card search-bill-card">
+        <div class="search-bill-main">
+            <div class="bill-info">
+                <div class="bill-topline">
+                    <span class="bill-code" data-field="code"></span>
+                </div>
+                <div class="bill-subtitle" data-field="title"></div>
+                <div class="search-bill-meta">
+                    <span data-field="congress"></span>
+                </div>
+            </div>
+            <div class="bill-card-actions ms-auto left-gap-2">
+                <form method="POST" data-field="form">
+                    <input type="hidden" name="csrfmiddlewaretoken" data-field="csrf">
+                    <input type="hidden" name="title" data-field="save-title">
+                    <input type="hidden" name="congress" data-field="save-congress">
+                    <input type="hidden" name="type" data-field="save-type">
+                    <input type="hidden" name="userid" data-field="save-userid">
+                    <button type="submit" data-field="button"></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
 {% block content %}
 <div class="container px-1">
 
@@ -114,38 +185,7 @@
                     <div class="overview-box">
                         <p class="text-start fs-5">Tracked Legislation</p>
 
-                        {% if tracked_bills %}
-                        <div class="bill-list">
-
-                            {% for bill in tracked_bills %}
-                            {% with detail=bill.bill_details.first %}
-                            <div class="bill-card">
-
-                                <!-- LEFT SIDE -->
-                                <div class="bill-info">
-                                    <div class="bill-code">
-                                        {{ bill.type }}. {{ bill.number }}
-                                    </div>
-
-                                    <div class="bill-subtitle">
-                                        {{ bill.title|truncatechars:80 }}
-                                    </div>
-                                </div>
-
-                                <!-- RIGHT SIDE -->
-                                <div class="bill-status-container">
-                                    <span class="bill-status">
-                                        {{ bill.originChamber|default:"Status Unknown" }}
-                                    </span>
-                                </div>
-                            </div>
-                            {% endwith %}
-                            {% endfor %}
-
-                        </div>
-                        {% else %}
-                        <p class="text-muted mb-0">No bills tracked yet.</p>
-                        {% endif %}
+                        <div class="bill-list" id="overview-bill-list"></div>
 
                     </div>
                 </div>
@@ -223,52 +263,8 @@
 
         <!-- My Bills -->
         <div class="tab-pane fade {% if request.GET.tab == 'mybills' %}show active{% endif %}" id="mybills">
-            <div class="row g-4 mt-1 py-1">
-                {% for bill in tracked_bills %}
-                <div class="col-md-6">
-                    <div class="my-bills-box">
-                        <div class="bill-card-top">
-                            <div>
-                                <span class="bill-number">{{ bill.type }}. {{ bill.number }}</span>
-                                <span class="bill-status">
-                                    {{ bill.bill_details.first.bill_subject }}
-                                </span>
-                            </div>
-                            <form method="POST" action="{% url 'remove_bill' bill.id %}">
-                                {% csrf_token %}
-                                <button class="btn btn-sm btn-outline-danger">
-                                    Remove
-                                </button>
-                            </form>
-                        </div>
+            <div class="row g-4 mt-1 py-1" id="my-bills-list">
 
-                        <h6 class="bill-title">{{ bill.title }}</h6>
-
-                       <div class="bill-meta">
-                            <span>Congress: {{ bill.congress }}</span>
-                            <span>{{ bill.bill_details.first.originChamber }}</span>
-                        </div>
-
-                        
-                        <p class="bill-sponsor">
-                            <strong>Sponsor:</strong> {{ bill.bill_details.first.firstName }} {{ bill.bill_details.first.lastName }}
-                        </p>                        
-                        <p class="bill-introduced">
-                            <strong>Introduced:</strong> {{ bill.bill_details.first.introducedDate }}
-                        </p>                        
-                        <p class="bill-latest-action">
-                            <strong>Latest Action:</strong> {{ bill.bill_details.first.actionDesc }}
-                        </p>                        
-                        <p class="bill-summary">
-                            <strong>Summary:</strong> {{ bill.bill_details.first.bill_summary|safe }}
-                        </p>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="col-12">
-                    <p class="text-muted mb-0">No saved bills yet.</p>
-                </div>
-                {% endfor %}
             </div>
         </div>
 
@@ -290,30 +286,17 @@
 
                                     <div class="mb-3">
                                         <label class="form-label">Keyword</label>
-                                        <input type="text" name="q" class="form-control">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Congress</label>
-                                        <select name="congress" class="form-select">
-                                            <option value="">All Congress</option>
-                                            <option value="118">118</option>
-                                            <option value="119">119</option>
-                                        </select>
+                                        <input type="text" name="q" class="form-control" id="bill-search-keyword">
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label">Bill Type</label>
-                                        <select name="bill_type" class="form-select">
+                                        <select name="bill_type" class="form-select" id="bill-search-type-selector">
                                             <option value="">All Types</option>
                                             <option value="h">House</option>
                                             <option value="s">Senate</option>
                                         </select>
                                     </div>
-
-                                    <button type="submit" class="btn btn-primary w-100 mt-2">
-                                        Search
-                                    </button>
 
                                 </div>
                             </div>
@@ -325,60 +308,18 @@
 
                                     <div class="results-header">
                                         <h5 class="section-title mb-0">Bills</h5>
-                                        <span class="results-count">{{ search_results_count }} results</span>
+                                        <span class="results-count" id="results-count"></span>
                                     </div>
 
                                     <div class="bill-list">
-                                        {% for bill in search_results %}
-                                        
-                                        <div class="bill-card search-bill-card">
-
-                                            <div class="search-bill-main">
-                                                <div class="bill-info">
-                                                    <div class="bill-topline">
-                                                        <span class="bill-code">
-                                                            {{ bill.type }} {{ bill.number }}
-                                                        </span>
-
-                                                        <span class="bill-status">
-                                                            {{ bill.originChamber|default:"Status Unknown" }}
-                                                        </span>
-                                                    </div>
-
-                                                    <div class="bill-subtitle">
-                                                        {{ bill.title }}
-                                                    </div>
-
-                                                    <div class="search-bill-meta">
-                                                        <span>Congress: {{ bill.congress }}</span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="bill-card-actions ms-auto left-gap-2">
-                                                    <form method="POST" action="{% url 'save_bill' bill.number %}">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="title" value="{{ bill.title }}">
-                                                        <input type="hidden" name="congress"
-                                                            value="{{ bill.congress }}">
-                                                        <input type="hidden" name="type" value="{{ bill.type }}">
-                                                        <input type="hidden" name="userid" value="{{ user.id }}">
-
-                                                        <button type="submit"
-                                                            class="btn btn-primary btn-sm save-bill-btn">
-                                                            Save Bill
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                       
-                                        {% empty %}
-                                        <p class="text-muted mb-0">No bills found.</p>
-                                        {% endfor %}
+                                        <!-- Populated by client when needed in search.js -->
                                     </div>
 
-                                   
+                                    <div id="bill-list-page-selector" class="d-flex align-items-center justify-content-center gap-2 mt-3">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-search-page="prev">Previous</button>
+                                        <span class="small text-muted">Page <span data-search-page-current>1</span></span>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-search-page="next">Next</button>
+                                    </div>
                                 </div>
                             </div>
 
