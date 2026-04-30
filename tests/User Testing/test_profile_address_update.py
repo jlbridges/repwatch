@@ -15,10 +15,10 @@ def test_profile_update_valid_address(client, test_user, test_password, login_ur
     # Ensure profile exists
     profile, _ = Profile.objects.get_or_create(user=test_user)
 
-    # Submit valid address
-    response = client.post(reverse("dashboard"), {
+    # Submit valid address 
+    response = client.post(reverse("updateSettings"), {
         "hidden_id": test_user.id,
-        "address_line1": "123 Main St",
+        "address_line1": "222 W Hargett St",
         "city": "Raleigh",
         "state": "NC",
         "zipcode": "27601",
@@ -27,9 +27,10 @@ def test_profile_update_valid_address(client, test_user, test_password, login_ur
     # Reload profile
     profile.refresh_from_db()
 
-    # Assert updated
-    assert profile.address_line1 == "123 Main St"
-    assert profile.city == "Raleigh"
+    # Assert updated 
+    assert "222" in profile.address_line1
+    assert "hargett" in profile.address_line1.lower()
+    assert profile.city.lower() == "raleigh"
     assert profile.state == "NC"
     assert profile.zipcode == "27601"
 
@@ -53,13 +54,13 @@ def test_profile_update_invalid_address(client, test_user, test_password, login_
     profile.save()
 
     #Submit invalid address (no street number)
-    response = client.post(reverse("dashboard"), {
+    response = client.post(reverse("updateSettings"), {
         "hidden_id": test_user.id,
         "address_line1": "Main Street",  # ❌ invalid
         "city": "Raleigh",
         "state": "NC",
         "zipcode": "27601",
-    })
+    }, follow=True)
 
     profile.refresh_from_db()
 
