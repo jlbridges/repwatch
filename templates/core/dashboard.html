@@ -12,7 +12,10 @@
 <template id="overview-bill-card-template">
     <div class="bill-card">
         <div class="bill-info">
-            <div class="bill-code" data-field="code"></div>
+            <div class="bill-topline">
+                <div class="bill-code" data-field="code"></div>
+                <span class="bill-origin-pill" data-field="origin"></span>
+            </div>
             <div class="bill-subtitle" data-field="title"></div>
         </div>
     </div>
@@ -22,9 +25,9 @@
     <div class="col-md-6">
         <div class="my-bills-box">
             <div class="bill-card-top">
-                <div>
+                <div class="bill-topline">
                     <span class="bill-number" data-field="code"></span>
-                    <span class="bill-status" data-field="status"></span>
+                    <span class="bill-origin-pill" data-field="origin"></span>
                 </div>
                 <form method="POST" data-field="form">
                     <input type="hidden" name="csrfmiddlewaretoken" data-field="csrf">
@@ -39,11 +42,11 @@
             <p class="bill-introduced" data-field="introduced-row" hidden>
                 <strong>Introduced:</strong> <span data-field="introduced"></span>
             </p>
-            <p class="bill-summary" data-field="summary-row" hidden>
-                <strong>Summary:</strong> <span data-field="summary"></span>
-            </p>
             <p class="bill-latest-action" data-field="action-row" hidden>
                 <strong>Latest Action:</strong> <span data-field="action"></span>
+            </p>
+            <p class="bill-summary" data-field="summary-row">
+                <strong>Summary:</strong> <span data-field="summary"></span>
             </p>
         </div>
     </div>
@@ -55,6 +58,7 @@
             <div class="bill-info">
                 <div class="bill-topline">
                     <span class="bill-code" data-field="code"></span>
+                    <span class="bill-origin-pill" data-field="origin"></span>
                 </div>
                 <div class="bill-subtitle" data-field="title"></div>
                 <div class="search-bill-meta">
@@ -285,7 +289,7 @@
                                     <h5 class="section-title mb-3">Search Filters</h5>
 
                                     <div class="mb-3">
-                                        <label class="form-label">Keyword</label>
+                                        <label class="form-label">Title Search</label>
                                         <input type="text" name="q" class="form-control" id="bill-search-keyword">
                                     </div>
 
@@ -307,7 +311,7 @@
                                 <div class="search-results-panel">
 
                                     <div class="results-header">
-                                        <h5 class="section-title mb-0">Bills</h5>
+                                        <h5 class="section-title mb-0">Available Bills</h5>
                                         <span class="results-count" id="results-count"></span>
                                     </div>
 

@@ -18,11 +18,11 @@ def test_user_can_remove_saved_bill(client, test_user, test_password, login_url)
         title="Test Bill"
     )
 
-    bill.tracked_by.add(test_user)
+    bill.saved_by.add(test_user)
 
     response = client.post(reverse("remove_bill", args=[bill.id]))
 
     bill.refresh_from_db()
 
-    assert test_user not in bill.tracked_by.all()
+    assert test_user not in bill.saved_by.all()
     assert response.status_code == 302

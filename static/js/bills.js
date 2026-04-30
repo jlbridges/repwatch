@@ -95,6 +95,14 @@ function fields(root) {
     return map;
 }
 
+// Turns a chamber code like "H"/"S" into "House"/"Senate" for display
+function chamberLabel(code) {
+    const c = (code ?? '').toString().trim().toUpperCase();
+    if (c.startsWith('H')) return 'House';
+    if (c.startsWith('S')) return 'Senate';
+    return '';
+}
+
 // Shows a card row if there's a value, hides it if not — keeps cards from looking empty
 function setOptionalRow(rowEl, valueEl, value) {
     if (value) {
@@ -152,6 +160,7 @@ function buildOverviewBillCard(bill) {
 
     f.code.textContent = `${bill.type ?? ''}. ${bill.number ?? ''}`;
     f.title.textContent = title.length > 80 ? title.slice(0, 79) + '…' : title;
+    f.origin.textContent = chamberLabel(bill.type);
     return card;
 }
 
@@ -212,13 +221,14 @@ function buildMyBillCard(bill, csrfToken) {
     const f = fields(col);
 
     f.code.textContent = `${bill.type ?? ''}. ${bill.number ?? ''}`;
-    f.status.textContent = detail.bill_status ?? '';
+    f.origin.textContent = chamberLabel(bill.type);
     f.title.textContent = bill.title ?? '';
     f.congress.textContent = `Congress: ${bill.congress ?? ''}`;
     f.chamber.textContent = bill.originChamberCode ?? '';
 
     setOptionalRow(f['introduced-row'], f.introduced, detail.introducedDate);
-    setOptionalRow(f['summary-row'], f.summary, detail.bill_summary);
+
+    f.summary.textContent = detail.bill_summary?.trim() ? detail.bill_summary : 'No summary available yet.';    
     setOptionalRow(f['action-row'], f.action, detail.actionDesc);
 
     f.form.action = `/remove-bill/${encodeURIComponent(bill.id)}/`;
@@ -387,7 +397,7 @@ function populateSearchResultsList(bills, meta, page) {
     }
 }
 
-// Stamps out one Search result card — Save vs Remove depending on whether it's tracked
+// Stamps out one Search result card - Save vs Saved (disabled) depending on whether it's tracked
 function buildBillCard(bill, meta, csrfToken, userId) {
     const congress = meta.congress ?? '';
     const card = instantiateTemplate('search-bill-card-template');
@@ -395,13 +405,14 @@ function buildBillCard(bill, meta, csrfToken, userId) {
 
     f.code.textContent = `${bill.bill_type ?? ''} ${bill.number ?? ''}`.trim();
     f.title.textContent = bill.title ?? '';
+    f.origin.textContent = chamberLabel(bill.chamber);
     f.congress.textContent = `Congress: ${congress}`;
     f.csrf.value = csrfToken;
 
     if (bill.saved) {
-        f.form.action = `/remove-bill/${encodeURIComponent(bill.saved_id)}/`;
-        f.button.className = 'btn btn-outline-danger btn-sm remove-bill-btn';
-        f.button.textContent = 'Remove';
+        f.button.className = 'btn btn-primary btn-sm save-bill-btn saved';
+        f.button.textContent = 'Saved';
+        f.button.disabled = true;
     } else {
         f.form.action = `/save-bill/${encodeURIComponent(bill.number)}/`;
         f['save-title'].value = bill.title ?? '';
