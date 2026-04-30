@@ -379,6 +379,21 @@ a {
   margin-bottom: 0;
 }
 
+.bill-origin-pill {
+  display: inline-block;
+  background-color: var(--dark-gray-bg);
+  color: var(--dark-text-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+[data-bs-theme="dark"] .bill-origin-pill {
+  background-color: #444444;
+}
+
 /* My Bills */
 .my-bills-box {
   background-color: var(--bg-color);
@@ -445,8 +460,16 @@ a {
   background-color: var(--dark-blue-bg);
 }
 
+.save-bill-btn.saved {
+    background-color: var(--secondary-color);
+}
+
 [data-bs-theme="dark"] .save-bill-btn {
   background-color: var(--light-blue-bg);
+}
+
+[data-bs-theme="dark"] .save-bill-btn.saved {
+  background-color: #1f1f1f
 }
 
 /* Bill Cards in Overview */
