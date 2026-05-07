@@ -226,7 +226,7 @@
                                 <p><strong>Congress:</strong> {{ detail.congress }}</p>
                                 <p><strong>State:</strong> {{ rep.state }}</p>
                                 {% if rep.type|lower == "representative" %}
-                                    <p><strong>Constituency: </strong>NC Congressional District {{ rep.district_number }}</p>
+                                    <p><strong>Constituency: </strong>{{ rep.state }} Congressional District {{ rep.district_number }}</p>
                                 {% else %}
                                     <p><strong>Constituency: </strong>US Senator</p>
                                 {% endif %}
