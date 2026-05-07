@@ -70,7 +70,7 @@ def test_registration_invalid_state(mock_validate, client):
         "address_line1": "1101 Oberlin Rd",
         "address_line2": "",
         "city": "Raleigh",
-        "state": "CA",
+        "state": "TA",
         "zipcode": "90210",
     })
 
